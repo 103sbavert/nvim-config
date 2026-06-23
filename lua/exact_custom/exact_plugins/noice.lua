@@ -1,9 +1,9 @@
-require('noice').setup {
+require("noice").setup({
     lsp = {
         override = {
-            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-            ['vim.lsp.util.stylize_markdown'] = true,
-            ['cmp.entry.get_documentation'] = true,
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
         },
     },
     presets = {
@@ -15,52 +15,51 @@ require('noice').setup {
     },
     routes = {
         {
-            view = 'split',
+            view = "split",
             filter = {
-                event = 'msg_show',
+                event = "msg_show",
                 kind = {
-                    'shell_out',
-                    'shell_err',
+                    "shell_out",
+                    "shell_err",
                 },
             },
             opts = { enter = true },
         },
         {
             filter = {
-                kind = 'confirm',
-                find = 'chezmoi',
+                kind = "confirm",
+                find = "chezmoi",
             },
-            view = 'chezmoi_confirm',
+            view = "chezmoi_confirm",
         },
     },
     views = {
         split = {
             enter = false,
-            size = 'auto',
-            timeout = 2000,
+            size = "auto",
         },
         cmdline_popup = {
             position = {
                 row = 10,
-                col = '50%',
+                col = "50%",
             },
             size = {
-                width = '25%',
-                height = 'auto',
+                width = "25%",
+                height = "auto",
             },
             border = {
-                style = 'rounded',
+                style = "rounded",
                 padding = { 0, 1 },
             },
         },
         chezmoi_confirm = {
-            view = 'confirm',
+            view = "confirm",
             focusable = false,
             border = {
                 text = {
-                    top = ' Chezmoi ',
+                    top = " Chezmoi ",
                 },
             },
         },
     },
-}
+})
