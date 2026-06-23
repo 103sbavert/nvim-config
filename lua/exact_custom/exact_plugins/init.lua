@@ -38,3 +38,11 @@ vim.keymap.set({ "n", "o", "x" }, "G", "G$", { noremap = true })
 vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 -- default theme
 vim.cmd.colorscheme("adwaita")
+-- interpret <ext>.tmpl same as <ext>
+vim.filetype.add({
+    pattern = {
+        [".*%.([^%.]+)%.tmpl"] = function(_, _, ext)
+            return ext
+        end,
+    },
+})
