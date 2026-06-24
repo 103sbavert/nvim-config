@@ -18,6 +18,10 @@
       "rev": "4167bbec76f693f481a5243f1be521ff0ccf1a6d",
       "src": "https://github.com/xvzc/chezmoi.nvim"
     },
+    "chezmoi.vim": {
+      "rev": "7a498ea65f658993237fb0469001bdf71f68cf94",
+      "src": "https://github.com/alker0/chezmoi.vim"
+    },
     "conform.nvim": {
       "rev": "619363c30309d29ffa631e67c8183f2a72caa373",
       "src": "https://github.com/stevearc/conform.nvim"
@@ -70,6 +74,10 @@
     "nvim-autopairs": {
       "rev": "7b9923abad60b903ece7c52940e1321d39eccc79",
       "src": "https://github.com/windwp/nvim-autopairs"
+    },
+    "nvim-chezmoi": {
+      "rev": "b3edf9ca41c63755c6d2c6e7462babf21e044aa2",
+      "src": "https://github.com/andre-kotake/nvim-chezmoi"
     },
     "nvim-lspconfig": {
       "rev": "bfcc0171a43f22afa61d927ffe9fcb6cb85dc99e",
