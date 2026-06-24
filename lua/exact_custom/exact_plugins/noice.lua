@@ -15,7 +15,7 @@ require("noice").setup({
     },
     routes = {
         {
-            view = "split",
+            view = "shell_display",
             filter = {
                 event = "msg_show",
                 kind = {
@@ -34,9 +34,12 @@ require("noice").setup({
         },
     },
     views = {
-        split = {
-            enter = false,
+        shell_display = {
+            timeout = 3000,
+            view = "split",
             size = "auto",
+            enter = false,
+            focusable = false,
         },
         cmdline_popup = {
             position = {
