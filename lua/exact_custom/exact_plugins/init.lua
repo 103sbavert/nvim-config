@@ -14,7 +14,7 @@ vim.pack.add({ gh("MunifTanjim/nui.nvim"), gh("rcarriga/nvim-notify"), gh("folke
 -- easy lsp
 vim.pack.add({ gh("stevearc/conform.nvim") })
 
--- plugin for chezmoi commands and tools
+-- chezmoi commands and tools
 vim.pack.add({ gh("xvzc/chezmoi.nvim") })
 
 -- Iterate over all Lua files in the plugins directory and load them

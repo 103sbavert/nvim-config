@@ -186,7 +186,7 @@ local function show_apply_prompt_for_source(source_abs)
     end
 
     commands.apply({
-        args = { "--no-tty", "--source-path", source_abs },
+        args = { "--no-tty", "--force", "--source-path", source_abs },
         on_stderr = function(_, data)
             if type(data) == "string" and data ~= "" then
                 vim.notify(data, vim.log.levels.WARN)
