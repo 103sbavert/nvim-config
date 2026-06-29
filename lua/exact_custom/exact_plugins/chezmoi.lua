@@ -45,12 +45,22 @@ require("chezmoi").setup({
 local commands = require("chezmoi.commands")
 local chezmoi_config = require("chezmoi").config
 local cached_chezmoi_src_dir = nil
+local symlink_pattern = "^symlink_"
 
 local function normalize_path(path)
     if not path or path == "" then
         return nil
     end
     return vim.fs.normalize(path)
+end
+
+local function is_file_chezmoi_symlink(tgt, src)
+    local stat = vim.uv.fs_lstat(tgt)
+    if not stat or stat.type ~= "link" then
+        return false
+    end
+    local link_tgt = vim.uv.fs_readlink(tgt)
+    return vim.fs.basename(src):match(symlink_pattern) or vim.fs.basename(link_tgt):match(symlink_pattern)
 end
 
 local function is_path_inside_dir(path, dir)
@@ -201,7 +211,9 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 return
             end
 
-            show_open_source_file_prompt(file)
+            if not is_file_chezmoi_symlink(file, source) then
+                show_open_source_file_prompt(file)
+            end
         end)
     end,
 })
