@@ -55,12 +55,7 @@ local function normalize_path(path)
 end
 
 local function is_file_chezmoi_symlink(tgt, src)
-    local stat = vim.uv.fs_lstat(tgt)
-    if not stat or stat.type ~= "link" then
-        return false
-    end
-    local link_tgt = vim.uv.fs_readlink(tgt)
-    return vim.fs.basename(src):match(symlink_pattern) or vim.fs.basename(link_tgt):match(symlink_pattern)
+    return (vim.fs.basename(src):match(symlink_pattern)) -- check if src starts with 'symlink_'
 end
 
 local function is_path_inside_dir(path, dir)
