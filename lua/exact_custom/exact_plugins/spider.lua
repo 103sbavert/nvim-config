@@ -13,7 +13,7 @@ local function toggle_buffer_camel_mode()
     vim.keymap.set(modes, "e", function() require("spider").motion("e") end, { buffer = bufnr, desc = "Spider-e" })
   else
     vim.b[bufnr].camel_mode_active = false
-    vim.notify("Disabling camelCase mode.")
+    vim.notify("Disabling camelCase mode")
     
     vim.keymap.del(modes, "w", { buffer = bufnr })
     vim.keymap.del(modes, "b", { buffer = bufnr })
