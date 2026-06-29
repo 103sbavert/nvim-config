@@ -5,6 +5,9 @@ local function gh(repo)
     return "https://github.com/" .. repo
 end
 
+-- camelCase and smart word navigation
+vim.pack.add({ gh("chrisgrieser/nvim-spider") })
+
 -- Adwaita color schema from github
 vim.pack.add({ gh("Mofiqul/adwaita.nvim") })
 
