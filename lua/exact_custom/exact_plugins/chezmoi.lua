@@ -45,41 +45,28 @@ require("chezmoi").setup({
 local commands = require("chezmoi.commands")
 local chezmoi_config = require("chezmoi").config
 local cached_chezmoi_src_dir = nil
-local skip_paths = {}
 
 local function normalize_path(path)
-    if path == nil or path == "" then
+    if not path or path == "" then
         return nil
     end
-
-    local resolved = vim.loop.fs_realpath(path)
-    if resolved and resolved ~= "" then
-        return resolved
-    end
-
-    return vim.fn.fnamemodify(path, ":p")
+    return vim.fs.normalize(path)
 end
 
 local function is_path_inside_dir(path, dir)
     local path_abs = normalize_path(path)
     local dir_abs = normalize_path(dir)
 
-    if path_abs == nil or dir_abs == nil then
+    if not path_abs or not dir_abs then
         return false
     end
 
-    dir_abs = dir_abs:gsub("/+$", "")
-    if path_abs == dir_abs then
-        return true
-    end
-
-    return path_abs:sub(1, #dir_abs + 1) == (dir_abs .. "/")
+    return path_abs:find(dir_abs, 1, true) == 1
 end
 
-local function source_path_for_target(file)
+local function get_source_file_path(file)
     local ok, source_paths = pcall(commands.source_path, {
         targets = file,
-
         on_stderr = function() end,
     })
 
@@ -95,14 +82,14 @@ local function source_path_for_target(file)
     return normalize_path(source)
 end
 
-local function get_chezmoi_source_dir()
-    if cached_chezmoi_src_dir ~= nil and cached_chezmoi_src_dir ~= "" then
+local function get_source_dir()
+    if cached_chezmoi_src_dir and cached_chezmoi_src_dir ~= "" then
         return cached_chezmoi_src_dir
     end
 
-    local env_src_dir = os.getenv("CHEZMOI_SRC_DIR")
-    if env_src_dir and env_src_dir ~= "" then
-        cached_chezmoi_src_dir = normalize_path(env_src_dir)
+    local env = os.getenv("CHEZMOI_SRC_DIR")
+    if env and env ~= "" then
+        cached_chezmoi_src_dir = normalize_path(env)
         return cached_chezmoi_src_dir
     end
 
@@ -110,34 +97,29 @@ local function get_chezmoi_source_dir()
         on_stderr = function() end,
     })
 
-    if not ok or type(source_paths) ~= "table" then
-        return nil
+    if ok and type(source_paths) == "table" and type(source_paths[1]) == "string" and source_paths[1] ~= "" then
+        cached_chezmoi_src_dir = normalize_path(source_paths[1])
+        return cached_chezmoi_src_dir
     end
 
-    local source_root = source_paths[1]
-    if type(source_root) ~= "string" or source_root == "" then
-        return nil
-    end
-
-    cached_chezmoi_src_dir = normalize_path(source_root)
-    return cached_chezmoi_src_dir
+    return nil
 end
 
-local function is_chezmoi_source_file(file)
-    local chezmoi_src_dir = get_chezmoi_source_dir()
-    if chezmoi_src_dir == nil or chezmoi_src_dir == "" then
+local function is_source_file(file)
+    local chezmoi_src_dir = get_source_dir()
+    if not chezmoi_src_dir or chezmoi_src_dir == "" then
         return false
     end
 
     return is_path_inside_dir(file, chezmoi_src_dir)
 end
 
-local function is_ignored_chezmoi_source(file_abs)
-    if file_abs == nil or file_abs == "" then
+local function is_source_file_ignored(file)
+    if not file or file == "" then
         return false
     end
 
-    local patterns = chezmoi_config.edit and chezmoi_config.edit.ignore_patterns or nil
+    local patterns = chezmoi_config.edit and chezmoi_config.edit.ignore_patterns
     if type(patterns) ~= "table" then
         return false
     end
@@ -149,7 +131,7 @@ local function is_ignored_chezmoi_source(file_abs)
                 anchored_pattern = anchored_pattern .. "$"
             end
 
-            if file_abs:match(anchored_pattern) then
+            if file:match(anchored_pattern) then
                 return true
             end
         end
@@ -158,25 +140,19 @@ local function is_ignored_chezmoi_source(file_abs)
     return false
 end
 
-local function open_chezmoi_source(file, source)
-    source = source or source_path_for_target(file)
-    if source == nil then
-        return
-    end
-
-    skip_paths[source] = (skip_paths[source] or 0) + 1
+local function open_source_file(file)
     commands.edit({ targets = file })
 end
 
-local function show_chezmoi_prompt(file, source)
+local function show_open_source_file_prompt(file)
     local choice = vim.fn.confirm("Open the chezmoi source file instead?\n", "&No\n&Yes", 1, "Question")
     if choice == 2 then
-        open_chezmoi_source(file, source)
+        open_source_file(file)
     end
 end
 
-local function show_apply_prompt_for_source(source_abs)
-    if source_abs == nil or source_abs == "" then
+local function show_apply_to_target_file_prompt(source)
+    if not source or source == "" then
         return
     end
 
@@ -186,7 +162,7 @@ local function show_apply_prompt_for_source(source_abs)
     end
 
     commands.apply({
-        args = { "--no-tty", "--force", "--source-path", source_abs },
+        args = { "--no-tty", "--force", "--source-path", source },
         on_stderr = function(_, data)
             if type(data) == "string" and data ~= "" then
                 vim.notify(data, vim.log.levels.WARN)
@@ -210,44 +186,22 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
         vim.b[buf].chezmoi_checked = true
 
-        if vim.bo[buf].buftype ~= "" then
-            return
-        end
-
-        local file = vim.api.nvim_buf_get_name(buf)
-        if file == "" then
-            return
-        end
-
-        local file_abs = file
-        if skip_paths[file_abs] and skip_paths[file_abs] > 0 then
-            skip_paths[file_abs] = skip_paths[file_abs] - 1
-            return
-        end
-
         vim.schedule(function()
-            if not vim.api.nvim_buf_is_valid(buf) then
+            if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].buftype ~= "" then
                 return
             end
 
-            if vim.api.nvim_buf_get_name(buf) ~= file then
+            local file = vim.api.nvim_buf_get_name(buf)
+            if file == "" or is_source_file(file) then
                 return
             end
 
-            if is_chezmoi_source_file(file) then
+            local source = get_source_file_path(file)
+            if not source or source == file then
                 return
             end
 
-            local source = source_path_for_target(file)
-            if source == nil then
-                return
-            end
-
-            if source == file_abs then
-                return
-            end
-
-            show_chezmoi_prompt(file, source)
+            show_open_source_file_prompt(file)
         end)
     end,
 })
@@ -261,25 +215,15 @@ vim.api.nvim_create_autocmd("BufWritePost", {
         end
 
         local file = vim.api.nvim_buf_get_name(buf)
-        if file == "" then
+        if file == "" or is_source_file_ignored(file) then
             return
         end
 
-        local file_abs = file
-
-        if not is_chezmoi_source_file(file_abs) then
+        if not is_source_file(file) then
             return
         end
 
-        if is_ignored_chezmoi_source(file_abs) then
-            vim.notify(
-                "Skipping chezmoi apply for ignored file: " .. vim.fn.fnamemodify(file, ":t"),
-                vim.log.levels.INFO
-            )
-            return
-        end
-
-        show_apply_prompt_for_source(file_abs)
+        show_apply_to_target_file_prompt(file)
     end,
 })
 
@@ -314,7 +258,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
             return completions
         end
 
-        pcall(vim.api.nvim_del_user_command, "ChezmoiEdit")
         vim.api.nvim_create_user_command("ChezmoiEdit", function(opts)
             local fargs = opts.fargs
             local targets = select(1, util.__classify_args(fargs))
@@ -338,7 +281,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
             complete = edit_complete,
         })
 
-        pcall(vim.api.nvim_del_user_command, "ChezmoiApply")
         vim.api.nvim_create_user_command("ChezmoiApply", function(opts)
             local files = opts.fargs
 
@@ -360,7 +302,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
             local target_files = {}
 
             for _, file in ipairs(files) do
-                if is_chezmoi_source_file(file) then
+                if is_source_file(file) then
                     commands.apply({
                         args = { "--no-tty", "--source-path", file },
                         on_stderr = apply_stderr,
