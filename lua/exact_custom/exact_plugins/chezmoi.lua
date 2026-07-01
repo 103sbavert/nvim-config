@@ -12,7 +12,6 @@ require("chezmoi").setup({
             "%.gitignore",
             "%.internal",
             "%.git/.*",
-            "%..*",
         },
     },
     events = {
@@ -55,7 +54,7 @@ local function normalize_path(path)
     return vim.fs.normalize(path)
 end
 
-local function is_file_chezmoi_symlink(tgt, src)
+local function source_has_symlink_attr(src)
     return (vim.fs.basename(src):match(symlink_pattern)) -- check if src starts with 'symlink_'
 end
 
@@ -207,7 +206,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 return
             end
 
-            if not is_file_chezmoi_symlink(file, source) then
+            if not source_has_symlink_attr(source) then
                 show_open_source_file_prompt(file)
             end
         end)
@@ -239,7 +238,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
     once = true,
     callback = function()
         local util = require("chezmoi.util")
-        local commands = require("chezmoi.commands")
+        commands = require("chezmoi.commands")
 
         local function current_file(command_name)
             local bufname = vim.api.nvim_buf_get_name(0)

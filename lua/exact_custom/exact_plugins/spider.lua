@@ -28,4 +28,4 @@ local function toggle_buffer_camel_mode()
 end
 
 -- toggle on demand
-vim.keymap.set("n", "<leader>cc", toggle_buffer_camel_mode, { desc = "Toggle Buffer CamelCase Mode" })
+vim.keymap.set("n", "<leader>tc", toggle_buffer_camel_mode, { desc = "Toggle Buffer CamelCase Mode" })
