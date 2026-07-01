@@ -3,15 +3,12 @@ require("chezmoi").setup({
         watch = false,
         force = false,
         ignore_patterns = {
-            "run_onchange_.*",
-            "run_once_.*",
-            "%.chezmoiignore",
-            "%.chezmoitemplates?",
-            "%.chezmoiscripts?",
-            "%.chezmoidata",
+            "run_",
+            "%.chezmoi",
             "%.gitignore",
-            "%.internal",
-            "%.git/.*",
+            "%.git/",
+            "%/%.[^%.%/]",
+            "^%.[^%.%/]",
         },
     },
     events = {
@@ -44,7 +41,7 @@ require("chezmoi").setup({
 
 local commands = require("chezmoi.commands")
 local chezmoi_config = require("chezmoi").config
-local cached_chezmoi_src_dir = nil
+local cached_chezmoi_src_dir = os.getenv("CHEZMOI_SOURCE_DIR")
 local symlink_pattern = "^symlink_"
 
 local function normalize_path(path)
@@ -93,6 +90,7 @@ local function get_source_dir()
     end
 
     local env = os.getenv("CHEZMOI_SOURCE_DIR")
+
     if env and env ~= "" then
         cached_chezmoi_src_dir = normalize_path(env)
         return cached_chezmoi_src_dir
@@ -124,6 +122,20 @@ local function is_source_file_ignored(file)
         return false
     end
 
+    if not is_source_file(file) then
+        return false
+    end
+
+    local src_dir = get_source_dir()
+    if not src_dir or src_dir == "" then
+        return false
+    end
+
+    local relative_file = normalize_path(vim.fs.relpath(src_dir, file))
+    if not relative_file or relative_file == "" then
+        return false
+    end
+
     local patterns = chezmoi_config.edit and chezmoi_config.edit.ignore_patterns
     if type(patterns) ~= "table" then
         return false
@@ -131,12 +143,7 @@ local function is_source_file_ignored(file)
 
     for _, pattern in ipairs(patterns) do
         if type(pattern) == "string" and pattern ~= "" then
-            local anchored_pattern = pattern
-            if anchored_pattern:sub(-1) ~= "$" then
-                anchored_pattern = anchored_pattern .. "$"
-            end
-
-            if file:match(anchored_pattern) then
+            if relative_file:match(pattern) then
                 return true
             end
         end
@@ -170,10 +177,12 @@ local function show_apply_to_target_file_prompt(source)
         args = { "--no-tty", "--force", "--source-path", source },
         on_stderr = function(_, data)
             if type(data) == "string" and data ~= "" then
-                vim.notify(data, vim.log.levels.WARN)
+                vim.notify(data, vim.log.levels.WARN, { title = "chezmoi.nvim" })
             end
         end,
     })
+
+    vim.notify("Applied to target", vim.log.levels.INFO, { title = "chezmoi.nvim" })
 end
 
 local group = vim.api.nvim_create_augroup("chezmoi-open-source-prompt", {
@@ -234,24 +243,33 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     end,
 })
 
+vim.keymap.set("n", "<leader>sz", function()
+    require("chezmoi.pick").telescope()
+end, { desc = "[S]earch che[Z]moi managed files" })
+
 vim.api.nvim_create_autocmd("VimEnter", {
     once = true,
     callback = function()
         local util = require("chezmoi.util")
         commands = require("chezmoi.commands")
 
-        local function current_file(command_name)
+        local function get_current_file()
             local bufname = vim.api.nvim_buf_get_name(0)
+
             if bufname == "" or vim.bo.buftype ~= "" then
-                vim.notify(command_name .. ": No valid file target detected", vim.log.levels.ERROR)
                 return nil
             end
+
+            if bufname:sub(1, 1) == "-" then
+                bufname = "\\" .. bufname
+            end
+
             return bufname
         end
 
-        local function apply_stderr(_, data)
+        local function notify_stderr(_, data)
             if type(data) == "string" and data ~= "" then
-                vim.notify(data, vim.log.levels.WARN)
+                vim.notify(data, vim.log.levels.WARN, { title = "chezmoi.nvim" })
             end
         end
 
@@ -270,8 +288,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
             local targets = select(1, util.__classify_args(fargs))
 
             if vim.tbl_isempty(targets) then
-                local bufname = current_file("ChezmoiEdit")
+                local bufname = get_current_file()
                 if not bufname then
+                    vim.notify("No valid file target detected", vim.log.levels.ERROR, { title = "ChezmoiEdit" })
                     return
                 end
 
@@ -279,6 +298,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
             end
 
             local parsed_targets, parsed_args = util.__classify_args(fargs)
+
             commands.edit({
                 targets = parsed_targets,
                 args = parsed_args,
@@ -292,39 +312,61 @@ vim.api.nvim_create_autocmd("VimEnter", {
             local files = opts.fargs
 
             if #files == 0 then
-                local bufname = current_file("ChezmoiApply")
+                local bufname = get_current_file()
                 if not bufname then
+                    vim.notify("No valid file target detected", vim.log.levels.ERROR, { title = "ChezmoiApply" })
                     return
                 end
                 files = { bufname }
             end
 
+            local target_files = {}
+            local source_files = {}
+
             for _, file in ipairs(files) do
                 if file:sub(1, 1) == "-" then
-                    vim.notify("ChezmoiApply: flags not supported; only filenames allowed", vim.log.levels.ERROR)
+                    vim.notify(
+                        "File name argument cannot start with -. Escape with a \\ if the file name contains a leading -.",
+                        vim.log.levels.ERROR,
+                        { title = "ChezmoiApply" }
+                    )
                     return
+                elseif file:sub(1, 2) == "\\-" then
+                    file = file:sub(2)
                 end
-            end
 
-            local target_files = {}
-
-            for _, file in ipairs(files) do
                 if is_source_file(file) then
-                    commands.apply({
-                        args = { "--no-tty", "--source-path", file },
-                        on_stderr = apply_stderr,
-                    })
+                    table.insert(source_files, file)
                 else
                     table.insert(target_files, file)
                 end
             end
 
+            if not vim.tbl_isempty(source_files) then
+                commands.apply({
+                    args = { "--force", "--no-tty", "--source-path", table.concat(source_files, " ") },
+                    on_stderr = notify_stderr,
+                })
+
+                vim.notify(
+                    "Successfully applied " .. #source_files .. " source files.",
+                    vim.log.levels.INFO,
+                    { title = "ChezmoiApply" }
+                )
+            end
+
             if not vim.tbl_isempty(target_files) then
                 commands.apply({
                     targets = target_files,
-                    args = { "--no-tty" },
-                    on_stderr = apply_stderr,
+                    args = { "--force", "--no-tty" },
+                    on_stderr = notify_stderr,
                 })
+
+                vim.notify(
+                    "Successfully applied " .. #target_files .. " target files.",
+                    vim.log.levels.INFO,
+                    { title = "ChezmoiApply" }
+                )
             end
         end, {
             nargs = "*",
@@ -332,7 +374,3 @@ vim.api.nvim_create_autocmd("VimEnter", {
         })
     end,
 })
-
-vim.keymap.set("n", "<leader>sz", function()
-    require("chezmoi.pick").telescope()
-end, { desc = "[S]earch che[Z]moi managed files" })
