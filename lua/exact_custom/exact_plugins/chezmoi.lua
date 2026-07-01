@@ -92,7 +92,7 @@ local function get_source_dir()
         return cached_chezmoi_src_dir
     end
 
-    local env = os.getenv("CHEZMOI_SRC_DIR")
+    local env = os.getenv("CHEZMOI_SOURCE_DIR")
     if env and env ~= "" then
         cached_chezmoi_src_dir = normalize_path(env)
         return cached_chezmoi_src_dir
