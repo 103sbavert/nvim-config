@@ -52,9 +52,3 @@ vim.api.nvim_create_user_command(
     format_buffer,
     { range = true, desc = "Format current buffer or visual selection with conform" }
 )
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>cf",
-    format_buffer,
-    { noremap = true, desc = "Format current buffer or visual selection with conform" }
-)
