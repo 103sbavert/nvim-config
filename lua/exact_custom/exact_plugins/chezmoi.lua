@@ -12,6 +12,7 @@ require("chezmoi").setup({
             "%.gitignore",
             "%.internal",
             "%.git/.*",
+            "%..*",
         },
     },
     events = {
