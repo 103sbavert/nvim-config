@@ -14,9 +14,6 @@ vim.pack.add({ gh("Mofiqul/adwaita.nvim") })
 -- noice plugin for fancy dialogs
 vim.pack.add({ gh("MunifTanjim/nui.nvim"), gh("rcarriga/nvim-notify"), gh("folke/noice.nvim") })
 
--- easy lsp
-vim.pack.add({ gh("stevearc/conform.nvim") })
-
 -- chezmoi commands and tools
 vim.pack.add({ gh("xvzc/chezmoi.nvim") })
 
