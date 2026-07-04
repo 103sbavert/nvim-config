@@ -387,6 +387,7 @@ do
             { "<leader>t", group = "[T]oggle" },
             { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } }, -- Enable gitsigns recommended keymaps first
             { "gr", group = "LSP Actions", mode = { "n" } },
+            { "<leader>z", group = "Che[z]moi" },
         },
     })
 
@@ -720,10 +721,9 @@ do
     ---@type table<string, vim.lsp.Config>
     local servers = {
         -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
         -- rust_analyzer = {},
-        --
+        gopls = {},
+        pyright = {},
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
@@ -794,7 +794,7 @@ do
         -- You can add other tools here that you want Mason to install
     })
 
-    require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+    require("mason-tool-installer").setup({ ensure_installed = ensure_installed, auto_update = true })
 
     for name, server in pairs(servers) do
         vim.lsp.config(name, server)
@@ -811,29 +811,47 @@ do
     vim.pack.add({ gh("stevearc/conform.nvim") })
     require("conform").setup({
         notify_on_error = false,
-        format_on_save = function(bufnr)
-            -- You can specify filetypes to autoformat on save here:
-            local enabled_filetypes = {
-                -- lua = true,
-                -- python = true,
-            }
-            if enabled_filetypes[vim.bo[bufnr].filetype] then
-                return { timeout_ms = 500 }
-            else
-                return nil
-            end
-        end,
         default_format_opts = {
             lsp_format = "fallback", -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
         },
+        format_after_save = {
+            async = true,
+            timeout_ms = 500,
+        },
         -- You can also specify external formatters in here.
         formatters_by_ft = {
-            -- rust = { 'rustfmt' },
-            -- Conform can also run multiple formatters sequentially
-            -- python = { "isort", "black" },
-            --
-            -- You can use 'stop_after_first' to run the first available formatter from the list
-            -- javascript = { "prettierd", "prettier", stop_after_first = true },
+            lua = { "stylua" },
+            python = { "isort", "black" },
+            go = { "gofmt" },
+            javascript = { "prettier", stop_after_first = true },
+            typescript = { "prettier", stop_after_first = true },
+            json = { "prettier", stop_after_first = true },
+            yaml = { "prettier", stop_after_first = true },
+            toml = { "taplo" },
+            sh = { "shfmt" },
+            bash = { "shfmt" },
+            zsh = { "shfmt" },
+        },
+        formatters = {
+            stylua = {
+                args = { "--indent-type", "Spaces", "--indent-width", "4", "-" },
+            },
+            shfmt = {
+                args = { "-i", "4", "-ci" },
+            },
+            prettier = {
+                args = {
+                    "--log-level",
+                    "error",
+                    "--tab-width",
+                    "4",
+                    "--stdin-filepath",
+                    "$FILENAME",
+                },
+            },
+            taplo = {
+                args = { "fmt", "--option", "indent_string=    ", "-" },
+            },
         },
     })
 
