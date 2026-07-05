@@ -708,6 +708,7 @@ do
             --
             -- This may be unwanted, since they displace some of your code
             if client and client:supports_method("textDocument/inlayHint", event.buf) then
+                vim.lsp.inlay_hint.enable() -- enable inlay hints by default
                 map("<leader>th", function()
                     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
                 end, "[T]oggle Inlay [H]ints")
@@ -722,7 +723,25 @@ do
     local servers = {
         -- clangd = {},
         -- rust_analyzer = {},
-        gopls = {},
+        gopls = {
+            settings = {
+                gopls = {
+                    hints = {
+                        assignVariableTypes = true,
+                        compositeLiteralFields = true,
+                        compositeLiteralTypes = true,
+                        constantValues = true,
+                        functionTypeParameters = true,
+                        parameterNames = true,
+                        rangeVariableTypes = true,
+                    },
+                    analyses = {
+                        unusedparams = true,
+                    },
+                    staticcheck = true,
+                },
+            },
+        },
         pyright = {},
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
