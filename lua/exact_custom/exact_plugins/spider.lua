@@ -1,5 +1,6 @@
+--- Toggles buffer-local sub-word (camelCase/snake_case) motions via nvim-spider.
 local function toggle_buffer_camel_mode()
-    -- enable per buffer
+    -- Initialize state variables and scope context to the active buffer.
     local bufnr = vim.api.nvim_get_current_buf()
     local is_active = vim.b[bufnr].camel_mode_active or false
     local modes = { "n", "o", "x" }

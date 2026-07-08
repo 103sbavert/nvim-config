@@ -549,18 +549,6 @@ do
         callback = function(event)
             local buf = event.buf
 
-            -- Find references for the word under your cursor.
-            vim.keymap.set("n", "grr", builtin.lsp_references, { buffer = buf, desc = "[G]oto [R]eferences" })
-
-            -- Jump to the implementation of the word under your cursor.
-            -- Useful when your language has ways of declaring types without an actual implementation.
-            vim.keymap.set("n", "gri", builtin.lsp_implementations, { buffer = buf, desc = "[G]oto [I]mplementation" })
-
-            -- Jump to the definition of the word under your cursor.
-            -- This is where a variable was first declared, or where a function is defined, etc.
-            -- To jump back, press <C-t>.
-            vim.keymap.set("n", "grd", builtin.lsp_definitions, { buffer = buf, desc = "[G]oto [D]efinition" })
-
             -- Fuzzy find all the symbols in your current document.
             -- Symbols are things like variables, functions, types, etc.
             vim.keymap.set("n", "gO", builtin.lsp_document_symbols, { buffer = buf, desc = "Open Document Symbols" })
@@ -716,13 +704,33 @@ do
         end,
     })
 
+    vim.pack.add({ gh("Hoffs/omnisharp-extended-lsp.nvim") })
+    local csharp_lsp_extension = require("omnisharp_extended")
+
     -- Enable the following language servers
     --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
     --  See `:help lsp-config` for information about keys and how to configure
     ---@type table<string, vim.lsp.Config>
     local servers = {
-        -- clangd = {},
-        -- rust_analyzer = {},
+        omnisharp = {
+            handlers = {
+                ["textDocument/definition"] = csharp_lsp_extension.definition_handler,
+                ["textDocument/typeDefinition"] = csharp_lsp_extension.type_definition_handler,
+                ["textDocument/references"] = csharp_lsp_extension.references_handler,
+                ["textDocument/implementation"] = csharp_lsp_extension.implementation_handler,
+            },
+            settings = {
+                FormattingOptions = {
+                    EnableEditorConfigSupport = true,
+                    OrganizeImports = true,
+                },
+                RoslynExtensionsOptions = {
+                    EnableAnalyzersSupport = true,
+                    EnableImportCompletion = true,
+                    EnableDecompilationSupport = true,
+                },
+            },
+        },
         gopls = {
             settings = {
                 gopls = {
@@ -743,15 +751,7 @@ do
             },
         },
         pyright = {},
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-
-        stylua = {}, -- Used to format Lua code
-
-        -- Special Lua Config, as recommended by neovim help docs
+        stylua = {},
         lua_ls = {
             on_init = function(client)
                 client.server_capabilities.documentFormattingProvider = false -- Disable formatting (formatting is done by stylua)
