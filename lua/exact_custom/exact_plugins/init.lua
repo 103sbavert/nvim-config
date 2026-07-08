@@ -1,6 +1,6 @@
----Helper function for github-hosted nvim plugins, copied from kickstart's parent init.lua
----@param repo string
----@return string
+--- Generates a full GitHub URL for Neovim plugin repositories.
+--- @param repo string The shorthand repository path formatted as "owner/repository".
+--- @return string The absolute HTTPS URL pointing to the GitHub repository.
 local function gh(repo)
     return "https://github.com/" .. repo
 end

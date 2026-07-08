@@ -7,7 +7,7 @@ require("chezmoi").setup({
             "%.chezmoi",
             "%.gitignore",
             "%.git/",
-            "%/%.[^%.%/]",
+            "%.[^%.%/]",
             "^%.[^%.%/]",
         },
     },
@@ -46,8 +46,9 @@ local symlink_pattern = "^symlink_"
 local CZM_STATUSLINE_HI = ("%#MiniStatuslineChezmoi# [chezmoi] %*"):gsub("%%", "%%%%")
 local statusline = require("mini.statusline")
 
---- @param args table?
---- @return string?
+--- Resolves the absolute file system path of the current target buffer.
+--- @param args table? Optional autocmd event payload parameters containing buffer context.
+--- @return string? Absolute file path string if valid, otherwise nil.
 local function get_current_file(args)
     local buf = 0
 
@@ -68,7 +69,9 @@ local function get_current_file(args)
     return buf_name
 end
 
---- @param args string | string[]
+--- Serializes a single string or an array of string arguments into a single space-separated sequence.
+--- @param args string | string[] Input target arguments list or scalar value.
+--- @return string Formatted plain text command-line string parameter.
 local function to_str(args)
     if type(args) == "table" then
         return table.concat(args, " ")
@@ -76,20 +79,25 @@ local function to_str(args)
     return args
 end
 
---- @param src string
---- @return boolean
+--- Validates if the given source path implies an internal chezmoi symlink configuration target attribute prefix.
+--- @param src string Target source file path string context.
+--- @return boolean True if the absolute base file name starts with 'symlink_'.
 local function has_symlink_attr(src)
-    return (vim.fs.basename(src):match(symlink_pattern)) -- check if src starts with 'symlink_'
+    return (vim.fs.basename(src):match(symlink_pattern)) ~= nil
 end
 
+--- Directs standard error diagnostic output streams to the native Neovim notification engine.
+--- @param _ any Ignored positional context variable.
+--- @param data string Standard error diagnostic stream raw text packet chunk payload.
 local function notify_stderr(_, data)
     if type(data) == "string" and data ~= "" then
         vim.notify(data, vim.log.levels.WARN, { title = "chezmoi.nvim" })
     end
 end
 
---- @param tgt_files string[] | string
---- @param on_exit? fun(code: number, signal: number)
+--- Invokes an asynchronous chezmoi state synchronization run targeted on destination mirror paths.
+--- @param tgt_files string[] | string Destination path vectors inside the configured file system environment.
+--- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
 local function apply_tgt_files(tgt_files, on_exit)
     commands.apply({
         targets = tgt_files,
@@ -99,8 +107,9 @@ local function apply_tgt_files(tgt_files, on_exit)
     })
 end
 
---- @param src_files string[] | string
---- @param on_exit? fun(code: number, signal: number)
+--- Invokes an asynchronous chezmoi state synchronization run targeted explicitly from source tracking paths.
+--- @param src_files string[] | string Source control repository file configurations.
+--- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
 local function apply_src_files(src_files, on_exit)
     commands.apply({
         args = { "--no-tty", "--force", "--source-path", to_str(src_files) },
@@ -109,9 +118,10 @@ local function apply_src_files(src_files, on_exit)
     })
 end
 
---- @param path string
---- @param dir string
---- @return boolean
+--- Determines if an arbitrary filesystem entity exists relative to a specific ancestor path structure hierarchy.
+--- @param path string? Valid relative or absolute system path location.
+--- @param dir string? Target parent repository or structural directory path location.
+--- @return boolean True if the canonical resolved representation indicates root inclusion.
 local function is_path_inside_dir(path, dir)
     if not path or not dir then
         return false
@@ -131,9 +141,10 @@ local function is_path_inside_dir(path, dir)
     return path_abs:find(dir_abs, 1, true) == 1
 end
 
---- @param file string|string[]?
---- @param on_exit? fun(code: number, signal: number)
---- @return string[]?
+--- Maps local file system definitions to underlying target paths registered in the active chezmoi state tracker.
+--- @param file (string | string[])? Source file vector parameter paths or target entity list tracking points.
+--- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
+--- @return string[]? Resolved system collection containing mapped source references.
 local function get_src_file(file, on_exit)
     file = file or {}
     local source_paths = commands.source_path({ targets = file, on_stderr = function() end, on_exit = on_exit })
@@ -168,7 +179,8 @@ local function get_src_file(file, on_exit)
     return abs_paths
 end
 
---- @return string?
+--- Inspects and extracts the canonical tracked baseline directory for the state store structure context.
+--- @return string? Absolute tracking directory path if accessible.
 local function get_src_dir()
     if cached_chezmoi_src_dir and cached_chezmoi_src_dir ~= "" then
         return cached_chezmoi_src_dir
@@ -191,7 +203,9 @@ local function get_src_dir()
     return nil
 end
 
---- @return boolean
+--- Determines if an individual target document falls contextually inside the chezmoi source framework domain.
+--- @param file string? Targeted physical address path value context.
+--- @return boolean True if path resides structural depths inside active source root.
 local function is_src_file(file)
     local chezmoi_src_dir = get_src_dir()
 
@@ -202,7 +216,9 @@ local function is_src_file(file)
     return is_path_inside_dir(file, chezmoi_src_dir)
 end
 
---- @return boolean
+--- Validates file exclusions against explicit user configuration layout rules defined inside standard global parameters.
+--- @param file string Tracked source document parameter path pointer.
+--- @return boolean True if internal module parameters mandate structural omission patterns on target configuration.
 local function should_ignore_src_file(file)
     if not file or file == "" then
         return false
@@ -247,18 +263,21 @@ local function should_ignore_src_file(file)
     return false
 end
 
---- @param files string|string[]
---- @param args string[]?
+--- Dispatches file paths straight to the editing subsystem parameters to initiate text updates.
+--- @param files string | string[] Single document identifier context string or tracking group listing array.
+--- @param args string[]? Supplemental control syntax string parameters payload passed to editing subprocess context.
 local function open_src_file(files, args)
     commands.edit({ targets = files, args = args or {} })
 end
 
---- @return boolean
+--- Prompts visual modal text interfaces to confirm if editing operations should intercept upstream storage points.
+--- @return boolean True if affirmative confirmation index returned.
 local function ask_open_src_file()
     return vim.fn.confirm("Open the chezmoi source file instead?\n", "&No\n&Yes", 1, "Question") == 2
 end
 
---- @return boolean
+--- Prompts visual modal text interfaces to decide immediate state deployment flags to downstream tracking points.
+--- @return boolean True if target deployment selection sequence matches affirmative context bounds.
 local function ask_apply_to_tgt()
     return vim.fn.confirm("Apply to target now?\n", "&No\n&Yes", 1, "Question") == 2
 end
@@ -278,7 +297,8 @@ statusline.active = function()
 end
 
 statusline.section_chezmoi = function()
-    if not is_src_file(get_current_file()) then
+    local src_file = get_current_file()
+    if not src_file or src_file == "" or not is_src_file(src_file) then
         return ""
     end
     return CZM_STATUSLINE_HI
@@ -353,6 +373,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
         local util = require("chezmoi.util")
         commands = require("chezmoi.commands")
 
+        --- Generates completion tracking vectors matched on active filesystem targets and subcommands.
+        --- @param arg_lead string Trailing data token matching target context for input expansion operations.
+        --- @return string[] Array listing of string path entries valid for UI matching selections.
         local function edit_complete(arg_lead, _, _)
             local completions = vim.fn.getcompletion(arg_lead, "file")
             for _, arg in ipairs({ "--watch", "--force" }) do
@@ -433,8 +456,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
                 if is_src_file(file) then
                     table.insert(source_files, file)
-                else
-                    table.insert(target_files, file)
                 end
             end
 
