@@ -42,18 +42,43 @@ require("telescope").setup({
 pcall(require("telescope").load_extension, "fzf")
 pcall(require("telescope").load_extension, "ui-select")
 
+-- keymapping factory for the Search group
+local map_search = create_keymap_group("[S]earch", "<leader>s", "n")
+
 -- See `:help telescope.builtin`
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
-vim.keymap.set({ "n", "v" }, "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
-vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
-vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
-vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-vim.keymap.set("n", "<leader>sc", builtin.commands, { desc = "[S]earch [C]ommands" })
+
+map_search("h", builtin.help_tags, "[S]earch [H]elp")
+map_search("k", builtin.keymaps, "[S]earch [K]eymaps")
+map_search("f", builtin.find_files, "[S]earch [F]iles")
+map_search("s", builtin.builtin, "[S]earch [S]elect Telescope")
+map_search("g", builtin.live_grep, "[S]earch by [G]rep")
+map_search("d", builtin.diagnostics, "[S]earch [D]iagnostics")
+map_search("r", builtin.resume, "[S]earch [R]esume")
+map_search(".", builtin.oldfiles, '[S]earch Recent Files ("." for repeat)')
+map_search("c", builtin.commands, "[S]earch [C]ommands")
+map_search("w", builtin.grep_string, "[S]earch current [W]ord", {}, { "n", "v" })
+
+-- It's also possible to pass additional configuration options.
+--  See `:help telescope.builtin.live_grep()` for information about particular keys
+map_search(
+    "/",
+    function()
+        builtin.live_grep({
+            grep_open_files = true,
+            prompt_title = "Live Grep in Open Files",
+        })
+    end,
+    "[S]earch [/] in Open Files"
+)
+
+-- Shortcut for searching your Neovim configuration files
+map_search(
+    "n",
+    function() builtin.find_files({ cwd = vim.fn.stdpath("config"), follow = true }) end,
+    "[S]earch [N]eovim files"
+)
+
 vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 
 -- Override default behavior and theme when searching
@@ -64,25 +89,3 @@ vim.keymap.set("n", "<leader>/", function()
         previewer = false,
     }))
 end, { desc = "[/] Fuzzily search in current buffer" })
-
--- It's also possible to pass additional configuration options.
---  See `:help telescope.builtin.live_grep()` for information about particular keys
-vim.keymap.set(
-    "n",
-    "<leader>s/",
-    function()
-        builtin.live_grep({
-            grep_open_files = true,
-            prompt_title = "Live Grep in Open Files",
-        })
-    end,
-    { desc = "[S]earch [/] in Open Files" }
-)
-
--- Shortcut for searching your Neovim configuration files
-vim.keymap.set(
-    "n",
-    "<leader>sn",
-    function() builtin.find_files({ cwd = vim.fn.stdpath("config"), follow = true }) end,
-    { desc = "[S]earch [N]eovim files" }
-)
