@@ -1,4 +1,4 @@
-local utils = require("custom.chezmoi.utils")
+local utils = require("config.plugins.chezmoi.utils")
 
 local group = vim.api.nvim_create_augroup("chezmoi_auto_cmd", {
     clear = true,
