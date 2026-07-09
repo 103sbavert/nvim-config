@@ -3,11 +3,12 @@ local wk = require("which-key")
 wk.setup({
     -- Delay between pressing a key and opening which-key (milliseconds)
     delay = 0,
+    preset = "helix",
     icons = { mappings = vim.g.have_nerd_font },
     -- Document existing key chains
     spec = {
-        { "<leader>s", group = "[s]earch", mode = { "n", "v" } },
-        { "<leader>h", group = "Git [h]unk", mode = { "n", "v" } }, -- Enable gitsigns recommended keymaps first
+        { "gc", group = "Comments", { "n", "v" } },
+        { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } }, -- Enable gitsigns recommended keymaps first
     },
 })
 
@@ -29,7 +30,8 @@ function _G.create_keymap_group(group_name, key_prefix, default_modes)
 
     return function(keys, func, desc, opts, modes)
         local final_opts = vim.tbl_deep_extend("force", {}, opts or {})
-        final_opts.desc = desc .. ": "
+
+        final_opts.desc = desc
 
         local target_modes = modes or default_modes
         local full_keys = key_prefix .. keys
@@ -38,7 +40,7 @@ function _G.create_keymap_group(group_name, key_prefix, default_modes)
     end
 end
 
-local toggle_key_group = create_keymap_group("[t]oggle", "<leader>t", { "n" })
+local toggle_key_group = create_keymap_group("[T]oggle", "<leader>t", { "n" })
 
 --- Maps toggle keys, and optionally notifies
 --- @param keys string The key combination triggering the function.
@@ -55,5 +57,5 @@ function _G.map_toggle_key(keys, func, desc)
 
     toggle_key_group(keys, toggle_fn, desc)
 
-    vim.keymap.set({ "n" }, "<leader>t" .. keys, toggle_fn, { desc = "[T]oggle" .. desc })
+    vim.keymap.set({ "n" }, "<leader>t" .. keys, toggle_fn, { desc = desc })
 end
