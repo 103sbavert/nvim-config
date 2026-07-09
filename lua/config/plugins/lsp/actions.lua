@@ -1,6 +1,6 @@
 local osh_wrapper = require("omnisharp_extended")
 local ts_builtin = require("telescope.builtin")
-local utils = require("custom.lsp.utils")
+local utils = require("config.plugins.lsp.utils")
 
 --- @class LspJumpConfig
 --- @field default_lsp_action function Callback function executed for standard language servers.

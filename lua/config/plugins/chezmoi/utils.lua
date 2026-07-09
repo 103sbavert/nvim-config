@@ -5,7 +5,7 @@ local chezmoi_config = require("chezmoi").config
 
 local cached_chezmoi_src_dir = os.getenv("CHEZMOI_SOURCE_DIR")
 
-local common_utils = require("custom.utils")
+local common_utils = require("config.plugins.utils")
 local symlink_pattern = "^symlink_"
 
 --- Directs standard error diagnostic output streams to the native Neovim notification engine.

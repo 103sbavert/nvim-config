@@ -41,8 +41,8 @@ require("chezmoi").setup({
 
 local register_chezmoi_keymap = create_keymap_group("Che[Z]moi", "<leader>z", { "n" })
 
-require("custom.chezmoi.auto_commands")
-require("custom.chezmoi.user_commands")
+require("config.plugins.chezmoi.auto_commands")
+require("config.plugins.chezmoi.user_commands")
 
 local mappings = {
     e = {

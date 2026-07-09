@@ -149,6 +149,6 @@ for name, server in pairs(servers) do
     vim.lsp.enable(name)
 end
 
-require("custom.lsp.actions")
-require("custom.lsp.formatting")
-require("custom.lsp.autocomplete")
+require("config.plugins.lsp.actions")
+require("config.plugins.lsp.formatting")
+require("config.plugins.lsp.autocomplete")

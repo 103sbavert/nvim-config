@@ -5,7 +5,6 @@
 function _G.gh(repo) return "https://github.com/" .. repo end
 
 -- Initial recommended configurations
-
 do
     -- Enable faster startup by caching compiled Lua modules
     vim.loader.enable()
@@ -26,9 +25,9 @@ do
 
     -- Make line numbers default
     vim.o.number = true
-    -- You can also add relative line numbers, to help with jumping.
-    --  Experiment for yourself to see if you like it!
-    -- vim.o.relativenumber = true
+
+    -- enable relative line numbers
+    vim.o.relativenumber = true
 
     -- Enable mouse mode, can be useful for resizing splits for example!
     vim.o.mouse = "a"
@@ -44,9 +43,6 @@ do
 
     -- Enable break indent
     vim.o.breakindent = true
-
-    -- Enable undo/redo changes even after closing and reopening a file
-    vim.o.undofile = true
 
     -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
     vim.o.ignorecase = true
@@ -82,33 +78,23 @@ do
     -- Show which line your cursor is on
     vim.o.cursorline = true
 
-    -- Minimal number of screen lines to keep above and below the cursor.
-    vim.o.scrolloff = 10
-
     -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
     -- instead raise a dialog asking if you wish to save the current file(s)
     -- See `:help 'confirm'`
     vim.o.confirm = true
 
-    -- enable relative line numbers
-    vim.o.relativenumber = true
     -- undo/redo history persists until session closes
     vim.o.undofile = false
+
     -- 8 lines of context around cursor when scrolling
     vim.o.scrolloff = 8
+
     -- move to the last character of the last line
+
     vim.keymap.set({ "n", "o", "x" }, "G", "G$", { noremap = true })
     -- move to the first character of the first line
-    vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 
-    -- get rid of keyboard LSP shortcuts I don't like
-    vim.keymap.del("n", "grn")
-    vim.keymap.del("n", "grx")
-    vim.keymap.del("n", "gra")
-    vim.keymap.del("n", "grr")
-    vim.keymap.del("n", "gri")
-    vim.keymap.del("n", "grt")
-    vim.keymap.del("n", "gO")
+    vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 
     -- interpret <ext>.tmpl same as <ext>
     vim.filetype.add({
@@ -118,8 +104,7 @@ do
     })
 end
 
--- basic keymaps (pure vim.keymap.set() calls to built in vim actions, before any plugin configuration)
-
+-- Basic keymaps (built in vim actions, without any plugin dependency)
 do
     -- [[ Basic Keymaps ]]
     --  See `:help vim.keymap.set()`
@@ -194,10 +179,18 @@ do
         group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
         callback = function() vim.hl.on_yank() end,
     })
+
+    -- get rid of keyboard LSP shortcuts I don't like
+    vim.keymap.del("n", "grn")
+    vim.keymap.del("n", "grx")
+    vim.keymap.del("n", "gra")
+    vim.keymap.del("n", "grr")
+    vim.keymap.del("n", "gri")
+    vim.keymap.del("n", "grt")
+    vim.keymap.del("n", "gO")
 end
 
 -- vim.pack intro, build hooks
-
 do
     -- [[ Intro to `vim.pack` ]]
     -- `vim.pack` is a new plugin manager built into Neovim,
@@ -268,67 +261,92 @@ do
     })
 end
 
--- Core lua library
-vim.pack.add({ gh("nvim-lua/plenary.nvim") })
+-- Package installation
+do
+    -- Core lua library
+    vim.pack.add({ gh("nvim-lua/plenary.nvim") })
 
--- UI and Aesthetics
-vim.pack.add({
-    gh("Mofiqul/adwaita.nvim"),
-    gh("MunifTanjim/nui.nvim"),
-    gh("rcarriga/nvim-notify"),
-    gh("folke/noice.nvim"),
-    gh("j-hui/fidget.nvim"),
-})
+    -- Color scheme
+    do
+        vim.pack.add({ gh("ribru17/bamboo.nvim") })
 
--- Language Server Protocol and tool installers
-vim.pack.add({
-    gh("neovim/nvim-lspconfig"),
-    gh("mason-org/mason.nvim"),
-    gh("mason-org/mason-lspconfig.nvim"),
-    gh("WhoIsSethDaniel/mason-tool-installer.nvim"),
-})
+        require("bamboo").setup({
+            style = "vulgaris",
+            transparent = false,
+            term_colors = true,
+            code_style = {
+                comments = { italic = true },
+                keywords = { italic = true },
+                diagnostics = {
+                    darker = true,
+                    undercurl = true,
+                    background = true,
+                },
+            },
+        })
 
--- Editing and Navigation Essentials
-vim.pack.add({
-    gh("NMAC427/guess-indent.nvim"),
-    gh("chrisgrieser/nvim-spider"),
-    gh("folke/which-key.nvim"),
-    { src = gh("nvim-treesitter/nvim-treesitter"), version = "main" },
-})
+        require("bamboo").load()
+    end
 
--- Coding, Formatting, and Snippets
-vim.pack.add({
-    gh("stevearc/conform.nvim"),
-    gh("rafamadriz/friendly-snippets"),
-    { src = gh("saghen/blink.cmp"), version = vim.version.range("1.*") },
-    { src = gh("L3MON4D3/LuaSnip"), version = vim.version.range("2.*") },
-})
+    -- UI and Aesthetics
+    vim.pack.add({
+        gh("MunifTanjim/nui.nvim"),
+        gh("rcarriga/nvim-notify"),
+        gh("folke/noice.nvim"),
+        gh("j-hui/fidget.nvim"),
+    })
 
--- Git and External Tool Integrations
-vim.pack.add({
-    gh("lewis6991/gitsigns.nvim"),
-    gh("xvzc/chezmoi.nvim"),
-    gh("folke/todo-comments.nvim"),
-})
+    -- Language Server Protocol and tool installers
+    vim.pack.add({
+        gh("neovim/nvim-lspconfig"),
+        gh("mason-org/mason.nvim"),
+        gh("mason-org/mason-lspconfig.nvim"),
+        gh("WhoIsSethDaniel/mason-tool-installer.nvim"),
+    })
 
--- Language Server Extensions
-vim.pack.add({ gh("Hoffs/omnisharp-extended-lsp.nvim") })
+    -- Editing and Navigation Essentials
+    vim.pack.add({
+        gh("NMAC427/guess-indent.nvim"),
+        gh("chrisgrieser/nvim-spider"),
+        gh("nvim-neo-tree/neo-tree.nvim"),
+        gh("folke/which-key.nvim"),
+    })
 
--- Plugin Suites / Ecosystems
-vim.pack.add({ gh("nvim-mini/mini.nvim") })
+    -- Coding, Formatting, and Snippets
+    vim.pack.add({
+        gh("nvim-treesitter/nvim-treesitter"),
+        gh("stevearc/conform.nvim"),
+        gh("rafamadriz/friendly-snippets"),
+        gh("saghen/blink.cmp"),
+        gh("L3MON4D3/LuaSnip"),
+    })
 
--- Telescope plugins
-local telescope_plugins = {
-    gh("nvim-telescope/telescope.nvim"),
-    gh("nvim-telescope/telescope-ui-select.nvim"),
-}
+    -- Git and External Tool Integrations
+    vim.pack.add({
+        gh("lewis6991/gitsigns.nvim"),
+        gh("xvzc/chezmoi.nvim"),
+        gh("folke/todo-comments.nvim"),
+    })
 
-if vim.fn.executable("make") == 1 then
-    table.insert(telescope_plugins, gh("nvim-telescope/telescope-fzf-native.nvim"))
+    -- Language Server Extensions
+    vim.pack.add({ gh("Hoffs/omnisharp-extended-lsp.nvim") })
+
+    -- Plugin Suites / Ecosystems
+    vim.pack.add({ gh("nvim-mini/mini.nvim") })
+
+    -- Telescope plugins
+    do
+        local telescope_plugins = {
+            gh("nvim-telescope/telescope.nvim"),
+            gh("nvim-telescope/telescope-ui-select.nvim"),
+        }
+
+        if vim.fn.executable("make") == 1 then
+            table.insert(telescope_plugins, gh("nvim-telescope/telescope-fzf-native.nvim"))
+        end
+
+        vim.pack.add(telescope_plugins)
+    end
 end
 
-vim.pack.add(telescope_plugins)
-
-require("custom")
-require("kickstart.plugins.autopairs")
-require("kickstart.plugins.neo-tree")
+require("config")
