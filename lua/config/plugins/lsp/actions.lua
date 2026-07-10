@@ -10,11 +10,11 @@ local utils = require("config.plugins.lsp.utils")
 --- @type table<string, LspJumpConfig>
 local lsp_jump = {
     ["n"] = {
-        description = "Re[N]ame Symbol",
+        description = "Re[n]ame Symbol",
         default_lsp_action = vim.lsp.buf.rename,
     },
     ["a"] = {
-        description = "[A]ction",
+        description = "[a]ction",
         default_lsp_action = vim.lsp.buf.code_action,
     },
     ["D"] = {
@@ -22,11 +22,11 @@ local lsp_jump = {
         default_lsp_action = vim.lsp.buf.declaration,
     },
     ["sW"] = {
-        description = "[S]ymbols in [W]orkspace",
+        description = "[s]ymbols in [W]orkspace",
         default_lsp_action = ts_builtin.lsp_document_symbols,
     },
     ["sD"] = {
-        description = "[S]ymbols in [D]ocument",
+        description = "[s]ymbols in [D]ocument",
         default_lsp_action = ts_builtin.lsp_dynamic_workspace_symbols,
     },
     ["t"] = {
@@ -34,28 +34,28 @@ local lsp_jump = {
         lsp_action_override = {
             ["omnisharp"] = osh_wrapper.telescope_lsp_type_definition,
         },
-        description = "[T]ype definition",
+        description = "[t]ype definition",
     },
     ["r"] = {
         default_lsp_action = ts_builtin.lsp_references,
         lsp_action_override = {
             ["omnisharp"] = osh_wrapper.telescope_lsp_references,
         },
-        description = "[R]eferences",
+        description = "[r]eferences",
     },
     ["i"] = {
         default_lsp_action = ts_builtin.lsp_implementations,
         lsp_action_override = {
             ["omnisharp"] = osh_wrapper.telescope_lsp_implementation,
         },
-        description = "[I]mplementation",
+        description = "[i]mplementation",
     },
     ["d"] = {
         default_lsp_action = ts_builtin.lsp_definitions,
         lsp_action_override = {
             ["omnisharp"] = osh_wrapper.telescope_lsp_definitions,
         },
-        description = "[D]efinition",
+        description = "[d]efinition",
     },
 }
 

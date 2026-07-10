@@ -1,6 +1,6 @@
 local M = {}
 
-local lsp_key_group = create_keymap_group("[L]SP", "<leader>l", { "n", "v" })
+local lsp_key_group = create_keymap_group("[l]SP", "<leader>l", { "n", "v" })
 
 --- Maps an LSP command to a buffer-local key sequence.
 --- @param keys string The key combination triggering the function.
