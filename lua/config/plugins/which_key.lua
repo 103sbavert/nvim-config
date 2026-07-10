@@ -8,7 +8,6 @@ wk.setup({
     -- Document existing key chains
     spec = {
         { "gc", group = "Comments", { "n", "v" } },
-        { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } }, -- Enable gitsigns recommended keymaps first
     },
 })
 
@@ -23,7 +22,7 @@ function _G.create_keymap_group(group_name, key_prefix, default_modes)
     -- Only register with which-key if the group_name has not been processed yet
     if not registered_groups[group_name] then
         wk.add({
-            { key_prefix, group = group_name },
+            { key_prefix, group = group_name, mode = default_modes },
         })
         registered_groups[group_name] = true
     end
