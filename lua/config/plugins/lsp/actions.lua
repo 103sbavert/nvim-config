@@ -79,5 +79,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 utils.map_lsp_key(key, target_fn, event.buf, config.description)
             end
         end
+
+        create_keymap_group("[s]ymbols", "<leader>ls", { "n", "v" }) -- for sW and sG
     end,
 })
