@@ -39,7 +39,7 @@ function _G.create_keymap_group(group_name, key_prefix, default_modes)
     end
 end
 
-local toggle_key_group = create_keymap_group("[T]oggle", "<leader>t", { "n" })
+local toggle_key_group = create_keymap_group("[t]oggle", "<leader>t", { "n" })
 
 --- Maps toggle keys, and optionally notifies
 --- @param keys string The key combination triggering the function.

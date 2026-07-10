@@ -39,7 +39,7 @@ require("chezmoi").setup({
     },
 })
 
-local register_chezmoi_keymap = create_keymap_group("Che[Z]moi", "<leader>z", { "n" })
+local register_chezmoi_keymap = create_keymap_group("Che[z]moi", "<leader>z", { "n" })
 
 require("config.plugins.chezmoi.auto_commands")
 require("config.plugins.chezmoi.user_commands")
@@ -47,15 +47,15 @@ require("config.plugins.chezmoi.user_commands")
 local mappings = {
     e = {
         function() vim.cmd("ChezmoiEdit") end,
-        "[E]dit a chezmoi source file",
+        "[e]dit a chezmoi source file",
     },
     a = {
         function() vim.cmd("ChezmoiApply") end,
-        "[A]pply chezmoi changes",
+        "[a]pply chezmoi changes",
     },
     f = {
         function() require("telescope.pick").telescope() end,
-        "Search chezmoi managed [F]iles",
+        "Search chezmoi managed [f]iles",
     },
 }
 

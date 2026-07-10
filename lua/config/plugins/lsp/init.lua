@@ -35,7 +35,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         end
 
         if client and client:supports_method("textDocument/inlayHint", event.buf) then
-            map_toggle_key("h", toggle_hints, "[T]oggle Inlay [H]ints")
+            map_toggle_key("h", toggle_hints, "Inlay [h]ints")
         end
     end,
 })
