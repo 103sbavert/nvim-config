@@ -7,7 +7,7 @@ wk.setup({
     icons = { mappings = vim.g.have_nerd_font },
     -- Document existing key chains
     spec = {
-        { "gc", group = "Comments", { "n", "v" } },
+        { "gc", group = "Comments", mode = { "n", "v" } },
     },
 })
 
