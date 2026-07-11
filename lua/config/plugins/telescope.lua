@@ -78,10 +78,14 @@ map_search("n", function() builtin.find_files({ cwd = vim.fn.stdpath("config"), 
 vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 
 -- Override default behavior and theme when searching
-vim.keymap.set("n", "<leader>/", function() -- double leader
-    -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-    builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-        winblend = 10,
-        previewer = false,
-    }))
-end, { desc = "[/] Fuzzily search in current buffer" })
+vim.keymap.set(
+    "n",
+    "<leader>/",
+    function() -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+        builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+            winblend = 10,
+            previewer = false,
+        }))
+    end,
+    { desc = "[/] Fuzzily search in current buffer" }
+)
