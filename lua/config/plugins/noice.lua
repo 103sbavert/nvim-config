@@ -1,4 +1,5 @@
 require("noice").setup({
+
     lsp = {
         override = {
             ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -23,7 +24,6 @@ require("noice").setup({
                     "shell_err",
                 },
             },
-            opts = { enter = true },
         },
         {
             filter = {
@@ -35,11 +35,20 @@ require("noice").setup({
     },
     views = {
         shell_display = {
-            timeout = 3000,
             view = "split",
             size = "auto",
-            enter = false,
+            enter = true,
             focusable = false,
+            close = {
+                keys = { "q", "<Esc>" },
+            },
+            buf_options = {
+                filetype = "noice_shell_display",
+            },
+            format = {
+                "{message}",
+                "\n",
+            },
         },
         cmdline_popup = {
             position = {
