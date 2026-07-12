@@ -1,10 +1,9 @@
-local statusline = require("mini.statusline")
-
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
-vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { bg = "#008080", bold = true })
-
 local chezmoi_utils = require("config.plugins.chezmoi.utils")
 local common_utils = require("config.plugins.utils")
+local statusline = require("mini.statusline")
+
+vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { bg = "#1f9890", bold = true })
 
 -- Set `use_icons` to true if you have a Nerd Font
 statusline.setup({ use_icons = vim.g.have_nerd_font })
