@@ -63,5 +63,8 @@ require("gitsigns").setup({
 
         -- text object 'h'unk
         vim.keymap.set({ "o", "x" }, "ih", gitsigns.select_hunk, { buffer = bufnr })
+
+        -- LazyGit TUI with kdheepak/lazygit.nvim
+        git_key_mapper("g", "<cmd>LazyGitCurrentFile<cr>", "Initialize LazyGit TUI")
     end,
 })

@@ -1,6 +1,7 @@
 require("fidget").setup({})
 require("guess-indent").setup({})
 require("todo-comments").setup({ signs = false })
+require("lazygit")
 
 require("config.plugins.utils")
 require("config.plugins.mini_nvim")
