@@ -61,6 +61,9 @@ do
     vim.o.splitright = true
     vim.o.splitbelow = true
 
+    -- Enable spell check for camelCase words
+    vim.o.spelloptions = "camel"
+
     -- Sets how neovim will display certain whitespace characters in the editor.
     --  See `:help 'list'`
     --  and `:help 'listchars'`
@@ -87,7 +90,7 @@ do
     vim.o.undofile = false
 
     -- 8 lines of context around cursor when scrolling
-    vim.o.scrolloff = 8
+    vim.o.scrolloff = 5
 
     -- move to the last character of the last line
 
