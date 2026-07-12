@@ -4,8 +4,11 @@
 
 return {
     "nvim-treesitter/nvim-treesitter",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
     build = ":TSUpdate",
     config = function()
+        require("mason-tool-installer").setup({ ensure_installed = { "tree-sitter-cli" }, auto_update = true })
+
         -- Ensure basic parsers are installed
         local parsers = {
             "bash",
