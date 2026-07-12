@@ -1,4 +1,14 @@
 local conform = require("conform")
+
+local formatters = {
+    "shfmt",
+    "taplo",
+    "prettier",
+    "isort",
+}
+
+require("mason-tool-installer").setup({ ensure_installed = formatters, auto_update = true })
+
 conform.setup({
     notify_on_error = false,
     default_format_opts = {
@@ -10,22 +20,20 @@ conform.setup({
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-        lua = { "stylua" },
-        python = { "isort", "black" },
+        lua = { "stylua" }, -- installed in init.lua with other LSPs
+        python = { "isort" },
         go = { "gofmt" },
-        javascript = { "prettier", stop_after_first = true },
-        typescript = { "prettier", stop_after_first = true },
-        json = { "prettier", stop_after_first = true },
-        yaml = { "prettier", stop_after_first = true },
+        javascript = { "prettier" },
+        typescript = { "prettier" },
+        json = { "prettier" },
+        yaml = { "prettier" },
         toml = { "taplo" },
         sh = { "shfmt" },
         bash = { "shfmt" },
         zsh = { "shfmt" },
     },
     formatters = {
-        stylua = {
-            args = { "--indent-type", "Spaces", "--indent-width", "4", "-" },
-        },
+        stylua = {},
         shfmt = {
             args = { "-i", "4", "-ci" },
         },
