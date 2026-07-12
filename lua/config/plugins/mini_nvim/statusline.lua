@@ -1,6 +1,6 @@
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
 local chezmoi_utils = require("config.plugins.chezmoi.utils")
-local common_utils = require("config.plugins.utils")
+local common_utils = require("config.utils")
 local statusline = require("mini.statusline")
 
 vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { bg = "#1f9890", bold = true })

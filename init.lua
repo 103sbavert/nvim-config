@@ -268,95 +268,57 @@ do
     })
 end
 
--- Package installation
+-- lazy.nvim to load install all other plugins (except theme below)
+vim.pack.add({ gh("folke/lazy.nvim") })
+
+-- Default colorscheme
 do
-    -- Core lua library
-    vim.pack.add({ gh("nvim-lua/plenary.nvim") })
-
-    -- Color scheme
-    do
-        vim.pack.add({ gh("ribru17/bamboo.nvim") })
-
-        require("bamboo").setup({
-            style = "vulgaris",
-            transparent = false,
-            term_colors = true,
-            code_style = {
-                comments = { italic = true },
-                keywords = { italic = true },
-                diagnostics = {
-                    darker = true,
-                    undercurl = true,
-                    background = true,
-                },
+    vim.pack.add({ gh("ribru17/bamboo.nvim") })
+    require("bamboo").setup({
+        style = "vulgaris",
+        transparent = false,
+        term_colors = true,
+        code_style = {
+            comments = { italic = true },
+            keywords = { italic = true },
+            diagnostics = {
+                darker = true,
+                undercurl = true,
+                background = true,
             },
-        })
-
-        require("bamboo").load()
-    end
-
-    -- UI and Aesthetics
-    vim.pack.add({
-        gh("MunifTanjim/nui.nvim"),
-        gh("rcarriga/nvim-notify"),
-        gh("folke/noice.nvim"),
-        gh("j-hui/fidget.nvim"),
+        },
     })
-
-    -- Language Server Protocol and tool installers
-    vim.pack.add({
-        gh("neovim/nvim-lspconfig"),
-        gh("mason-org/mason.nvim"),
-        gh("mason-org/mason-lspconfig.nvim"),
-        gh("WhoIsSethDaniel/mason-tool-installer.nvim"),
-    })
-
-    -- Editing and Navigation Essentials
-    vim.pack.add({
-        gh("NMAC427/guess-indent.nvim"),
-        gh("chrisgrieser/nvim-spider"),
-        gh("nvim-neo-tree/neo-tree.nvim"),
-        gh("folke/which-key.nvim"),
-    })
-
-    -- Coding, Formatting, and Snippets
-    vim.pack.add({
-        gh("nvim-treesitter/nvim-treesitter"),
-        gh("stevearc/conform.nvim"),
-        gh("rafamadriz/friendly-snippets"),
-        gh("saghen/blink.cmp"),
-        gh("L3MON4D3/LuaSnip"),
-    })
-
-    -- Git and External Tool Integrations
-    vim.pack.add({
-        gh("lewis6991/gitsigns.nvim"),
-        gh("xvzc/chezmoi.nvim"),
-        gh("folke/todo-comments.nvim"),
-    })
-
-    -- Language Server Extensions
-    vim.pack.add({ gh("Hoffs/omnisharp-extended-lsp.nvim") })
-
-    -- Plugin Suites / Ecosystems
-    vim.pack.add({ gh("nvim-mini/mini.nvim") })
-
-    -- Telescope plugins
-    do
-        local telescope_plugins = {
-            gh("nvim-telescope/telescope.nvim"),
-            gh("nvim-telescope/telescope-ui-select.nvim"),
-        }
-
-        if vim.fn.executable("make") == 1 then
-            table.insert(telescope_plugins, gh("nvim-telescope/telescope-fzf-native.nvim"))
-        end
-
-        vim.pack.add(telescope_plugins)
-    end
-
-    -- LazyGit plugin integration for NeoVim
-    vim.pack.add({ gh("kdheepak/lazygit.nvim") })
+    require("bamboo").load()
 end
 
-require("config")
+require("lazy").setup({
+    spec = {
+        { import = "config.plugins" },
+
+        {
+            "j-hui/fidget.nvim",
+            config = function() require("fidget").setup({}) end,
+        },
+        {
+            "NMAC427/guess-indent.nvim",
+            config = function() require("guess-indent").setup({}) end,
+        },
+        {
+            "folke/todo-comments.nvim",
+            dependencies = { "nvim-lua/plenary.nvim" },
+            config = function() require("todo-comments").setup({ signs = false }) end,
+        },
+        {
+            name = "config.utils",
+            dir = vim.fn.stdpath("config"),
+            init = function() require("config.utils") end,
+        },
+        {
+            name = "config.terminal",
+            dir = vim.fn.stdpath("config"),
+            dependencies = { "folke/which-key.nvim" },
+            config = function() require("config.terminal") end,
+        },
+    },
+    defaults = { lazy = false },
+})
