@@ -24,7 +24,7 @@ function M.has_symlink_attr(src) return (vim.fs.basename(src):match(symlink_patt
 
 --- Invokes an asynchronous chezmoi state synchronization run targeted on destination mirror paths.
 --- @param tgt_files string[] | string Destination path vectors inside the configured file system environment.
---- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
+--- @param on_exit? fun(cmd_res: table, signal: number) Lifecycle completion hook callback.
 function M.apply_tgt_files(tgt_files, on_exit)
     commands.apply({
         targets = tgt_files,
@@ -36,7 +36,7 @@ end
 
 --- Invokes an asynchronous chezmoi state synchronization run targeted explicitly from source tracking paths.
 --- @param src_files string[] | string Source control repository file configurations.
---- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
+--- @param on_exit? fun(cmd_res: table, signal: number) Lifecycle completion hook callback.
 function M.apply_src_files(src_files, on_exit)
     commands.apply({
         args = { "--no-tty", "--force", "--source-path", common_utils.to_str(src_files) },
