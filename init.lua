@@ -350,6 +350,9 @@ do
 
         vim.pack.add(telescope_plugins)
     end
+
+    -- LazyGit plugin integration for NeoVim
+    vim.pack.add({ gh("kdheepak/lazygit.nvim") })
 end
 
 require("config")
