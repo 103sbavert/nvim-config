@@ -26,6 +26,10 @@ do
     -- Make line numbers default
     vim.o.number = true
 
+    -- Tab size
+    vim.o.shiftwidth = 4
+    vim.o.tabstop = 4
+
     -- enable relative line numbers
     vim.o.relativenumber = true
 
