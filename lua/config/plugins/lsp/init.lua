@@ -1,7 +1,10 @@
 return {
     "neovim/nvim-lspconfig",
     dependencies = {
-        "saghen/blink.cmp",
+        {
+            "saghen/blink.cmp",
+            version = "1.*",
+        },
         "mason-org/mason.nvim",
         "mason-org/mason-lspconfig.nvim",
         "WhoIsSethDaniel/mason-tool-installer.nvim",
@@ -13,7 +16,6 @@ return {
     },
     config = function()
         local csharp_lsp_extension = require("omnisharp_extended")
-
         -- Enable the following language servers
         --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
         --  See `:help lsp-config` for information about keys and how to configure
