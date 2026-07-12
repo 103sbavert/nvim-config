@@ -294,19 +294,12 @@ end
 require("lazy").setup({
     spec = {
         { import = "config.plugins" },
-
-        {
-            "j-hui/fidget.nvim",
-            config = function() require("fidget").setup({}) end,
-        },
-        {
-            "NMAC427/guess-indent.nvim",
-            config = function() require("guess-indent").setup({}) end,
-        },
+        { "j-hui/fidget.nvim", config = true },
+        { "NMAC427/guess-indent.nvim", config = true },
         {
             "folke/todo-comments.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
-            config = function() require("todo-comments").setup({ signs = false }) end,
+            opts = { signs = false },
         },
         {
             name = "config.utils",
