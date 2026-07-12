@@ -95,12 +95,18 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
                 if utils.is_src_file(file) then
                     table.insert(source_files, file)
+                elseif utils.get_src_file(file) then
+                    table.insert(target_files, file)
                 end
             end
 
+            if vim.tbl_isempty(source_files) and vim.tbl_isempty(target_files) then
+                vim.notify("No chezmoi files to apply", vim.log.levels.INFO, { title = "ChezmoiApply" })
+            end
+
             if not vim.tbl_isempty(source_files) then
-                utils.apply_src_files(source_files, function(code, _)
-                    if code == 0 then
+                utils.apply_src_files(source_files, function(cmd_res, _)
+                    if cmd_res.code and cmd_res.code == 0 then
                         vim.notify(
                             "Successfully applied " .. #source_files .. " source files.",
                             vim.log.levels.INFO,
@@ -111,8 +117,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
             end
 
             if not vim.tbl_isempty(target_files) then
-                utils.apply_tgt_files(target_files, function(code, _)
-                    if code == 0 then
+                utils.apply_tgt_files(target_files, function(cmd_res, _)
+                    if cmd_res.code and cmd_res.code == 0 then
                         vim.notify(
                             "Successfully applied " .. #target_files .. " target files.",
                             vim.log.levels.INFO,
