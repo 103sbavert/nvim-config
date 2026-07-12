@@ -11,3 +11,7 @@ local function toggle_terminal()
 end
 
 map_toggle_key("t", toggle_terminal, "Bottom Terminal Pane")
+
+vim.keymap.set("t", "<C-n>", "<C-\\><C-n>", {
+    desc = "Exit terminal mode to normal mode",
+})
