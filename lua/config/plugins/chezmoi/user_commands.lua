@@ -1,9 +1,8 @@
 require("chezmoi")
 
-local plugin_utils = require("chezmoi.util")
-
-local utils = require("config.plugins.chezmoi.utils")
-local common_utils = require("config.plugins.utils")
+local plugin_utils = require("chezmoi.util") -- comes from xvzc/chezmoi.nvim plugin itself
+local utils = require("config.plugins.chezmoi.utils") -- my custom chezmoi utils
+local common_utils = require("config.utils") -- global utils
 
 local group = vim.api.nvim_create_augroup("chezmoi_user_cmd", {
     clear = true,
