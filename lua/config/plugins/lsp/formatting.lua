@@ -53,9 +53,10 @@ conform.setup({
     },
 })
 
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>f",
-    function() conform.format({ async = true }) end,
-    { desc = "[f]ormat buffer or visual selection" }
+vim.api.nvim_create_user_command(
+    "Format",
+    function(_) conform.format({ async = true }) end,
+    { desc = "Format current buffer or visual selection" }
 )
+
+vim.keymap.set({ "n", "v" }, "<leader>f", "<Cmd>Format<Cr>", { desc = "[f]ormat buffer or visual selection" })
