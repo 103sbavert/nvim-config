@@ -1,5 +1,6 @@
 return {
     "lewis6991/gitsigns.nvim",
+    dependencies = { "kdheepak/lazygit.nvim" },
     config = function()
         require("gitsigns").setup({
             signs = {
