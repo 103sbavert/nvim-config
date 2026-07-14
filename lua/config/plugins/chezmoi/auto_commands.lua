@@ -7,6 +7,8 @@ local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
 local apply_src_grp = vim.api.nvim_create_augroup("apply_czm_src", {
     clear = true,
 })
+
+local no_open_src_files = false
 local no_apply_src_files = {}
 local watched_src_files = {}
 
@@ -22,6 +24,10 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 
             local buf_file = vim.api.nvim_buf_get_name(buf)
             if buf_file == "" or utils.is_src_file(buf_file) then
+                return
+            end
+
+            if no_open_src_files then
                 return
             end
 
@@ -41,8 +47,12 @@ vim.api.nvim_create_autocmd("BufReadPre", {
                 return
             end
 
-            if utils.ask_open_src_file() then
+            local choice = utils.ask_open_src_file()
+
+            if choice == 2 then
                 utils.open_src_file(buf_file)
+            elseif choice == 3 then
+                no_open_src_files = true
             end
         end)
     end,

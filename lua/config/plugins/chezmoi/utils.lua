@@ -195,10 +195,15 @@ end
 --- @param args string[]? Supplemental control syntax string parameters payload passed to editing subprocess context.
 function M.open_src_file(files, args) commands.edit({ targets = files, args = args or {} }) end
 
---- Prompts visual modal text interfaces to confirm if editing operations should intercept upstream storage points.
---- @return boolean True if affirmative confirmation index returned.
+--- Prompts to open chezmoi source file instead of target.
+--- @return integer 1 = No, 2 = Yes, 3 = Don't ask again, 0 = dismissed
 function M.ask_open_src_file()
-    return vim.fn.confirm("Open the chezmoi source file instead?\n", "&No\n&Yes", 1, "Question") == 2
+    return vim.fn.confirm(
+        "Open the chezmoi source file instead?\n",
+        "&no\n" .. "&yes\n" .. "&don't ask again",
+        1,
+        "Question"
+    )
 end
 
 --- Prompts to apply chezmoi source file to target.
