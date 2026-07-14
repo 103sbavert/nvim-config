@@ -1,11 +1,17 @@
 local utils = require("config.plugins.chezmoi.utils")
 
-local group = vim.api.nvim_create_augroup("chezmoi_auto_cmd", {
+local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
     clear = true,
 })
 
+local apply_src_grp = vim.api.nvim_create_augroup("apply_czm_src", {
+    clear = true,
+})
+local no_apply_src_files = {}
+local watched_src_files = {}
+
 vim.api.nvim_create_autocmd("BufReadPre", {
-    group = group,
+    group = open_src_grp,
     callback = function(args)
         local buf = args.buf
 
@@ -43,7 +49,7 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 })
 
 vim.api.nvim_create_autocmd("BufWritePost", {
-    group = group,
+    group = apply_src_grp,
     callback = function(args)
         local buf = args.buf
         if vim.bo[buf].buftype ~= "" then
@@ -59,9 +65,34 @@ vim.api.nvim_create_autocmd("BufWritePost", {
             return
         end
 
-        if utils.ask_apply_to_tgt() then
+        if no_apply_src_files[buf_file] then
+            return
+        elseif watched_src_files[buf_file] then
             utils.apply_src_files(buf_file)
-            vim.notify("Applied to target", vim.log.levels.INFO, { title = "chezmoi.nvim" })
+            return
         end
+
+        local choice = utils.ask_apply_src_file()
+
+        if choice == 2 or choice == 4 then
+            utils.apply_src_files(buf_file)
+            vim.notify("Applied to target", vim.log.levels.INFO, { title = "Chezmoi" })
+        end
+
+        if choice == 3 then
+            no_apply_src_files[buf_file] = true
+        elseif choice == 4 then
+            watched_src_files[buf_file] = true
+            vim.notify("File will be auto-applied on save", vim.log.levels.INFO, { title = "Chezmoi" })
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "BufDelete", "BufFilePre" }, {
+    group = apply_src_grp,
+    callback = function(args)
+        local buf_file = vim.api.nvim_buf_get_name(args.buf)
+        no_apply_src_files[buf_file] = nil
+        watched_src_files[buf_file] = nil
     end,
 })

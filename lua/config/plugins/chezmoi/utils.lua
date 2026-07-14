@@ -13,7 +13,7 @@ local symlink_pattern = "^symlink_"
 --- @param data string Standard error diagnostic stream raw text packet chunk payload.
 local function notify_stderr(_, data)
     if type(data) == "string" and data ~= "" then
-        vim.notify(data, vim.log.levels.WARN, { title = "chezmoi.nvim" })
+        vim.notify(data, vim.log.levels.WARN, { title = "Chezmoi" })
     end
 end
 
@@ -201,8 +201,15 @@ function M.ask_open_src_file()
     return vim.fn.confirm("Open the chezmoi source file instead?\n", "&No\n&Yes", 1, "Question") == 2
 end
 
---- Prompts visual modal text interfaces to decide immediate state deployment flags to downstream tracking points.
---- @return boolean True if target deployment selection sequence matches affirmative context bounds.
-function M.ask_apply_to_tgt() return vim.fn.confirm("Apply to target now?\n", "&No\n&Yes", 1, "Question") == 2 end
+--- Prompts to apply chezmoi source file to target.
+--- @return integer 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
+function M.ask_apply_src_file()
+    return vim.fn.confirm(
+        "Apply to the chezmoi target now?\n",
+        "&no\n" .. "&yes\n" .. "&don't ask again\n" .. "&watch this file",
+        1,
+        "Question"
+    )
+end
 
 return M
