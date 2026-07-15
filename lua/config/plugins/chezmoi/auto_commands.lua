@@ -1,3 +1,6 @@
+local cmd_edit = require("nvim-chezmoi.chezmoi.commands.edit")
+local cmd_apply = require("nvim-chezmoi.chezmoi.commands.apply")
+
 local utils = require("config.plugins.chezmoi.utils")
 
 local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
@@ -15,45 +18,52 @@ local watched_src_files = {}
 vim.api.nvim_create_autocmd("BufReadPre", {
     group = open_src_grp,
     callback = function(args)
-        local buf = args.buf
+        local buf_id = args.buf
 
         vim.schedule(function()
-            if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].buftype ~= "" then
+            if not vim.api.nvim_buf_is_valid(buf_id) or vim.bo[buf_id].buftype ~= "" then
                 return
             end
 
-            local buf_file = vim.api.nvim_buf_get_name(buf)
-            if buf_file == "" or utils.is_src_file(buf_file) then
+            local buf_file = vim.api.nvim_buf_get_name(buf_id)
+            if buf_file == "" or no_open_src_files then
                 return
             end
 
-            if no_open_src_files then
-                return
-            end
+            utils.is_src_file(buf_file, function(is_src)
+                if is_src then
+                    return
+                end
 
-            local sources_tbl = utils.get_src_file(buf_file)
+                utils.should_ignore_src_file(buf_file, function(should_ignore)
+                    if should_ignore then
+                        return
+                    end
 
-            if not sources_tbl or vim.tbl_isempty(sources_tbl) then
-                return
-            end
+                    utils.get_src_file(buf_file, function(sources)
+                        if not sources or #sources == 0 then
+                            return
+                        end
 
-            local source = sources_tbl[1]
+                        local source = sources[1]
+                        if not source or not vim.uv.fs_stat(source) or source == buf_file then
+                            return
+                        end
 
-            if not source or not vim.uv.fs_lstat(source) or source == buf_file then
-                return
-            end
+                        if utils.has_symlink_attr(source) then
+                            return
+                        end
 
-            if utils.has_symlink_attr(source) then
-                return
-            end
-
-            local choice = utils.ask_open_src_file()
-
-            if choice == 2 then
-                utils.open_src_file(buf_file)
-            elseif choice == 3 then
-                no_open_src_files = true
-            end
+                        utils.ask_open_src_file(function(choice)
+                            if choice == 2 then
+                                cmd_edit:exec(buf_file)
+                            elseif choice == 3 then
+                                no_open_src_files = true
+                            end
+                        end)
+                    end)
+                end)
+            end)
         end)
     end,
 })
@@ -61,40 +71,51 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 vim.api.nvim_create_autocmd("BufWritePost", {
     group = apply_src_grp,
     callback = function(args)
-        local buf = args.buf
-        if vim.bo[buf].buftype ~= "" then
+        local buf_id = args.buf
+        if vim.bo[buf_id].buftype ~= "" then
             return
         end
 
-        local buf_file = vim.api.nvim_buf_get_name(buf)
-        if buf_file == "" or utils.should_ignore_src_file(buf_file) then
+        local buf_file = vim.api.nvim_buf_get_name(buf_id)
+        if buf_file == "" then
             return
         end
 
-        if not utils.is_src_file(buf_file) then
-            return
-        end
+        utils.should_ignore_src_file(buf_file, function(should_ignore)
+            if should_ignore then
+                return
+            end
 
-        if no_apply_src_files[buf_file] then
-            return
-        elseif watched_src_files[buf_file] then
-            utils.apply_src_files(buf_file)
-            return
-        end
+            utils.is_src_file(buf_file, function(is_src)
+                if not is_src then
+                    return
+                end
 
-        local choice = utils.ask_apply_src_file()
+                if no_apply_src_files[buf_file] then
+                    return
+                elseif watched_src_files[buf_file] then
+                    cmd_apply:async({ buf_file })
+                    return
+                end
 
-        if choice == 2 or choice == 4 then
-            utils.apply_src_files(buf_file)
-            vim.notify("Applied to target", vim.log.levels.INFO, { title = "Chezmoi" })
-        end
+                utils.ask_apply_src_file(function(choice)
+                    if choice == 2 or choice == 4 then
+                        cmd_apply:async({ buf_file, "--source-path" }, function(result)
+                            if result.success then
+                                vim.notify("Applied to target", vim.log.levels.INFO, { title = "Chezmoi" })
+                            end
+                        end)
+                    end
 
-        if choice == 3 then
-            no_apply_src_files[buf_file] = true
-        elseif choice == 4 then
-            watched_src_files[buf_file] = true
-            vim.notify("File will be auto-applied on save", vim.log.levels.INFO, { title = "Chezmoi" })
-        end
+                    if choice == 3 then
+                        no_apply_src_files[buf_file] = true
+                    elseif choice == 4 then
+                        watched_src_files[buf_file] = true
+                        vim.notify("File will be auto-applied on save", vim.log.levels.INFO, { title = "Chezmoi" })
+                    end
+                end)
+            end)
+        end)
     end,
 })
 
