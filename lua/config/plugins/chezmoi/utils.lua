@@ -1,219 +1,230 @@
 local M = {}
 
-local commands = require("chezmoi.commands")
-local chezmoi_config = require("chezmoi").config
+local cmd_source_path = require("nvim-chezmoi.chezmoi.commands.source_path")
+local cmd_target_path = require("nvim-chezmoi.chezmoi.commands.target_path")
+local uv = vim.uv or vim.loop
 
-local cached_chezmoi_src_dir = os.getenv("CHEZMOI_SOURCE_DIR")
+local cached_src_dir = nil
 
-local common_utils = require("config.utils")
-local symlink_pattern = "^symlink_"
+--- Lua patterns matched against relative source paths. Matching files are skipped.
+--- @type string[]
+local ignore_patterns = {
+    "run_",
+    "%.chezmoi",
+    "%.gitignore",
+    "%.git/",
+    "%.[^%.%/]",
+    "^%.[^%.%/]",
+}
 
---- Directs standard error diagnostic output streams to the native Neovim notification engine.
---- @param _ any Ignored positional context variable.
---- @param data string Standard error diagnostic stream raw text packet chunk payload.
-local function notify_stderr(_, data)
-    if type(data) == "string" and data ~= "" then
-        vim.notify(data, vim.log.levels.WARN, { title = "Chezmoi" })
+--- Safely resolves and normalizes an arbitrary path into a clean absolute system location.
+--- @param p string? The filesystem path to normalize.
+--- @return string? The absolute, normalized path, or nil if input is invalid.
+local function get_clean_absolute_path(p)
+    if not p or p == "" then
+        return nil
     end
+
+    return vim.fs.abspath(p)
 end
 
---- Validates if the given source path implies an internal chezmoi symlink configuration target attribute prefix.
---- @param src string Target source file path string context.
---- @return boolean True if the absolute base file name starts with 'symlink_'.
-function M.has_symlink_attr(src) return (vim.fs.basename(src):match(symlink_pattern)) ~= nil end
-
---- Invokes an asynchronous chezmoi state synchronization run targeted on destination mirror paths.
---- @param tgt_files string[] | string Destination path vectors inside the configured file system environment.
---- @param on_exit? fun(cmd_res: table, signal: number) Lifecycle completion hook callback.
-function M.apply_tgt_files(tgt_files, on_exit)
-    commands.apply({
-        targets = tgt_files,
-        args = { "--force", "--no-tty" },
-        on_stderr = notify_stderr,
-        on_exit = on_exit,
-    })
-end
-
---- Invokes an asynchronous chezmoi state synchronization run targeted explicitly from source tracking paths.
---- @param src_files string[] | string Source control repository file configurations.
---- @param on_exit? fun(cmd_res: table, signal: number) Lifecycle completion hook callback.
-function M.apply_src_files(src_files, on_exit)
-    commands.apply({
-        args = { "--no-tty", "--force", "--source-path", common_utils.to_str(src_files) },
-        on_stderr = notify_stderr,
-        on_exit = on_exit,
-    })
-end
-
---- Determines if an arbitrary filesystem entity exists relative to a specific ancestor path structure hierarchy.
+--- Determines if an arbitrary filesystem entity exists relative to a specific ancestor path hierarchy.
 --- @param path string? Valid relative or absolute system path location.
---- @param dir string? Target parent repository or structural directory path location.
---- @return boolean True if the canonical resolved representation indicates root inclusion.
-function M.is_path_inside_dir(path, dir)
-    if not path or not dir then
-        return false
-    end
-
-    local path_abs = vim.fs.abspath(path)
-    local dir_abs = vim.fs.abspath(dir)
+--- @param dir string? Target parent directory path location.
+--- @param callback fun(is_path_inside_dir: boolean) Executed asynchronously with the evaluation result.
+function M.is_path_inside_dir(path, dir, callback)
+    local path_abs = get_clean_absolute_path(path)
+    local dir_abs = get_clean_absolute_path(dir)
 
     if not path_abs or not dir_abs then
-        return false
+        callback(false)
+        return
     end
 
-    if not vim.uv.fs_stat(path) then
-        return false
+    -- Force a trailing slash onto the target parent directory.
+    -- This blocks prefix collision false-positives (e.g. matching '/project-backup' when checking '/project').
+    if not vim.endswith(dir_abs, "/") then
+        dir_abs = dir_abs .. "/"
     end
 
-    return path_abs:find(dir_abs, 1, true) == 1
-end
-
---- Maps local file system definitions to underlying target paths registered in the active chezmoi state tracker.
---- @param file (string | string[])? Source file vector parameter paths or target entity list tracking points.
---- @param on_exit? fun(code: number, signal: number) Lifecycle completion hook callback.
---- @return string[]? Resolved system collection containing mapped source references.
-function M.get_src_file(file, on_exit)
-    file = file or {}
-    local source_paths = commands.source_path({ targets = file, on_stderr = function() end, on_exit = on_exit })
-
-    if not source_paths then
-        return nil
-    end
-
-    if type(source_paths) ~= "table" then
-        return nil
-    end
-
-    if vim.tbl_isempty(source_paths) then
-        return nil
-    end
-
-    local abs_paths = {}
-
-    for _, source in ipairs(source_paths) do
-        if source and source ~= "" then
-            local abs_source = vim.fs.abspath(source)
-            if abs_source and abs_source ~= "" then
-                table.insert(abs_paths, abs_source)
-            end
+    uv.fs_stat(path_abs, function(err, stat)
+        if err or not stat then
+            callback(false)
+            return
         end
-    end
 
-    if vim.tbl_isempty(abs_paths) then
-        return nil
-    end
-
-    return abs_paths
+        local is_inside = path_abs:find(dir_abs, 1, true) == 1
+        callback(is_inside)
+    end)
 end
 
---- Inspects and extracts the canonical tracked baseline directory for the state store structure context.
---- @return string? Absolute tracking directory path if accessible.
-function M.get_src_dir()
-    if cached_chezmoi_src_dir and cached_chezmoi_src_dir ~= "" then
-        return cached_chezmoi_src_dir
+--- Inspects and extracts the canonical tracked baseline directory for the chezmoi state store.
+--- Result is cached after the first successful resolution.
+--- @param callback fun(src_dir: string?) Callback executed with the absolute source directory path, or nil.
+function M.get_src_dir(callback)
+    if cached_src_dir then
+        callback(cached_src_dir)
+        return
     end
 
     local env = os.getenv("CHEZMOI_SOURCE_DIR")
 
     if env and env ~= "" then
-        cached_chezmoi_src_dir = vim.fs.abspath(env)
-        return cached_chezmoi_src_dir
+        cached_src_dir = get_clean_absolute_path(env)
+        callback(cached_src_dir)
+        return
     end
 
-    local source_paths = M.get_src_file()
-
-    if source_paths then
-        cached_chezmoi_src_dir = source_paths[1]
-        return cached_chezmoi_src_dir
-    end
-
-    return nil
+    cmd_source_path:async({}, function(result)
+        if result.success and result.data and #result.data > 0 then
+            cached_src_dir = get_clean_absolute_path(result.data[1])
+        end
+        callback(cached_src_dir)
+    end)
 end
 
---- Determines if an individual target document falls contextually inside the chezmoi source framework domain.
---- @param file string? Targeted physical address path value context.
---- @return boolean True if path resides structural depths inside active source root.
-function M.is_src_file(file)
-    local chezmoi_src_dir = M.get_src_dir()
-
-    if not chezmoi_src_dir or chezmoi_src_dir == "" then
-        return false
+--- Maps target file paths to their tracked chezmoi source counterparts.
+--- @param file string? Target filesystem path. Nil or empty resolves the source directory itself.
+--- @param callback fun(src_files: string[]?) Callback executed with resolved absolute source paths, or nil.
+function M.get_src_file(file, callback)
+    local args = {}
+    if file and file ~= "" then
+        table.insert(args, file)
     end
 
-    return M.is_path_inside_dir(file, chezmoi_src_dir)
-end
+    cmd_source_path:async(args, function(result)
+        if not result.success or not result.data or #result.data == 0 then
+            callback(nil)
+            return
+        end
 
---- Validates file exclusions against explicit user configuration layout rules defined inside standard global parameters.
---- @param file string Tracked source document parameter path pointer.
---- @return boolean True if internal module parameters mandate structural omission patterns on target configuration.
-function M.should_ignore_src_file(file)
-    if not file or file == "" then
-        return false
-    end
-
-    local src_dir = M.get_src_dir()
-
-    if not src_dir or src_dir == "" then
-        return false
-    end
-
-    if not M.is_path_inside_dir(file, src_dir) then
-        return false
-    end
-
-    local rel_path = vim.fs.relpath(src_dir, file)
-
-    if not rel_path or rel_path == "" then
-        return false
-    end
-
-    local normal_rel_path = vim.fs.normalize(rel_path)
-
-    if not normal_rel_path or normal_rel_path == "" then
-        return false
-    end
-
-    local patterns = chezmoi_config.edit and chezmoi_config.edit.ignore_patterns
-
-    if type(patterns) ~= "table" then
-        return false
-    end
-
-    for _, pattern in ipairs(patterns) do
-        if type(pattern) == "string" and pattern ~= "" then
-            if normal_rel_path:match(pattern) then
-                return true
+        local abs_paths = {}
+        for _, src in ipairs(result.data) do
+            local abs = get_clean_absolute_path(src)
+            if abs then
+                table.insert(abs_paths, abs)
             end
         end
-    end
 
-    return false
+        callback(#abs_paths > 0 and abs_paths or nil)
+    end)
 end
 
---- Dispatches file paths straight to the editing subsystem parameters to initiate text updates.
---- @param files string | string[] Single document identifier context string or tracking group listing array.
---- @param args string[]? Supplemental control syntax string parameters payload passed to editing subprocess context.
-function M.open_src_file(files, args) commands.edit({ targets = files, args = args or {} }) end
+--- Maps chezmoi source file paths to their managed target destinations.
+--- @param file string? Source repository path. Nil or empty resolves against the source directory root.
+--- @param callback fun(tgt_files: string[]?) Callback executed with resolved absolute target paths, or nil.
+function M.get_tgt_file(file, callback)
+    local args = {}
+    if file and file ~= "" then
+        table.insert(args, file)
+    end
+
+    cmd_target_path:async(args, function(result)
+        if not result.success or not result.data or #result.data == 0 then
+            callback(nil)
+            return
+        end
+
+        local abs_paths = {}
+        for _, tgt in ipairs(result.data) do
+            local abs = get_clean_absolute_path(tgt)
+            if abs then
+                table.insert(abs_paths, abs)
+            end
+        end
+
+        callback(#abs_paths > 0 and abs_paths or nil)
+    end)
+end
+
+--- Validates if a file resides inside the configured source directory hierarchy.
+--- @param file string? Absolute or relative path to check.
+--- @param callback fun(is_src: boolean) Callback executed with the final verification boolean.
+function M.is_src_file(file, callback)
+    M.get_src_dir(function(src_dir)
+        if not src_dir then
+            callback(false)
+            return
+        end
+        M.is_path_inside_dir(file, src_dir, callback)
+    end)
+end
+
+--- Validates file exclusions against the module-level ignore_patterns list.
+--- @param file string? Tracked source document path.
+--- @param callback fun(should_ignore: boolean) Callback executed with the exclusion verdict.
+function M.should_ignore_src_file(file, callback)
+    if not file or file == "" or #ignore_patterns == 0 then
+        callback(false)
+        return
+    end
+
+    M.get_src_dir(function(src_dir)
+        if not src_dir then
+            callback(false)
+            return
+        end
+
+        M.is_path_inside_dir(file, src_dir, function(is_inside)
+            if not is_inside then
+                callback(false)
+                return
+            end
+
+            local rel_path = vim.fs.relpath(src_dir, file)
+            if not rel_path or rel_path == "" then
+                callback(false)
+                return
+            end
+
+            local normal_rel_path = vim.fs.normalize(rel_path)
+            for _, pattern in ipairs(ignore_patterns) do
+                if normal_rel_path:match(pattern) then
+                    callback(true)
+                    return
+                end
+            end
+
+            callback(false)
+        end)
+    end)
+end
+
+--- @param src string Source file path.
+--- @return boolean True if the base filename starts with 'symlink_'.
+function M.has_symlink_attr(src) return vim.fs.basename(src):match("^symlink_") ~= nil end
 
 --- Prompts to open chezmoi source file instead of target.
---- @return integer 1 = No, 2 = Yes, 3 = Don't ask again, 0 = dismissed
-function M.ask_open_src_file()
-    return vim.fn.confirm(
-        "Open the chezmoi source file instead?\n",
-        "&no\n" .. "&yes\n" .. "&don't ask again",
-        1,
-        "Question"
+--- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 0 = dismissed
+function M.ask_open_src_file(callback)
+    vim.schedule(
+        function()
+            callback(
+                vim.fn.confirm(
+                    "Open the chezmoi source file instead?\n",
+                    "&No" .. "\n&Yes" .. "\n&Don't ask again",
+                    1,
+                    "Question"
+                )
+            )
+        end
     )
 end
 
 --- Prompts to apply chezmoi source file to target.
---- @return integer 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
-function M.ask_apply_src_file()
-    return vim.fn.confirm(
-        "Apply to the chezmoi target now?\n",
-        "&no\n" .. "&yes\n" .. "&don't ask again\n" .. "&watch this file",
-        1,
-        "Question"
+--- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
+function M.ask_apply_src_file(callback)
+    vim.schedule(
+        function()
+            callback(
+                vim.fn.confirm(
+                    "Apply to the chezmoi target now?\n",
+                    "&No" .. "\n&Yes" .. "\n&Don't ask again" .. "\n&Watch this file",
+                    1,
+                    "Question"
+                )
+            )
+        end
     )
 end
 
