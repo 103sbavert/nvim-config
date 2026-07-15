@@ -19,6 +19,8 @@ return {
         local register_chezmoi_keymap = create_keymap_group("Che[z]moi", "<leader>z", { "n" })
 
         require("config.plugins.chezmoi.auto_commands")
+        require("config.plugins.chezmoi.template")
+
         local function apply_chezmoi()
             local utils = require("config.plugins.chezmoi.utils")
             local cmd_apply = require("nvim-chezmoi.chezmoi.commands.apply")
