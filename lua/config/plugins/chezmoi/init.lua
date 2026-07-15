@@ -1,65 +1,49 @@
 return {
-    "xvzc/chezmoi.nvim",
-    dependencies = { "nvim-telescope/telescope.nvim" },
+    "andre-kotake/nvim-chezmoi",
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope.nvim",
+    },
     config = function()
-        require("chezmoi").setup({
+        require("nvim-chezmoi").setup({
+            debug = false,
+            source_path = nil,
             edit = {
-                watch = false,
-                force = false,
-                ignore_patterns = {
-                    "run_",
-                    "%.chezmoi",
-                    "%.gitignore",
-                    "%.git/",
-                    "%.[^%.%/]",
-                    "^%.[^%.%/]",
-                },
+                apply_on_save = "never",
             },
-            events = {
-                on_open = {
-                    notification = {
-                        enable = true,
-                        msg = "Opened a chezmoi-managed file",
-                        opts = {},
-                    },
-                },
-                on_watch = {
-                    notification = {
-                        enable = true,
-                        msg = "This file will be automatically applied",
-                        opts = {},
-                    },
-                },
-                on_apply = {
-                    notification = {
-                        enable = true,
-                        msg = "Successfully applied",
-                        opts = {},
-                    },
-                },
-            },
-            telescope = {
-                select = { "<CR>" },
+            execute_template = {
+                open_in = "split",
             },
         })
 
         local register_chezmoi_keymap = create_keymap_group("Che[z]moi", "<leader>z", { "n" })
 
         require("config.plugins.chezmoi.auto_commands")
-        require("config.plugins.chezmoi.user_commands")
+        local function apply_chezmoi()
+            local utils = require("config.plugins.chezmoi.utils")
+            local cmd_apply = require("nvim-chezmoi.chezmoi.commands.apply")
+            local file = vim.api.nvim_buf_get_name(0)
+            utils.is_src_file(file, function(is_src)
+                if is_src then
+                    cmd_apply:async({ "--source-path", file })
+                else
+                    cmd_apply:async({})
+                end
+            end)
+        end
 
         local mappings = {
             e = {
-                function() vim.cmd("ChezmoiEdit") end,
+                "<Cmd>ChezmoiEdit<Cr>",
                 "[e]dit a chezmoi source file",
             },
             a = {
-                function() vim.cmd("ChezmoiApply") end,
+                apply_chezmoi,
                 "[a]pply chezmoi changes",
             },
-            f = {
-                function() require("telescope.pick").telescope() end,
-                "Search chezmoi managed [f]iles",
+            s = {
+                "<Cmd>ChezmoiManaged<Cr>",
+                "[s]earch managed files",
             },
         }
 
