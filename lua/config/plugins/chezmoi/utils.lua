@@ -201,7 +201,7 @@ function M.ask_open_src_file(callback)
             callback(
                 vim.fn.confirm(
                     "Open the chezmoi source file instead?\n",
-                    "&No" .. "\n&Yes" .. "\n&Don't ask again",
+                    "&no" .. "\n&yes" .. "\n&don't ask again",
                     1,
                     "Question"
                 )
@@ -218,7 +218,7 @@ function M.ask_apply_src_file(callback)
             callback(
                 vim.fn.confirm(
                     "Apply to the chezmoi target now?\n",
-                    "&No" .. "\n&Yes" .. "\n&Don't ask again" .. "\n&Watch this file",
+                    "&no" .. "\n&yes" .. "\n&don't ask again" .. "\n&watch this file",
                     1,
                     "Question"
                 )
