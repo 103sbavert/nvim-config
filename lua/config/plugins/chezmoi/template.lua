@@ -100,7 +100,7 @@ local function enable_preview_mode(buf_file, pattern)
             group = template_grp,
             buffer = preview_buf,
             once = true,
-            callback = function(args) disable_preview_mode() end,
+            callback = disable_preview_mode,
         })
     else
     end
