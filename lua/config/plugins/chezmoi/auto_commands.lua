@@ -15,7 +15,7 @@ local no_open_src_files = false
 local no_apply_src_files = {}
 local watched_src_files = {}
 
-vim.api.nvim_create_autocmd("BufReadPre", {
+vim.api.nvim_create_autocmd("BufReadPost", {
     group = open_src_grp,
     callback = function(args)
         if no_open_src_files then
