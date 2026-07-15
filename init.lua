@@ -312,6 +312,16 @@ require("lazy").setup({
             dependencies = { "folke/which-key.nvim" },
             config = function() require("config.terminal") end,
         },
+        {
+            name = "config.mason",
+            dir = vim.fn.stdpath("config"),
+            dependencies = {
+                "williamboman/mason.nvim",
+                "williamboman/mason-lspconfig.nvim",
+                "WhoIsSethDaniel/mason-tool-installer.nvim",
+            },
+            config = function() require("config.mason") end,
+        },
     },
     defaults = { lazy = false },
 })
