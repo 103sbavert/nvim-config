@@ -14,6 +14,10 @@ return {
 
         local registered_groups = {}
 
+        ---@param group_name string Label for the key group
+        ---@param key_prefix string Leader key sequence
+        ---@param default_modes string|string[] Default vim modes
+        ---@return fun(keys: string, func: string|function, desc: string, opts: table?, modes: string|string[]?): nil
         function _G.create_keymap_group(group_name, key_prefix, default_modes)
             if not registered_groups[group_name] then
                 wk.add({
@@ -33,6 +37,9 @@ return {
 
         local toggle_key_group = create_keymap_group("[t]oggle", "<leader>t", { "n" })
 
+        ---@param keys string Key suffix
+        ---@param func fun(): (string|nil, boolean|nil) Function returning message and notify flag
+        ---@param desc string Keymap description
         function _G.map_toggle_key(keys, func, desc)
             local function toggle_fn()
                 local message, should_notify = func()
