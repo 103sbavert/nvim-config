@@ -7,7 +7,7 @@ return {
     config = function()
         require("nvim-chezmoi").setup({
             debug = false,
-            source_path = nil,
+            source_path = os.getenv("CHEZMOI_SOURCE_DIR"),
             edit = {
                 apply_on_save = "never",
             },
