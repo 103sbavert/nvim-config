@@ -137,7 +137,7 @@ utils.get_src_dir(function(src_dir)
                 return
             end
 
-            local buf_type = vim.bo[buf_id].buftype
+            local buf_type = vim.bo[buf_id].filetype
             if not buf_type or buf_type == "" then
                 return
             end
