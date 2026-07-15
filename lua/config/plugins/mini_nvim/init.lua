@@ -1,6 +1,6 @@
 return {
     "nvim-mini/mini.nvim",
-    dependencies = { "andre-kotake/nvim-chezmoi" },
+    dependencies = { "103sbavert/nvim-chezmoi" },
     config = function()
         require("config.plugins.mini_nvim.around_in")
         require("config.plugins.mini_nvim.surround")
