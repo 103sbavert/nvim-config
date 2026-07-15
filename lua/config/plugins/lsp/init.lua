@@ -5,9 +5,7 @@ return {
             "saghen/blink.cmp",
             version = "1.*",
         },
-        "mason-org/mason.nvim",
-        "mason-org/mason-lspconfig.nvim",
-        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        "config.mason",
         "Hoffs/omnisharp-extended-lsp.nvim",
         "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
@@ -20,7 +18,7 @@ return {
         --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
         --  See `:help lsp-config` for information about keys and how to configure
         ---@type table<string, vim.lsp.Config>
-        local servers = {
+        local server_configs = {
             omnisharp = {
                 handlers = {
                     ["textDocument/definition"] = csharp_lsp_extension.definition_handler,
@@ -100,25 +98,10 @@ return {
             },
         }
 
-        -- Automatically install LSPs and related tools to stdpath for Neovim
-        local mason = require("mason")
-        mason.setup({})
+        local server_names = vim.tbl_keys(server_configs or {})
+        require("config.mason").InstallTools(server_names)
 
-        -- Ensure the servers and tools above are installed
-        -- To check the current status of installed tools and/or manually install
-        --      :Mason
-        --
-        -- To get more help help in this menu press
-        --      g?
-        local ensure_installed = vim.tbl_keys(servers or {})
-        vim.list_extend(ensure_installed, {
-            -- You can add other tools here that you want Mason to install
-        })
-
-        local mason_tool_installer = require("mason-tool-installer")
-        mason_tool_installer.setup({ ensure_installed = ensure_installed, auto_update = true })
-
-        for name, server in pairs(servers) do
+        for name, server in pairs(server_configs) do
             vim.lsp.config(name, server)
             vim.lsp.enable(name)
         end

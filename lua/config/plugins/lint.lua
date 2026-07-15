@@ -2,15 +2,15 @@
 
 return {
     "mfussenegger/nvim-lint",
-    dependencies = { "WhoIsSethDaniel/mason-tool-installer.nvim" },
+    dependencies = { "config.mason" },
     config = function()
         local linters = { "markdownlint" }
         local lint = require("lint")
 
-        require("mason-tool-installer").setup({ ensure_installed = linters, auto_update = true })
+        require("config.mason").InstallTools(linters)
 
         lint.linters_by_ft = {
-            markdown = { "markdownlint" }, -- Make sure to install `markdownlint` via mason / npm
+            markdown = { "markdownlint" },
         }
         -- Create autocommand which carries out the actual linting
         -- on the specified events.
