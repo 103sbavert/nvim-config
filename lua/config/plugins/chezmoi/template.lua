@@ -125,14 +125,23 @@ utils.get_src_dir(function(src_dir)
         return
     end
 
-    local pattern = { src_dir .. "/*.tmpl", src_dir .. "/**/*.tmpl" }
+    local src_dir_pattern = { src_dir .. "/*.tmpl", src_dir .. "/**/*.tmpl" }
 
     -- Register buffer-local <leader>zt keymap on every template file opened.
     vim.api.nvim_create_autocmd({ "BufReadPost", "BufEnter" }, {
         group = template_grp,
-        pattern = pattern,
+        pattern = src_dir_pattern,
         callback = function(args)
             local buf_id = args.buf
+            if not vim.api.nvim_buf_is_valid(buf_id) then
+                return
+            end
+
+            local buf_type = vim.bo[buf_id].buftype
+            if not buf_type or buf_type == "" then
+                return
+            end
+
             local buf_file = vim.api.nvim_buf_get_name(buf_id)
             if buf_file == "" then
                 return
@@ -142,7 +151,7 @@ utils.get_src_dir(function(src_dir)
                 if is_preview_mode then
                     disable_preview_mode()
                 else
-                    enable_preview_mode(buf_file, pattern)
+                    enable_preview_mode(buf_file, src_dir_pattern)
                 end
             end, { buffer = buf_id, desc = "Toggle [t]emplate preview" })
         end,
