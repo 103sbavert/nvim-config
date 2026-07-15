@@ -13,8 +13,7 @@ local ignore_patterns = {
     "%.chezmoi",
     "%.gitignore",
     "%.git/",
-    "%.[^%.%/]",
-    "^%.[^%.%/]",
+    "(^|/).[^/.]",
 }
 
 --- Safely resolves and normalizes an arbitrary path into a clean absolute system location.
