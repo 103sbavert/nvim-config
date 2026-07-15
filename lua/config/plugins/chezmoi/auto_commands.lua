@@ -75,11 +75,9 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 })
 
 utils.get_src_dir(function(src_dir)
-    local src_dir_pattern = { src_dir .. "/*.tmpl", src_dir .. "/**/*.tmpl" }
-
     vim.api.nvim_create_autocmd("BufWritePost", {
         group = apply_src_grp,
-        pattern = src_dir_pattern,
+        pattern = vim.fs.joinpath(src_dir, "*"),
         callback = function(args)
             local buf_id = args.buf
             if not vim.api.nvim_buf_is_valid(buf_id) then
