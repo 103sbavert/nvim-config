@@ -144,7 +144,7 @@ utils.get_src_dir(function(src_dir)
                 else
                     enable_preview_mode(buf_file, pattern)
                 end
-            end, { buffer = buf_id, desc = "Preview [t]emplate (toggle)" })
+            end, { buffer = buf_id, desc = "Toggle [t]emplate preview" })
         end,
     })
 end)
