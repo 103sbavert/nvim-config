@@ -1,7 +1,7 @@
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
 local common_utils = require("config.utils")
 local statusline = require("mini.statusline")
-
+local chezmoi_utils = require("config.plugins.chezmoi.utils")
 vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { bg = "#1f9890", bold = true })
 
 -- Set `use_icons` to true if you have a Nerd Font
@@ -14,28 +14,23 @@ statusline.section_location = function() return "%2l:%-2v" end
 -- Async cache: filepath -> boolean. Populated via autocmds so section_fileinfo stays sync.
 local src_file_cache = {}
 
--- Lazy-load chezmoi utils to avoid requiring them before nvim-chezmoi is ready.
-local chezmoi_utils = nil
-local function get_chezmoi_utils()
-    if not chezmoi_utils then
-        local ok, m = pcall(require, "config.plugins.chezmoi.utils")
-        if ok then chezmoi_utils = m end
-    end
-    return chezmoi_utils
-end
-
-local function update_src_cache(file)
-    if not file or file == "" then return end
-    local utils = get_chezmoi_utils()
-    if not utils then return end
-    utils.is_src_file(file, function(is_src)
-        src_file_cache[file] = is_src
-        vim.schedule(function() vim.cmd("redrawstatus") end)
-    end)
-end
-
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-    callback = function() update_src_cache(common_utils.get_current_file()) end,
+    callback = function(args)
+        local buf_type = vim.bo[args.buf].filetype
+        if not buf_type or buf_type == "" then
+            return
+        end
+
+        local buf_file = common_utils.get_current_file(args)
+        if not buf_file then
+            return
+        end
+
+        chezmoi_utils.is_src_file(buf_file, function(is_src)
+            src_file_cache[buf_file] = is_src
+            vim.schedule(function() vim.cmd("redrawstatus") end)
+        end)
+    end,
 })
 
 -- Cache the original function to keep standard file info intact
