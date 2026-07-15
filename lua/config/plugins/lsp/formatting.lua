@@ -7,7 +7,7 @@ local formatters = {
     "isort",
 }
 
-require("mason-tool-installer").setup({ ensure_installed = formatters, auto_update = true })
+require("config.mason").InstallTools(formatters)
 
 conform.setup({
     notify_on_error = false,
