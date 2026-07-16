@@ -295,6 +295,11 @@ require("lazy").setup({
     spec = {
         { import = "config.plugins" },
         { "j-hui/fidget.nvim", config = true },
+        { "windwp/nvim-autopairs", config = true },
+        {
+            "lukas-reineke/indent-blankline.nvim",
+            config = function() require("ibl").setup({}) end,
+        },
         { "NMAC427/guess-indent.nvim", config = true },
         {
             "folke/todo-comments.nvim",
