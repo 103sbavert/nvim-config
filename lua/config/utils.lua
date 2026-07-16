@@ -33,4 +33,11 @@ function M.to_str(args)
     return args
 end
 
+--- Returns a function that calls require when invoked
+--- @param modname string
+--- @return fun(): any
+function M.lazy_require(modname)
+    return function() return require(modname) end
+end
+
 return M
