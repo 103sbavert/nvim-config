@@ -1,10 +1,6 @@
 return {
     "neovim/nvim-lspconfig",
     dependencies = {
-        {
-            "saghen/blink.cmp",
-            version = "1.*",
-        },
         "config.mason",
         "Hoffs/omnisharp-extended-lsp.nvim",
         "nvim-telescope/telescope.nvim",
@@ -13,6 +9,7 @@ return {
         "L3MON4D3/LuaSnip",
     },
     config = function()
+        local common_utils = require("config.utils")
         local csharp_lsp_extension = require("omnisharp_extended")
         -- Enable the following language servers
         --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -60,6 +57,7 @@ return {
             pyright = {},
             stylua = {},
             lua_ls = {
+                on_attach = function() common_utils.lazy_require("luasnip")().setup() end,
                 on_init = function(client)
                     client.server_capabilities.documentFormattingProvider = false -- Disable formatting (formatting is done by stylua)
 
