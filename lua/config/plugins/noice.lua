@@ -1,6 +1,6 @@
 return {
     "folke/noice.nvim",
-    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+    dependencies = { "rcarriga/nvim-notify" },
     config = function()
         require("noice").setup({
             lsp = {
@@ -16,6 +16,9 @@ return {
                 long_message_to_split = true,
                 inc_rename = true,
                 lsp_doc_border = true,
+            },
+            popupmenu = {
+                enabled = false,
             },
             routes = {
                 {
