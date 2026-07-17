@@ -200,34 +200,26 @@ function M.has_symlink_attr(src) return vim.fs.basename(src):match("^symlink_") 
 --- Prompts to open chezmoi source file instead of target.
 --- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 0 = dismissed
 function M.ask_open_src_file(callback)
-    vim.schedule(
-        function()
-            callback(
-                vim.fn.confirm(
-                    "Open the chezmoi source file instead?\n",
-                    "&no" .. "\n&yes" .. "\n&don't ask again",
-                    1,
-                    "Question"
-                )
-            )
-        end
+    callback(
+        vim.fn.confirm(
+            "Open the chezmoi source file instead?\n",
+            "&no" .. "\n&yes" .. "\n&don't ask again",
+            1,
+            "Question"
+        )
     )
 end
 
 --- Prompts to apply chezmoi source file to target.
 --- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
 function M.ask_apply_src_file(callback)
-    vim.schedule(
-        function()
-            callback(
-                vim.fn.confirm(
-                    "Apply to the chezmoi target now?\n",
-                    "&no" .. "\n&yes" .. "\n&don't ask again" .. "\n&watch this file",
-                    1,
-                    "Question"
-                )
-            )
-        end
+    callback(
+        vim.fn.confirm(
+            "Apply to the chezmoi target now?\n",
+            "&no" .. "\n&yes" .. "\n&don't ask again" .. "\n&watch this file",
+            1,
+            "Question"
+        )
     )
 end
 

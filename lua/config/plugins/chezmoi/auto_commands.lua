@@ -59,12 +59,14 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                         return
                     end
 
-                    utils.ask_open_src_file(function(choice)
+                    vim.schedule(function()
+                        utils.ask_open_src_file(function(choice)
                             if choice == 2 then
                                 utils.edit_chezmoi(buf_file)
                             elseif choice == 3 then
                                 no_open_src_files = true
                             end
+                        end)
                     end)
                 end)
             end)
@@ -110,8 +112,7 @@ utils.get_src_dir(function(src_dir)
                         utils.apply_chezmoi(buf_file)
                         return
                     end
-
-                    utils.ask_apply_src_file(function(choice)
+                    vim.schedule(utils.ask_apply_src_file(function(choice)
                         if choice == 2 or choice == 4 then
                             utils.apply_chezmoi(buf_file)
                         end
@@ -122,7 +123,7 @@ utils.get_src_dir(function(src_dir)
                             watched_src_files[buf_file] = true
                             vim.notify("File will be auto-applied on save", vim.log.levels.INFO, { title = "Chezmoi" })
                         end
-                    end)
+                    end))
                 end)
             end)
         end,
