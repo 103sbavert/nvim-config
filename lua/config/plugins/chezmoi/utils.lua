@@ -238,9 +238,12 @@ local function notify_res(msg, result)
 end
 
 function M.edit_chezmoi(file)
-    local notify = function(res) notify_res("Opened chezmoi source file", res) end
     file = file or vim.api.nvim_buf_get_name(0)
-    get_cmd_edit():exec(file)
+    local res = get_cmd_edit():exec(file)
+
+    if res then
+        notify_res("Opened chezmoi source file", res)
+    end
 end
 
 function M.apply_chezmoi(file)
