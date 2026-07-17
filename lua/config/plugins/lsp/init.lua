@@ -11,11 +11,10 @@ return {
     config = function()
         local common_utils = require("config.utils")
         local csharp_lsp_extension = require("omnisharp_extended")
+
         -- Enable the following language servers
-        --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-        --  See `:help lsp-config` for information about keys and how to configure
         ---@type table<string, vim.lsp.Config>
-        local server_configs = {
+        local server_config_map = {
             omnisharp = {
                 handlers = {
                     ["textDocument/definition"] = csharp_lsp_extension.definition_handler,
@@ -62,6 +61,7 @@ return {
 
                     if client.workspace_folders then
                         local path = client.workspace_folders[1].name
+
                         if
                             path ~= vim.fn.stdpath("config")
                             and (vim.uv.fs_stat(path .. "/.luarc.json") or vim.uv.fs_stat(path .. "/.luarc.jsonc"))
@@ -86,26 +86,25 @@ return {
                         },
                     })
                 end,
-                ---@type lspconfig.settings.lua_ls
                 settings = {
                     Lua = {
-                        format = { enable = false }, -- Disable formatting (formatting is done by stylua)
+                        format = { enable = false },
                     },
                 },
             },
         }
 
-        local server_names = vim.tbl_keys(server_configs or {})
-        require("config.mason").InstallTools(server_names)
+        local server_names = vim.tbl_keys(server_config_map or {})
 
-        for name, server in pairs(server_configs) do
-            vim.lsp.config(name, server)
-            vim.lsp.enable(name)
-        end
+        require("config.mason").InstallTools(server_names)
 
         require("config.plugins.lsp.actions")
         require("config.plugins.lsp.auto_commands")
         require("config.plugins.lsp.formatting")
-        require("config.plugins.lsp.autocomplete")
+
+        for name, server_conf in pairs(server_config_map) do
+            vim.lsp.config(name, server_conf)
+            vim.lsp.enable(name)
+        end
     end,
 }
