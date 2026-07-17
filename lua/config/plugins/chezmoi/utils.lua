@@ -1,7 +1,8 @@
 local M = {}
 
-local cmd_source_path = require("nvim-chezmoi.chezmoi.commands.source_path")
-local cmd_target_path = require("nvim-chezmoi.chezmoi.commands.target_path")
+local UT = require("config.utils")
+local get_cmd_src_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
+local get_cmd_tgt_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.target_path")
 local uv = vim.uv or vim.loop
 
 local cached_src_dir = nil
@@ -74,7 +75,7 @@ function M.get_src_dir(callback)
         return
     end
 
-    cmd_source_path:async({}, function(result)
+    get_cmd_src_path():async({}, function(result)
         if result.success and result.data and #result.data > 0 then
             cached_src_dir = get_clean_absolute_path(result.data[1])
         end
@@ -91,7 +92,7 @@ function M.get_src_file(file, callback)
         table.insert(args, file)
     end
 
-    cmd_source_path:async(args, function(result)
+    get_cmd_src_path():async(args, function(result)
         if not result.success or not result.data or #result.data == 0 then
             callback(nil)
             return
@@ -118,7 +119,7 @@ function M.get_tgt_file(file, callback)
         table.insert(args, file)
     end
 
-    cmd_target_path:async(args, function(result)
+    get_cmd_tgt_path():async(args, function(result)
         if not result.success or not result.data or #result.data == 0 then
             callback(nil)
             return
