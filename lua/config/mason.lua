@@ -17,6 +17,7 @@ local InstallTools = function(tool_list)
 
     installer.setup({
         ensure_installed = cumulative_tool_tbl,
+        debounce_hours = debounce_hrs,
         run_on_start = false,
     })
 end
