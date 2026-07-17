@@ -1,9 +1,8 @@
-local group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true })
+local group = vim.api.nvim_create_augroup("highlights-lsp-attach", { clear = true })
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = group,
     callback = function(event)
-        -- highlight references of symbol under cursor, unhighlight when cursor leaves the symbol
         local client = vim.lsp.get_client_by_id(event.data.client_id)
 
         if client and client:supports_method("textDocument/documentHighlight", event.buf) then
