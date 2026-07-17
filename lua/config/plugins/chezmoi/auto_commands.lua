@@ -1,6 +1,3 @@
-local cmd_edit = require("nvim-chezmoi.chezmoi.commands.edit")
-local cmd_apply = require("nvim-chezmoi.chezmoi.commands.apply")
-
 local utils = require("config.plugins.chezmoi.utils")
 
 local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
@@ -63,11 +60,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                     end
 
                     utils.ask_open_src_file(function(choice)
-                        if choice == 2 then
-                            cmd_edit:exec(buf_file)
-                        elseif choice == 3 then
-                            no_open_src_files = true
-                        end
+                            if choice == 2 then
+                                utils.edit_chezmoi(buf_file)
+                            elseif choice == 3 then
+                                no_open_src_files = true
+                            end
                     end)
                 end)
             end)
@@ -110,17 +107,13 @@ utils.get_src_dir(function(src_dir)
                     end
 
                     if watched_src_files[buf_file] then
-                        cmd_apply:async({ buf_file })
+                        utils.apply_chezmoi(buf_file)
                         return
                     end
 
                     utils.ask_apply_src_file(function(choice)
                         if choice == 2 or choice == 4 then
-                            cmd_apply:async({ buf_file, "--source-path" }, function(result)
-                                if result.success then
-                                    vim.notify("Applied to target", vim.log.levels.INFO, { title = "Chezmoi" })
-                                end
-                            end)
+                            utils.apply_chezmoi(buf_file)
                         end
 
                         if choice == 3 then

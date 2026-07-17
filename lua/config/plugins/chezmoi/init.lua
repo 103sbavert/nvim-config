@@ -20,27 +20,15 @@ return {
 
         require("config.plugins.chezmoi.auto_commands")
         require("config.plugins.chezmoi.template")
-
-        local function apply_chezmoi()
-            local utils = require("config.plugins.chezmoi.utils")
-            local cmd_apply = require("nvim-chezmoi.chezmoi.commands.apply")
-            local file = vim.api.nvim_buf_get_name(0)
-            utils.is_src_file(file, function(is_src)
-                if is_src then
-                    cmd_apply:async({ "--source-path", file })
-                else
-                    cmd_apply:async({})
-                end
-            end)
-        end
+        local utils = require("config.plugins.chezmoi.utils")
 
         local mappings = {
             e = {
-                "<Cmd>ChezmoiEdit<Cr>",
+                utils.edit_chezmoi,
                 "[e]dit a chezmoi source file",
             },
             a = {
-                apply_chezmoi,
+                utils.apply_chezmoi,
                 "[a]pply chezmoi changes",
             },
             s = {

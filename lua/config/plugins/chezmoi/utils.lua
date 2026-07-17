@@ -3,6 +3,9 @@ local M = {}
 local UT = require("config.utils")
 local get_cmd_src_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
 local get_cmd_tgt_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.target_path")
+local get_cmd_apply = UT.lazy_require("nvim-chezmoi.chezmoi.commands.apply")
+local get_cmd_edit = UT.lazy_require("nvim-chezmoi.chezmoi.commands.edit")
+
 local uv = vim.uv or vim.loop
 
 local cached_src_dir = nil
@@ -226,6 +229,44 @@ function M.ask_apply_src_file(callback)
             )
         end
     )
+end
+
+local nopts = { title = "Chezmoi" }
+
+local function notify_inf(msg) vim.notify(msg, vim.log.levels.INFO, nopts) end
+local function notify_err(msg) vim.notify(msg, vim.log.levels.ERROR, nopts) end
+
+local function notify_res(msg, result)
+    if result.success then
+        notify_inf(msg)
+    else
+        local m = table.concat(result.data)
+        notify_err(m)
+    end
+end
+
+function M.edit_chezmoi(file)
+    local notify = function(res) notify_res("Opened chezmoi source file", res) end
+    file = file or vim.api.nvim_buf_get_name(0)
+    get_cmd_edit():exec(file)
+end
+
+function M.apply_chezmoi(file)
+    local notify = function(res) notify_res("Applied to target successfully", res) end
+
+    file = file or vim.api.nvim_buf_get_name(0)
+
+    if not file or type(file) ~= "string" then
+        notify_err("Filenames must be string")
+    end
+
+    M.is_src_file(file, function(is_src)
+        if is_src then
+            get_cmd_apply():async({ "--source-path", file }, notify)
+        else
+            get_cmd_apply():async({ file }, notify)
+        end
+    end)
 end
 
 return M
