@@ -228,26 +228,27 @@ local nopts = { title = "Chezmoi" }
 local function notify_inf(msg) vim.notify(msg, vim.log.levels.INFO, nopts) end
 local function notify_err(msg) vim.notify(msg, vim.log.levels.ERROR, nopts) end
 
-local function notify_res(msg, result)
-    if result.success then
-        notify_inf(msg)
-    else
-        local m = table.concat(result.data)
-        notify_err(m)
-    end
-end
-
 function M.edit_chezmoi(file)
     file = file or vim.api.nvim_buf_get_name(0)
     local res = get_cmd_edit():exec(file)
 
-    if res then
-        notify_res("Opened chezmoi source file", res)
+    if not res or res.success then
+        notify_inf("Opened source file")
+    else
+        local m = table.concat(res.data)
+        notify_err(m)
     end
 end
 
 function M.apply_chezmoi(file)
-    local notify = function(res) notify_res("Applied to target successfully", res) end
+    local notify = function(res)
+        if not res or res.success then
+            notify_inf("Applied changes to target")
+        else
+            local m = table.concat(res.data)
+            notify_err(m)
+        end
+    end
 
     file = file or vim.api.nvim_buf_get_name(0)
 
