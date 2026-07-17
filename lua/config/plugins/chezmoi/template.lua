@@ -1,4 +1,7 @@
-local cmd_execute_template = require("nvim-chezmoi.chezmoi.commands.execute_template")
+local UT = require("config.utils")
+
+local get_cmd_execute_template = UT.lazy_require("nvim-chezmoi.chezmoi.commands.execute_template")
+
 local utils = require("config.plugins.chezmoi.utils")
 
 local is_preview_mode = false
@@ -42,7 +45,7 @@ local function render_template(buf_file)
     local lines = vim.api.nvim_buf_get_lines(src_bufnr, 0, -1, false)
     local content = table.concat(lines, "\n")
 
-    cmd_execute_template:async({ content }, function(result)
+    get_cmd_execute_template():async({ content }, function(result)
         local buf_still_valid = preview_buf ~= nil and vim.api.nvim_buf_is_valid(preview_buf)
 
         if not result.success or not buf_still_valid then
