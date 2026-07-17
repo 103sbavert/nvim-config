@@ -1,5 +1,9 @@
 local M = {}
 
+require("mason-lspconfig").setup({
+    automatic_enable = false,
+})
+
 require("mason").setup({})
 local mason_tool_installer = require("mason-tool-installer")
 
