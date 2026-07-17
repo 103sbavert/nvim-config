@@ -1,8 +1,10 @@
 return {
     "103sbavert/nvim-chezmoi",
     dependencies = {
+        "nvim-mini/mini.nvim",
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope.nvim",
+        "folke/which-key.nvim",
     },
     config = function()
         require("nvim-chezmoi").setup({
