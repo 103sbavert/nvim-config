@@ -1,6 +1,7 @@
 return {
     "lewis6991/gitsigns.nvim",
     dependencies = { "kdheepak/lazygit.nvim" },
+    event = { "VeryLazy" },
     config = function()
         require("gitsigns").setup({
             signs = {
