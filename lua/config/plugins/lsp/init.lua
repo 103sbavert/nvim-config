@@ -55,7 +55,6 @@ return {
                 },
             },
             pyright = {},
-            stylua = {},
             lua_ls = {
                 on_attach = function() common_utils.lazy_require("luasnip")().setup() end,
                 on_init = function(client)
