@@ -1,12 +1,12 @@
 {
-    "plugins": {
-        "bamboo.nvim": {
-            "rev": "1309bc88bffcf1bedc3e84e7fa9004de93da774a",
-            "src": "https://github.com/ribru17/bamboo.nvim"
-        },
-        "lazy.nvim": {
-            "rev": "306a05526ada86a7b30af95c5cc81ffba93fef97",
-            "src": "https://github.com/folke/lazy.nvim"
-        }
+  "plugins": {
+    "bamboo.nvim": {
+      "rev": "1309bc88bffcf1bedc3e84e7fa9004de93da774a",
+      "src": "https://github.com/ribru17/bamboo.nvim"
+    },
+    "lazy.nvim": {
+      "rev": "306a05526ada86a7b30af95c5cc81ffba93fef97",
+      "src": "https://github.com/folke/lazy.nvim"
     }
+  }
 }
