@@ -42,17 +42,18 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 return
             end
 
-            utils.should_ignore_src_file(buf_file, function(should_ignore)
-                if should_ignore then
+            utils.get_src_file(buf_file, function(sources)
+                if not sources or #sources == 0 then
                     return
                 end
 
-                utils.get_src_file(buf_file, function(sources)
-                    if not sources or #sources == 0 then
+                local source = sources[1]
+
+                utils.should_ignore_src_file(source, function(should_ignore)
+                    if should_ignore then
                         return
                     end
 
-                    local source = sources[1]
                     if not source or not vim.uv.fs_stat(source) or source == buf_file then
                         return
                     end
