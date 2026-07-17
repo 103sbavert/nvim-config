@@ -3,6 +3,7 @@
 return {
     "mfussenegger/nvim-lint",
     dependencies = { "config.mason" },
+    event = { "VeryLazy" },
     config = function()
         local linters = { "markdownlint" }
         local lint = require("lint")

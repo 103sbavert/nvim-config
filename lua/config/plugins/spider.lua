@@ -1,6 +1,7 @@
 return {
     "chrisgrieser/nvim-spider",
     dependencies = { "folke/which-key.nvim" },
+    event = { "VeryLazy" },
     config = function()
         -- Toggles buffer-local sub-word (camelCase/snake_case) motions via nvim-spider.
         local function toggle_buffer_camel_mode()
