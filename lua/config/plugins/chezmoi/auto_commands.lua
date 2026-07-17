@@ -112,18 +112,24 @@ utils.get_src_dir(function(src_dir)
                         utils.apply_chezmoi(buf_file)
                         return
                     end
-                    vim.schedule(utils.ask_apply_src_file(function(choice)
-                        if choice == 2 or choice == 4 then
-                            utils.apply_chezmoi(buf_file)
-                        end
+                    vim.schedule(function()
+                        utils.ask_apply_src_file(function(choice)
+                            if choice == 2 or choice == 4 then
+                                utils.apply_chezmoi(buf_file)
+                            end
 
-                        if choice == 3 then
-                            no_apply_src_files[buf_file] = true
-                        elseif choice == 4 then
-                            watched_src_files[buf_file] = true
-                            vim.notify("File will be auto-applied on save", vim.log.levels.INFO, { title = "Chezmoi" })
-                        end
-                    end))
+                            if choice == 3 then
+                                no_apply_src_files[buf_file] = true
+                            elseif choice == 4 then
+                                watched_src_files[buf_file] = true
+                                vim.notify(
+                                    "File will be auto-applied on save",
+                                    vim.log.levels.INFO,
+                                    { title = "Chezmoi" }
+                                )
+                            end
+                        end)
+                    end)
                 end)
             end)
         end,
