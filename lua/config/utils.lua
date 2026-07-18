@@ -23,6 +23,16 @@ function M.get_current_file(args)
     return buf_name
 end
 
+function M.has_hidden_component(path)
+    for segment in path:gmatch("[^/]+") do
+        print("Segment:", segment)
+        if segment:match("^%.") and segment ~= "." and segment ~= ".." then
+            return true
+        end
+    end
+    return false
+end
+
 --- Serializes a single string or an array of string arguments into a single space-separated sequence.
 --- @param args string | string[] Input target arguments list or scalar value.
 --- @return string Formatted plain text command-line string parameter.
