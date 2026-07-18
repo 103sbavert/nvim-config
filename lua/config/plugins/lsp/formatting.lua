@@ -5,6 +5,7 @@ local formatters = {
     "taplo",
     "prettier",
     "isort",
+    "stylua",
 }
 
 require("config.mason").InstallTools(formatters)
@@ -20,7 +21,7 @@ conform.setup({
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-        lua = { "stylua" }, -- installed in init.lua with other LSPs
+        lua = { "stylua" },
         python = { "isort" },
         go = { "gofmt" },
         javascript = { "prettier" },
