@@ -15,7 +15,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
             return
         end
 
-        vim.uv.fs_stat(buf_file, function(err, stat_res)
+        vim.uv.fs_stat(buf_file, function(_, stat_res)
             if not stat_res then
                 return
             end

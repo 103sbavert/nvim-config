@@ -20,8 +20,10 @@ return {
 
         local register_chezmoi_keymap = create_keymap_group("Che[z]moi", "<leader>z", { "n" })
 
+        require("config.plugins.chezmoi.statusline")
         require("config.plugins.chezmoi.auto_commands")
         require("config.plugins.chezmoi.template")
+
         local utils = require("config.plugins.chezmoi.utils")
 
         local mappings = {
