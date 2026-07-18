@@ -18,7 +18,6 @@ local ignore_patterns = {
     "%.chezmoi",
     "%.gitignore",
     "%.git/",
-    "(^|/).[^/.]",
 }
 
 --- Safely resolves and normalizes an arbitrary path into a clean absolute system location.
@@ -182,10 +181,15 @@ function M.should_ignore_src_file(file, callback)
             end
 
             local normal_rel_path = vim.fs.normalize(rel_path)
-            for _, pattern in ipairs(ignore_patterns) do
-                if normal_rel_path:match(pattern) then
-                    callback(true)
-                    return
+            if UT.has_hidden_component(normal_rel_path) then
+                callback(true)
+                return
+            else
+                for _, pattern in ipairs(ignore_patterns) do
+                    if normal_rel_path:match(pattern) then
+                        callback(true)
+                        return
+                    end
                 end
             end
 
