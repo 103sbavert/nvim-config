@@ -24,11 +24,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
             return
         end
 
-        local buf_type = vim.bo[buf_id].filetype
-        if not buf_type or buf_type == "" then
-            return
-        end
-
         local buf_file = vim.api.nvim_buf_get_name(buf_id)
         if buf_file == "" then
             return
