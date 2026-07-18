@@ -12,12 +12,8 @@ function M.get_current_file(args)
 
     local buf_name = vim.api.nvim_buf_get_name(buf)
 
-    if buf_name == "" or vim.bo.buftype ~= "" then
+    if not buf_name or buf_name == "" then
         return nil
-    end
-
-    if buf_name:sub(1, 1) == "-" then
-        buf_name = "\\" .. buf_name
     end
 
     return buf_name
