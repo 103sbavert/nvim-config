@@ -5,6 +5,7 @@ local get_cmd_src_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_p
 local get_cmd_tgt_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.target_path")
 local get_cmd_apply = UT.lazy_require("nvim-chezmoi.chezmoi.commands.apply")
 local get_cmd_edit = UT.lazy_require("nvim-chezmoi.chezmoi.commands.edit")
+local get_czm_cache = UT.lazy_require("nvim-chezmoi.chezmoi.cache")
 
 local uv = vim.uv or vim.loop
 
@@ -227,6 +228,16 @@ local nopts = { title = "Chezmoi" }
 
 local function notify_inf(msg) vim.notify(msg, vim.log.levels.INFO, nopts) end
 local function notify_err(msg) vim.notify(msg, vim.log.levels.ERROR, nopts) end
+
+function M.populate_ft_cache(ft, src_file)
+    if ft and ft ~= "" then
+        get_czm_cache().new("ft_detect", { src_file }, {
+            args = {},
+            success = true,
+            data = { ft = ft },
+        })
+    end
+end
 
 function M.edit_chezmoi(file)
     file = file or vim.api.nvim_buf_get_name(0)

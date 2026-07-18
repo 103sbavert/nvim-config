@@ -57,7 +57,10 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                     vim.schedule(function()
                         utils.ask_open_src_file(function(choice)
                             if choice == 2 then
-                                utils.edit_chezmoi(buf_file)
+                                local buf_type = vim.bo[buf_id].filetype
+                                utils.populate_ft_cache(buf_type, src)
+
+                                vim.cmd.edit(src)
                             elseif choice == 3 then
                                 no_open_src_files = true
                             end
