@@ -1,6 +1,10 @@
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
 local chezmoi_utils = require("config.plugins.chezmoi.utils")
-vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { bg = "#1f9890", bold = true })
+
+local vulgaris = require("bamboo.palette").vulgaris
+local bg = vulgaris.purple
+local fg = vulgaris.contrast
+vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { fg = fg, bg = bg, bold = true })
 
 local UT = require("config.utils")
 local statusline = require("mini.statusline")
