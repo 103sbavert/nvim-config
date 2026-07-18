@@ -6,6 +6,7 @@ local formatters = {
     "prettier",
     "isort",
     "stylua",
+    "goimports",
 }
 
 require("config.mason").InstallTools(formatters)
@@ -23,7 +24,7 @@ conform.setup({
     formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort" },
-        go = { "gofmt" },
+        go = { "goimports" },
         javascript = { "prettier" },
         typescript = { "prettier" },
         json = { "prettier" },
