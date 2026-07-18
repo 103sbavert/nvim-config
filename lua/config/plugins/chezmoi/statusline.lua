@@ -10,19 +10,19 @@ local src_file_cache = {}
 
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
     callback = function(args)
-        local buf_type = vim.bo[args.buf].filetype
-        if not buf_type or buf_type == "" then
-            return
-        end
-
         local buf_file = UT.get_current_file(args)
         if not buf_file then
             return
         end
 
-        chezmoi_utils.is_src_file(buf_file, function(is_src)
-            src_file_cache[buf_file] = is_src
-            vim.schedule(function() vim.cmd("redrawstatus") end)
+        vim.uv.fs_stat(buf_file, function(err, stat_res)
+            if not stat_res then
+                return
+            end
+            chezmoi_utils.is_src_file(buf_file, function(is_src)
+                src_file_cache[buf_file] = is_src
+                vim.schedule(function() vim.cmd("redrawstatus") end)
+            end)
         end)
     end,
 })
