@@ -8,6 +8,10 @@ local get_omnisharp_ext = UT.lazy_require("omnisharp_extended")
 --- @field lsp_action_override? table<string, function> Optional map of LSP client names to override callbacks.
 --- @field description string Documentation string for the keymap decoration.
 
+--- @class LspSearchConfig
+--- @field action function Callback function executed for standard language servers.
+--- @field description string Documentation string for the keymap decoration.
+
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("telescope_lsp_action", { clear = true }),
     callback = function(event)
@@ -31,14 +35,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
             ["D"] = {
                 description = "[D]eclaration",
                 default_lsp_action = vim.lsp.buf.declaration,
-            },
-            ["sW"] = {
-                description = "[s]ymbols in [W]orkspace",
-                default_lsp_action = function() get_telescope_builtin().lsp_document_symbols() end,
-            },
-            ["sD"] = {
-                description = "[s]ymbols in [D]ocument",
-                default_lsp_action = function() get_telescope_builtin().lsp_dynamic_workspace_symbols() end,
             },
             ["t"] = {
                 default_lsp_action = function() get_telescope_builtin().lsp_type_definitions() end,
@@ -81,6 +77,24 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end
         end
 
-        create_keymap_group("[s]ymbols", "<leader>ls", { "n", "v" }) -- for sW and sG
+        --- @type table<string, LspSearchConfig>
+        local search_keywords = {
+            ["w"] = {
+                description = "LSP [w]orkspace",
+                action = function() get_telescope_builtin().lsp_document_symbols() end,
+            },
+            ["s"] = {
+                description = "LSP [s]ymbols",
+                action = function() get_telescope_builtin().lsp_dynamic_workspace_symbols() end,
+            },
+        }
+
+        for key, config in pairs(search_keywords) do
+            local target_fn = config.action
+
+            if target_fn then
+                utils.map_lsp_key(key, target_fn, event.buf, config.description)
+            end
+        end
     end,
 })
