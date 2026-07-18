@@ -1,4 +1,5 @@
 local utils = require("config.plugins.chezmoi.utils")
+local UT = require("config.utils")
 
 local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
     clear = true,
@@ -19,15 +20,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
             return
         end
 
-        local buf_id = args.buf
-        if not vim.api.nvim_buf_is_valid(buf_id) then
-            return
-        end
-
-        local buf_file = vim.api.nvim_buf_get_name(buf_id)
-        if buf_file == "" then
-            return
-        end
+        local buf_file = UT.get_current_file(args)
 
         utils.is_src_file(buf_file, function(is_src)
             if is_src then
@@ -57,7 +50,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                     vim.schedule(function()
                         utils.ask_open_src_file(function(choice)
                             if choice == 2 then
-                                local buf_type = vim.bo[buf_id].filetype
+                                local buf_type = vim.bo[args.buf].filetype
                                 utils.populate_ft_cache(buf_type, src)
 
                                 vim.cmd.edit(src)
@@ -77,18 +70,9 @@ utils.get_src_dir(function(src_dir)
         group = apply_src_grp,
         pattern = vim.fs.joinpath(src_dir, "*"),
         callback = function(args)
-            local buf_id = args.buf
-            if not vim.api.nvim_buf_is_valid(buf_id) then
-                return
-            end
+            local buf_file = UT.get_current_file(args)
 
-            local buf_type = vim.bo[buf_id].filetype
-            if not buf_type or buf_type == "" then
-                return
-            end
-
-            local buf_file = vim.api.nvim_buf_get_name(buf_id)
-            if buf_file == "" then
+            if not buf_file then
                 return
             end
 
