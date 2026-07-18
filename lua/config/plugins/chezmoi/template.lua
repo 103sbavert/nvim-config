@@ -136,17 +136,10 @@ utils.get_src_dir(function(src_dir)
         pattern = tmpl_pattern,
         callback = function(args)
             local buf_id = args.buf
-            if not vim.api.nvim_buf_is_valid(buf_id) then
-                return
-            end
 
-            local buf_type = vim.bo[buf_id].filetype
-            if not buf_type or buf_type == "" then
-                return
-            end
+            local buf_file = UT.get_current_file(args)
 
-            local buf_file = vim.api.nvim_buf_get_name(buf_id)
-            if buf_file == "" then
+            if not buf_file then
                 return
             end
 
