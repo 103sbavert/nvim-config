@@ -13,7 +13,10 @@ local debounce_hrs = 6
 
 ---@param tool_list string[]
 local InstallTools = function(tool_list)
-    cumulative_tool_tbl = vim.tbl_deep_extend("force", cumulative_tool_tbl, tool_list)
+    local lspconfig_to_mason = require("mason-lspconfig").get_mappings().lspconfig_to_package
+    local mason_names = vim.tbl_map(function(name) return lspconfig_to_mason[name] or name end, tool_list)
+
+    vim.list_extend(cumulative_tool_tbl, mason_names)
 
     installer.setup({
         ensure_installed = cumulative_tool_tbl,
