@@ -14,6 +14,7 @@ return {
         attach_to_untracked = true,
         on_attach = function(bufnr)
             local gitsigns = require("gitsigns")
+            local utils = require("config.plugins.git.utils")
 
             -- Initialize mappers
             local git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
@@ -87,6 +88,11 @@ return {
             -- LazyGit
             do
                 git_key_mapper("g", "<cmd>LazyGitCurrentFile<cr>", "Initialize LazyGit TUI")
+            end
+
+            -- Commit
+            do
+                git_key_mapper("c", utils.git_commit, "[c]ommit staged changes", nil, { "n" })
             end
 
             -- Toggles
