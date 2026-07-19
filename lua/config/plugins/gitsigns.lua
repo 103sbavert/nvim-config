@@ -2,8 +2,7 @@ return {
     "lewis6991/gitsigns.nvim",
     dependencies = { "kdheepak/lazygit.nvim" },
     event = { "VeryLazy" },
-    config = function()
-        require("gitsigns").setup({
+    opts = {
             signs = {
                 add = { text = "+" },
                 change = { text = "~" },
@@ -95,6 +94,5 @@ return {
                     map_toggle_key("b", gitsigns.toggle_current_line_blame, "Current line [b]lame")
                 end
             end,
-        })
-    end,
+        },
 }
