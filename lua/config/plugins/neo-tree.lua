@@ -12,17 +12,9 @@ return {
                 "buffers",
             },
             enable_opened_markers = true,
-            source_selector = {
-                winbar = true,
-                sources = {
-                    { source = "filesystem" },
-                    { source = "buffers" },
-                },
-                truncation_character = "…",
-            },
             default_component_configs = {
                 name = {
-                    highlight_opened_files = false,
+                    highlight_opened_files = true,
                 },
                 modified = {
                     symbol = "*",
@@ -67,11 +59,5 @@ return {
                 },
             },
         })
-
-        local vulgaris = require("bamboo.palette").vulgaris
-        vim.api.nvim_set_hl(0, "NeoTreeTabActive", { fg = vulgaris.contrast, bg = vulgaris.bg_yellow, bold = true })
-        vim.api.nvim_set_hl(0, "NeoTreeTabInactive", { fg = vulgaris.light_grey, bg = vulgaris.bg_d })
-        vim.api.nvim_set_hl(0, "NeoTreeTabSeparatorActive", { fg = vulgaris.bg_d, bg = vulgaris.bg3 })
-        vim.api.nvim_set_hl(0, "NeoTreeTabSeparatorInactive", { fg = vulgaris.bg_d, bg = vulgaris.bg_d })
     end,
 }
