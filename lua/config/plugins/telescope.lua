@@ -12,14 +12,16 @@ return {
         },
     },
     config = function()
-        require("telescope").setup({
+        local tsp = require("telescope")
+
+        tsp.setup({
             extensions = {
                 ["ui-select"] = { require("telescope.themes").get_dropdown() },
             },
         })
 
-        require("telescope").load_extension("fzf")
-        require("telescope").load_extension("ui-select")
+        tsp.load_extension("fzf")
+        tsp.load_extension("ui-select")
 
         local map_search = create_keymap_group("[ ] search", "<leader><leader>", "n")
         local builtin = require("telescope.builtin")
