@@ -21,29 +21,29 @@ return {
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ui-select")
 
-        local map_search = create_keymap_group("[s]earch", "<leader>s", "n")
+        local map_search = create_keymap_group("[ ] search", "<leader><leader>", "n")
         local builtin = require("telescope.builtin")
 
-        map_search("h", builtin.help_tags, "[h]elp")
-        map_search("k", builtin.keymaps, "[k]eymaps")
-        map_search("f", builtin.find_files, "[f]iles")
-        map_search("s", builtin.builtin, "[s]elect Telescope")
-        map_search("g", builtin.live_grep, "[g]rep")
+        map_search("h", builtin.help_tags, "[h]elp pages")
+        map_search("k", builtin.keymaps, "nvim [k]eymaps")
+        map_search("w", builtin.find_files, "[w]orkspace files")
+        map_search("/", builtin.builtin, "/ select telescope")
+        map_search("l", builtin.live_grep, "[l]ive grep workspace")
         map_search("d", builtin.diagnostics, "[d]iagnostics")
-        map_search("r", builtin.resume, "[r]esume")
-        map_search(".", builtin.oldfiles, "Recent Files ('.' for repeat)")
+        map_search(".", builtin.resume, ". resume search")
+        map_search("r", builtin.oldfiles, "[r]ecent files")
         map_search("c", builtin.commands, "[c]ommands")
-        map_search("w", builtin.grep_string, "current [W]ord", nil, { "n", "v" })
+        map_search("w", builtin.grep_string, "current [w]ORD", nil, { "n", "v" })
 
         map_search(
-            "/",
+            "g",
             function()
                 builtin.live_grep({
                     grep_open_files = true,
-                    prompt_title = "Live Grep in Open Files",
+                    prompt_title = "live grep in open files",
                 })
             end,
-            "[/] Open Files"
+            "[g]rep open files"
         )
 
         map_search(
@@ -52,18 +52,18 @@ return {
             "[n]eovim files"
         )
 
-        vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+        vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "find existing [b]uffers" })
 
         vim.keymap.set(
             "n",
             "<leader>/",
             function()
                 builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-                    winblend = 10,
+                    wnblend = 10,
                     previewer = false,
                 }))
             end,
-            { desc = "[/] Fuzzily search in current buffer" }
+            { desc = "[/] fuzzy search current buffer" }
         )
     end,
 }
