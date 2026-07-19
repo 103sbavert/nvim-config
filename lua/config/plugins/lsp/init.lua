@@ -5,7 +5,6 @@ return {
         "Hoffs/omnisharp-extended-lsp.nvim",
         "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
-        "stevearc/conform.nvim",
         "L3MON4D3/LuaSnip",
     },
     config = function()
@@ -34,6 +33,7 @@ return {
                     },
                 },
             },
+            shuck = {},
             gopls = {
                 settings = {
                     gopls = {
@@ -100,7 +100,6 @@ return {
 
         require("config.plugins.lsp.actions")
         require("config.plugins.lsp.auto_commands")
-        require("config.plugins.lsp.formatting")
 
         for name, server_conf in pairs(server_config_map) do
             vim.lsp.config(name, server_conf)
