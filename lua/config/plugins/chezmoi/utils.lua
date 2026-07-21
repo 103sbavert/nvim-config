@@ -255,8 +255,12 @@ function M.edit_chezmoi(file)
     end
 end
 
-function M.apply_chezmoi(file)
+function M.apply_chezmoi(file, opts)
     local notify = function(res)
+        if opts and opts.quiet and opts.quiet == true then
+            return
+        end
+
         if not res or res.success then
             notify_inf("Applied changes to target")
         else
