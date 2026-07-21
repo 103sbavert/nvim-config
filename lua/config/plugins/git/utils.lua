@@ -12,15 +12,13 @@ local function has_staged_files()
         "--name-only",
     }
 
-    local staged_cmd = table.concat(staged_cmd_parts, " ")
+    local result = vim.system(staged_cmd_parts, { text = true, cwd = cwd }):wait()
 
-    local staged = vim.fn.system(staged_cmd)
-
-    if vim.trim(staged) == "" then
-        return false
+    if result.stderr and vim.trim(result.stderr) ~= "" then
+        return true
     end
 
-    return true
+    return false
 end
 
 function M.git_commit()
@@ -44,17 +42,15 @@ function M.git_commit()
     local env = { GIT_EDITOR = editor }
     local commit_cmd = { "git", "-C", cwd, "commit" }
 
-    vim.fn.jobstart(commit_cmd, {
+    vim.system(commit_cmd, {
         cwd = cwd,
         env = env,
-        on_stderr = function(_, data)
-            local msg = vim.trim(table.concat(data, "\n"))
-            if msg == "" then
-                return
-            end
-            vim.notify(msg, vim.log.levels.ERROR, nopts)
-        end,
-    })
+        text = true,
+    }, function(result)
+        if result.code ~= 0 then
+            vim.notify(result.stderr, vim.log.levels.ERROR, nopts)
+        end
+    end)
 end
 
 return M
