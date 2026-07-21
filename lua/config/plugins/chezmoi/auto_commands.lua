@@ -91,7 +91,7 @@ utils.get_src_dir(function(src_dir)
                     end
 
                     if watched_src_files[buf_file] then
-                        utils.apply_chezmoi(buf_file)
+                        utils.apply_chezmoi(buf_file, { quiet = true })
                         return
                     end
                     vim.schedule(function()
