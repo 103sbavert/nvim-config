@@ -2,36 +2,24 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = {
         "config.mason",
-        "Hoffs/omnisharp-extended-lsp.nvim",
+        { "seblyng/roslyn.nvim", lazy = true },
         "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
         "L3MON4D3/LuaSnip",
     },
     config = function()
         local common_utils = require("config.utils")
-        local csharp_lsp_extension = require("omnisharp_extended")
 
         -- Enable the following language servers
         ---@type table<string, vim.lsp.Config>
         local server_config_map = {
-            omnisharp = {
-                handlers = {
-                    ["textDocument/definition"] = csharp_lsp_extension.definition_handler,
-                    ["textDocument/typeDefinition"] = csharp_lsp_extension.type_definition_handler,
-                    ["textDocument/references"] = csharp_lsp_extension.references_handler,
-                    ["textDocument/implementation"] = csharp_lsp_extension.implementation_handler,
-                },
-                settings = {
-                    FormattingOptions = {
-                        EnableEditorConfigSupport = true,
-                        OrganizeImports = true,
-                    },
-                    RoslynExtensionsOptions = {
-                        EnableAnalyzersSupport = true,
-                        EnableImportCompletion = true,
-                        EnableDecompilationSupport = true,
-                    },
-                },
+            roslyn_ls = {
+                on_attach = function(_, _)
+                    require("roslyn").setup({
+                        filewatching = "roslyn",
+                        lock_target = true,
+                    })
+                end,
             },
             shuck = {},
             gopls = {
