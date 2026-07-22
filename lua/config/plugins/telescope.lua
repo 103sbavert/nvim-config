@@ -30,7 +30,7 @@ return {
         map_search("k", builtin.keymaps, "nvim [k]eymaps")
         map_search("w", builtin.find_files, "[w]orkspace files")
         map_search("/", builtin.builtin, "/ select telescope")
-        map_search("l", builtin.live_grep, "[l]ive grep workspace")
+        map_search("g", builtin.live_grep, "[g]rep workspace")
         map_search("d", builtin.diagnostics, "[d]iagnostics")
         map_search(".", builtin.resume, ". resume search")
         map_search("r", builtin.oldfiles, "[r]ecent files")
@@ -38,14 +38,14 @@ return {
         map_search("w", builtin.grep_string, "current [w]ORD", nil, { "n", "v" })
 
         map_search(
-            "g",
+            "o",
             function()
                 builtin.live_grep({
                     grep_open_files = true,
-                    prompt_title = "live grep in open files",
+                    prompt_title = "grep in open files",
                 })
             end,
-            "[g]rep open files"
+            "grep [o]pen files"
         )
 
         map_search(
