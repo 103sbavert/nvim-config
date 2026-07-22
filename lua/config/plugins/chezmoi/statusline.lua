@@ -1,5 +1,5 @@
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
-local chezmoi_utils = require("config.plugins.chezmoi.utils")
+local edit_utils = require("config.plugins.chezmoi.edit_utils")
 
 local vulgaris = require("bamboo.palette").vulgaris
 local bg = vulgaris.purple
@@ -23,7 +23,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
             if not stat_res then
                 return
             end
-            chezmoi_utils.is_src_file(buf_file, function(is_src)
+            edit_utils.is_src_file_async(buf_file, function(is_src)
                 src_file_cache[buf_file] = is_src
                 vim.schedule(function() vim.cmd("redrawstatus") end)
             end)
