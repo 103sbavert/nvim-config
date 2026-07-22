@@ -25,7 +25,6 @@ end
 
 function M.has_hidden_component(path)
     for segment in path:gmatch("[^/]+") do
-        print("Segment:", segment)
         if segment:match("^%.") and segment ~= "." and segment ~= ".." then
             return true
         end
