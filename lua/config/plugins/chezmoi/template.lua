@@ -123,7 +123,7 @@ local function enable_preview_mode(buf_file, pattern)
 end
 
 -- Register all autocmds once src_dir is known.
-utils.get_src_dir(function(src_dir)
+utils.get_src_dir_async(function(src_dir)
     if not src_dir then
         return
     end
