@@ -25,6 +25,7 @@ return {
         require("config.plugins.chezmoi.template")
 
         local utils = require("config.plugins.chezmoi.utils")
+        local apply_utils = require("config.plugins.chezmoi.apply_utils")
 
         local mappings = {
             e = {
@@ -32,7 +33,7 @@ return {
                 "[e]dit a chezmoi source file",
             },
             a = {
-                utils.apply_chezmoi,
+                apply_utils.apply_chezmoi,
                 "[a]pply chezmoi changes",
             },
             s = {

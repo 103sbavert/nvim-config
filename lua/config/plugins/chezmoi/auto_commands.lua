@@ -1,4 +1,6 @@
-local utils = require("config.plugins.chezmoi.utils")
+local shared = require("config.plugins.chezmoi.utils")
+local edit_utils = require("config.plugins.chezmoi.edit_utils")
+local apply_utils = require("config.plugins.chezmoi.apply_utils")
 local UT = require("config.utils")
 
 local open_src_grp = vim.api.nvim_create_augroup("open_czm_src", {
@@ -22,19 +24,19 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
         local buf_file = UT.get_current_file(args)
 
-        utils.is_src_file(buf_file, function(is_src)
+        edit_utils.is_src_file_async(buf_file, function(is_src)
             if is_src then
                 return
             end
 
-            utils.get_src_file(buf_file, function(src_files)
+            edit_utils.get_src_file_async(buf_file, function(src_files)
                 if not src_files or #src_files == 0 then
                     return
                 end
 
                 local src = src_files[1]
 
-                utils.should_ignore_src_file(src, function(should_ignore)
+                edit_utils.should_ignore_src_file_async(src, function(should_ignore)
                     if should_ignore then
                         return
                     end
@@ -43,15 +45,15 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                         return
                     end
 
-                    if utils.has_symlink_attr(src) then
+                    if shared.has_symlink_attr(src) then
                         return
                     end
 
                     vim.schedule(function()
-                        utils.ask_open_src_file(function(choice)
+                        edit_utils.ask_open_src_file(function(choice)
                             if choice == 2 then
                                 local buf_type = vim.bo[args.buf].filetype
-                                utils.populate_ft_cache(buf_type, src)
+                                shared.populate_ft_cache(buf_type, src)
 
                                 vim.cmd.edit(src)
                             elseif choice == 3 then
@@ -65,7 +67,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
-utils.get_src_dir(function(src_dir)
+shared.get_src_dir_async(function(src_dir)
     vim.api.nvim_create_autocmd("BufWritePost", {
         group = apply_src_grp,
         pattern = vim.fs.joinpath(src_dir, "*"),
@@ -80,39 +82,34 @@ utils.get_src_dir(function(src_dir)
                 return
             end
 
-            utils.should_ignore_src_file(buf_file, function(should_ignore)
-                if should_ignore then
-                    return
+            if apply_utils.should_ignore_src_file(buf_file) then
+                return
+            end
+
+            if not apply_utils.is_src_file(buf_file) then
+                return
+            end
+
+            if watched_src_files[buf_file] then
+                apply_utils.apply_chezmoi(buf_file, { quiet = true })
+                return
+            end
+
+            apply_utils.ask_apply_src_file(function(choice)
+                if choice == 2 or choice == 4 then
+                    apply_utils.apply_chezmoi(buf_file)
                 end
 
-                utils.is_src_file(buf_file, function(is_src)
-                    if not is_src then
-                        return
-                    end
-
-                    if watched_src_files[buf_file] then
-                        utils.apply_chezmoi(buf_file, { quiet = true })
-                        return
-                    end
-                    vim.schedule(function()
-                        utils.ask_apply_src_file(function(choice)
-                            if choice == 2 or choice == 4 then
-                                utils.apply_chezmoi(buf_file)
-                            end
-
-                            if choice == 3 then
-                                no_apply_src_files[buf_file] = true
-                            elseif choice == 4 then
-                                watched_src_files[buf_file] = true
-                                vim.notify(
-                                    "File will be auto-applied on save",
-                                    vim.log.levels.INFO,
-                                    { title = "Chezmoi" }
-                                )
-                            end
-                        end)
-                    end)
-                end)
+                if choice == 3 then
+                    no_apply_src_files[buf_file] = true
+                elseif choice == 4 then
+                    watched_src_files[buf_file] = true
+                    vim.notify(
+                        "File will be auto-applied on save",
+                        vim.log.levels.INFO,
+                        { title = "Chezmoi" }
+                    )
+                end
             end)
         end,
     })
