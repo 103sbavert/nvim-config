@@ -5,13 +5,15 @@ return {
     dependencies = { "config.mason" },
     event = { "VeryLazy" },
     config = function()
-        local linters = { "markdownlint" }
+        local linters = { "markdownlint", "eslint_d" }
         local lint = require("lint")
 
         require("config.mason").InstallTools(linters)
 
         lint.linters_by_ft = {
             markdown = { "markdownlint" },
+            javascript = { "eslint_d" },
+            typescript = { "eslint_d" },
         }
         -- Create autocommand which carries out the actual linting
         -- on the specified events.
