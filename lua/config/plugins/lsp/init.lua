@@ -21,6 +21,7 @@ return {
                     })
                 end,
             },
+            vtsls = {},
             shuck = {},
             gopls = {
                 settings = {
