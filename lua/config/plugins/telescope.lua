@@ -35,7 +35,8 @@ return {
         map_search(".", builtin.resume, ". resume search")
         map_search("r", builtin.oldfiles, "[r]ecent files")
         map_search("c", builtin.commands, "[c]ommands")
-        map_search("w", builtin.grep_string, "current [w]ORD", nil, { "n", "v" })
+        map_search("W", builtin.grep_string, "current [W]ORD", nil, { "n", "v" })
+        map_search("b", builtin.buffers, "find existing [b]uffers")
 
         map_search(
             "o",
@@ -53,8 +54,6 @@ return {
             function() builtin.find_files({ cwd = vim.fn.stdpath("config"), follow = true }) end,
             "[n]eovim files"
         )
-
-        vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "find existing [b]uffers" })
 
         vim.keymap.set(
             "n",
