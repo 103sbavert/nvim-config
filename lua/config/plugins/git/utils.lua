@@ -32,7 +32,7 @@ function M.git_commit()
 
     local editor_parts = {
         "nvr",
-        "+'set bufhidden=delete'",
+        "+'set bufhidden=wipe'",
         "--servername",
         vim.fn.shellescape(vim.v.servername),
         "--remote-wait",
