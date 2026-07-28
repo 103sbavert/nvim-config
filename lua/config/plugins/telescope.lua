@@ -23,48 +23,53 @@ return {
         tsp.load_extension("fzf")
         tsp.load_extension("ui-select")
 
-        local map_search = create_keymap_group("[ ] search", "<leader><leader>", "n")
+        local map_search = create_keymap_group("[s]earch", "<leader>s", "n")
         local builtin = require("telescope.builtin")
 
-        map_search("h", builtin.help_tags, "[h]elp pages")
-        map_search("k", builtin.keymaps, "nvim [k]eymaps")
-        map_search("w", builtin.find_files, "[w]orkspace files")
-        map_search("/", builtin.builtin, "/ select telescope")
-        map_search("g", builtin.live_grep, "[g]rep workspace")
-        map_search("d", builtin.diagnostics, "[d]iagnostics")
-        map_search(".", builtin.resume, ". resume search")
+        -- primary file & buffer navigation
+        map_search("f", builtin.find_files, "[f]ind files")
         map_search("r", builtin.oldfiles, "[r]ecent files")
-        map_search("c", builtin.commands, "[c]ommands")
-        map_search("W", builtin.grep_string, "current [W]ORD", nil, { "n", "v" })
-        map_search("b", builtin.buffers, "find existing [b]uffers")
+        map_search("b", builtin.buffers, "[b]uffers")
+        map_search("g", builtin.git_status, "[g]it status")
 
+        -- text & grep search
+        map_search("/", builtin.live_grep, "[/] grep workspace")
+        map_search("w", builtin.grep_string, "search current [w]ord", nil, { "n", "v" })
         map_search(
             "o",
             function()
                 builtin.live_grep({
                     grep_open_files = true,
-                    prompt_title = "grep in open files",
+                    prompt_title = "Live Grep in Open Files",
                 })
             end,
             "grep [o]pen files"
         )
 
+        -- system & metadata
         map_search(
-            "n",
+            "c",
             function() builtin.find_files({ cwd = vim.fn.stdpath("config"), follow = true }) end,
-            "[n]eovim files"
+            "[c]onfig files"
         )
+        map_search("h", builtin.help_tags, "[h]elp tags")
+        map_search("k", builtin.keymaps, "[k]eymaps")
+        map_search("m", builtin.commands, "[m]odule commands")
+        map_search("d", builtin.diagnostics, "[d]iagnostics")
+        map_search(".", builtin.resume, "[.] resume search")
+        map_search("?", builtin.builtin, "[?] telescope builtins")
 
+        -- buffer-local search (kept separate for high-frequency access)
         vim.keymap.set(
             "n",
             "<leader>/",
             function()
                 builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-                    wnblend = 10,
+                    winblend = 10,
                     previewer = false,
                 }))
             end,
-            { desc = "[/] fuzzy search current buffer" }
+            { desc = "[/] search in current buffer" }
         )
     end,
 }
