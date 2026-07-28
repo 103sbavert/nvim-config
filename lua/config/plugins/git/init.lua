@@ -16,6 +16,10 @@ return {
             local gitsigns = require("gitsigns")
             local utils = require("config.plugins.git.utils")
 
+            ---@type Gitsigns.NavOpts
+            ---@diagnostic disable-next-line: missing-fields
+            local navopts = { foldopen = true, target = "all", wrap = true }
+
             -- Initialize mappers
             local git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
             local git_reset_mapper = create_keymap_group("[r]eset", "<leader>gr", { "n", "v" })
@@ -28,7 +32,7 @@ return {
                     if vim.wo.diff then
                         return "]c"
                     end
-                    vim.schedule(function() gitsigns.nav_hunk("next") end)
+                    vim.schedule(function() gitsigns.nav_hunk("next", navopts) end)
                     return "<Ignore>"
                 end, "Jump to next git [c]hange")
 
@@ -36,7 +40,7 @@ return {
                     if vim.wo.diff then
                         return "[c"
                     end
-                    vim.schedule(function() gitsigns.nav_hunk("prev") end)
+                    vim.schedule(function() gitsigns.nav_hunk("prev", navopts) end)
                     return "<Ignore>"
                 end, "Jump to previous git [c]hange")
             end
