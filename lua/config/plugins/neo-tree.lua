@@ -40,6 +40,9 @@ return {
             open_files_do_not_replace_types = { "nofile", "terminal", "Trouble", "qf", "edgy" },
             filesystem = {
                 filtered_items = {
+                    hide_gitignored = true,
+                    hide_ignored = true,
+                    show_hidden_count = true,
                     hide_dotfiles = false,
                     hide_by_name = {
                         "bin",
