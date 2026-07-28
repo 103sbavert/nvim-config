@@ -7,32 +7,27 @@ return {
     init = function() vim.keymap.set("n", "\\", "<Cmd>Neotree reveal<CR>", { desc = "NeoTree reveal", silent = true }) end,
     config = function()
         require("neo-tree").setup({
-            sources = {
-                "filesystem",
-                "buffers",
-            },
             enable_opened_markers = true,
             default_component_configs = {
                 name = {
                     highlight_opened_files = true,
                 },
                 modified = {
-                    symbol = "*",
+                    symbol = "＊",
                     highlight = "NeoTreeModified",
                 },
                 git_status = {
                     symbols = {
                         -- Change type
-                        added = "A",
-                        deleted = "D",
-                        modified = "M",
-                        renamed = "R",
+                        added = "𝗔",
+                        deleted = "𝗗",
+                        modified = "𝗠",
+                        renamed = "𝗥",
                         -- Status type
-                        untracked = "?",
-                        ignored = ".",
-                        unstaged = "~",
-                        staged = "+",
-                        conflict = "!",
+                        untracked = "？",
+                        conflict = "！",
+                        unstaged = "～",
+                        staged = "＋",
                     },
                     align = "right",
                 },
