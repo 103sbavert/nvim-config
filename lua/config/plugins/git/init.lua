@@ -47,14 +47,16 @@ return {
 
             -- Staging
             do
+                -- hunk
                 git_key_mapper(
-                    "h",
+                    " ",
                     function() gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end,
-                    "Toggle [h]unk staging",
+                    "[ ] toggle hunk staging",
                     nil,
                     { "v" }
                 )
-                git_key_mapper("h", gitsigns.stage_hunk, "Toggle [h]unk staging", nil, { "n" })
+                git_key_mapper(" ", gitsigns.stage_hunk, "[ ] toggle hunk staging", nil, { "n" })
+
                 git_key_mapper("s", gitsigns.stage_buffer, "[s]tage buffer")
                 git_key_mapper("u", gitsigns.reset_buffer_index, "[u]nstage buffer")
             end
