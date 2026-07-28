@@ -93,7 +93,7 @@ return {
 
             -- LazyGit
             do
-                vim.g.lazygit_floating_window_scaling_factor = 0.75
+                vim.g.lazygit_floating_window_scaling_factor = 0.80
                 vim.g.lazygit_floating_window_use_plenary = 1
 
                 git_key_mapper("l", "<cmd>LazyGitCurrentFile<cr>", "Open [L]azyGit")
