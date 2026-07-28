@@ -72,11 +72,14 @@ return {
         local function prompt_breakpoint_expr() dap.set_breakpoint(vim.fn.input("Breakpoint condition: ")) end
 
         breakpoint_grp("<CR>", dap.toggle_breakpoint, "[t]oggle", { nowait = false })
-        breakpoint_grp("e", prompt_breakpoint_expr, "conditional [e]xpression ", { nowait = false })
+        breakpoint_grp("e", prompt_breakpoint_expr, "conditional [e]xpression", { nowait = false })
 
         vim.keymap.set("n", "<F5>", dap.continue)
         vim.keymap.set("n", "<S-F5>", dap.terminate)
-        vim.keymap.set("n", "<F6>", dapui.toggle)
+
+        vim.keymap.set("n", "<F6>", dapui.open)
+        vim.keymap.set("n", "<S-F6>", dapui.close)
+
         vim.keymap.set("n", "<F10>", dap.step_over)
         vim.keymap.set("n", "<F11>", dap.step_into)
         vim.keymap.set("n", "<S-F11>", dap.step_out)
