@@ -21,7 +21,7 @@ local function has_staged_files()
     return false
 end
 
-function M.git_commit()
+function M.commit()
     local nopts = { title = "Git" }
     local cwd = vim.fn.getcwd()
 
