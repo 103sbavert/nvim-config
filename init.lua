@@ -160,6 +160,9 @@ do
     -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
     -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
+    vim.keymap.set("n", "<A-h>", vim.cmd.tabprevious, { silent = true, desc = "Previous tab" })
+    vim.keymap.set("n", "<A-l>", vim.cmd.tabnext, { silent = true, desc = "Next tab" })
+
     -- Keybinds to make split navigation easier.
     --  Use CTRL+<hjkl> to switch between windows
     --
