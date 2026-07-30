@@ -14,12 +14,7 @@ return {
         ---@type table<string, vim.lsp.Config>
         local server_config_map = {
             roslyn_ls = {
-                on_attach = function(_, _)
-                    require("roslyn").setup({
-                        filewatching = "roslyn",
-                        lock_target = true,
-                    })
-                end,
+                before_init = function(_, _) require("roslyn").setup() end,
             },
             vtsls = {},
             shuck = {},
