@@ -64,7 +64,7 @@ return {
             -- History
             do
                 git_key_mapper("b", function() gitsigns.blame_line({ full = true }) end, "[b]lame line")
-                git_key_mapper("d", gitsigns.diffthis, "View [d]iff against index")
+                git_key_mapper("p", gitsigns.preview_hunk, "[p]review current hunk")
                 git_key_mapper("D", function() gitsigns.diffthis("@") end, "View [D]iff against HEAD")
             end
 
