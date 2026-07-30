@@ -53,4 +53,45 @@ function M.git_commit()
     end)
 end
 
+function M.pick_ref(callback)
+    local actions = require("telescope.actions")
+    local action_state = require("telescope.actions.state")
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local make_entry = require("telescope.make_entry")
+    local conf = require("telescope.config").values
+    local Job = require("plenary.job")
+
+    local entry_maker = make_entry.gen_from_git_commits({})
+    local results = { "@ <HEAD>", "~1 <staged changes>" }
+
+    Job:new({
+        command = "git",
+        args = { "log", "--pretty=oneline", "--abbrev-commit", "--all" },
+        on_exit = function(j)
+            vim.list_extend(results, j:result())
+
+            vim.schedule(function()
+                local ref_picker = pickers.new({}, {
+                    prompt_title = "Diff Against",
+                    finder = finders.new_table({
+                        results = results,
+                        entry_maker = entry_maker,
+                    }),
+                    sorter = conf.file_sorter({}),
+                    attach_mappings = function(prompt_bufnr)
+                        actions.select_default:replace(function()
+                            actions.close(prompt_bufnr)
+                            callback(action_state.get_selected_entry().value)
+                        end)
+                        return true
+                    end,
+                })
+
+                ref_picker:find()
+            end)
+        end,
+    }):start()
+end
+
 return M
