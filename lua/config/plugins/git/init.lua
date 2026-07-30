@@ -101,7 +101,7 @@ return {
 
             -- Commit
             do
-                git_key_mapper("c", utils.git_commit, "[c]ommit staged changes", nil, { "n" })
+                git_key_mapper("c", utils.commit, "[c]ommit staged changes", nil, { "n" })
             end
 
             -- Toggles
