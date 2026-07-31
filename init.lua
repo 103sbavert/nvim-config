@@ -109,6 +109,22 @@ do
             [".*%.([^%.]+)%.tmpl"] = function(_, _, ext) return ext end,
         },
     })
+
+    if vim.fn.executable("nvr") == 1 then
+        local editor_cmd = {
+            "nvr",
+            "--servername",
+            vim.v.servername,
+            "--remote-quiet-wait",
+        }
+
+        local git_editor_cmd = vim.list_extend({}, editor_cmd)
+
+        vim.list_extend(git_editor_cmd, { "-cc", "split", "+'set bufhidden=wipe'" })
+
+        vim.env.EDITOR = table.concat(editor_cmd, " ")
+        vim.env.GIT_EDITOR = table.concat(git_editor_cmd, " ")
+    end
 end
 
 -- Basic keymaps (built in vim actions, without any plugin dependency)
