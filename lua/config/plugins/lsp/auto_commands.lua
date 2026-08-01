@@ -46,16 +46,16 @@ local roslyn_augroup = vim.api.nvim_create_augroup("roslyn-diagnostics-refresh",
 vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHoldI", "CursorHold" }, {
     group = roslyn_augroup,
     pattern = { "**/*.cs", "*.cs" },
-    callback = function()
+    callback = function(args)
         local clients = vim.lsp.get_clients({ name = "roslyn" })
         if not clients or #clients == 0 then
             return
         end
 
-        local client = clients[1]
-        for buf in pairs(client.attached_buffers) do
-            local params = { textDocument = vim.lsp.util.make_text_document_params(buf) }
-            client:request("textDocument/diagnostic", params, nil, buf)
-        end
+        local roslyn_client = clients[1]
+        local buf_id = args.buf
+
+        local params = { textDocument = vim.lsp.util.make_text_document_params(buf_id) }
+        roslyn_client:request("textDocument/diagnostic", params, nil, buf_id)
     end,
 })
