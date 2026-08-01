@@ -160,7 +160,7 @@ do
         },
     })
 
-    vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+    vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [q]uickfix list" })
 
     -- TIP: Disable arrow keys in normal mode
     -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
