@@ -305,13 +305,13 @@ end
 require("lazy").setup({
     spec = {
         { import = "config.plugins" },
-        { "j-hui/fidget.nvim", config = true },
-        { "windwp/nvim-autopairs", config = true },
+        { "j-hui/fidget.nvim" },
+        { "windwp/nvim-autopairs" },
         {
             "lukas-reineke/indent-blankline.nvim",
-            config = function() require("ibl").setup({}) end,
+            main = "ibl",
         },
-        { "NMAC427/guess-indent.nvim", config = true },
+        { "NMAC427/guess-indent.nvim" },
         {
             "folke/todo-comments.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
@@ -320,13 +320,11 @@ require("lazy").setup({
         {
             name = "config.utils",
             dir = vim.fn.stdpath("config"),
-            init = function() require("config.utils") end,
         },
         {
             name = "config.terminal",
             dir = vim.fn.stdpath("config"),
             dependencies = { "folke/which-key.nvim" },
-            config = function() require("config.terminal") end,
         },
         {
             name = "config.mason",
@@ -336,7 +334,6 @@ require("lazy").setup({
                 "williamboman/mason-lspconfig.nvim",
                 "WhoIsSethDaniel/mason-tool-installer.nvim",
             },
-            config = function() require("config.mason") end,
         },
     },
     defaults = { lazy = false },
