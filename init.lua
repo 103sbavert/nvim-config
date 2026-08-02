@@ -325,6 +325,7 @@ require("lazy").setup({
             name = "config.terminal",
             dir = vim.fn.stdpath("config"),
             dependencies = { "folke/which-key.nvim" },
+            config = function() require("config.terminal") end,
         },
         {
             name = "config.mason",
