@@ -9,8 +9,21 @@ local is_preview_mode = false
 local preview_buf = nil
 --- @type integer?
 local preview_win = nil
+local syncing = false
 
 local template_grp = vim.api.nvim_create_augroup("czm_template", { clear = true })
+
+--- Returns the proportionally equivalent line in the target buffer given a source position.
+--- @param line integer 1-based current line in the source buffer
+--- @param src_count integer Total lines in the source buffer
+--- @param tgt_count integer Total lines in the target buffer
+--- @return integer 1-based target line (clamped to [1, tgt_count])
+local function proportional_line(line, src_count, tgt_count)
+    if src_count == 0 or tgt_count == 0 then
+        return 1
+    end
+    return math.max(1, math.min(tgt_count, math.floor((line - 1) / src_count * tgt_count + 0.5) + 1))
+end
 
 --- Clears render augroup, closes preview window, resets all state.
 local function disable_preview_mode()
@@ -61,7 +74,20 @@ local function render_template(buf_file)
         vim.bo[preview_buf].modifiable = true
         vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, result.data)
         vim.bo[preview_buf].modifiable = false
+
+        -- Sync cursor from source window into preview window after render.
         if preview_win and vim.api.nvim_win_is_valid(preview_win) then
+            local src_win = vim.fn.bufwinid(src_bufnr)
+            if src_win ~= -1 then
+                local src_line = vim.api.nvim_win_get_cursor(src_win)[1]
+                local src_count = vim.api.nvim_buf_line_count(src_bufnr)
+                local preview_count = vim.api.nvim_buf_line_count(preview_buf)
+                pcall(
+                    vim.api.nvim_win_set_cursor,
+                    preview_win,
+                    { proportional_line(src_line, src_count, preview_count), 0 }
+                )
+            end
             vim.wo[preview_win].winbar = vim.fs.basename(buf_file) .. " template preview"
         end
     end)
@@ -72,7 +98,7 @@ end
 local function enable_render_autocmds(pattern)
     local render_grp = vim.api.nvim_create_augroup("czm_template_render", { clear = true })
 
-    vim.api.nvim_create_autocmd({ "BufWritePost", "BufWinEnter", "BufEnter", "BufReadPost" }, {
+    vim.api.nvim_create_autocmd({ "BufWinEnter", "CursorHold", "CursorHoldI" }, {
         group = render_grp,
         pattern = pattern,
         callback = function(args)
@@ -81,6 +107,55 @@ local function enable_render_autocmds(pattern)
             end
 
             render_template(vim.api.nvim_buf_get_name(args.buf))
+        end,
+    })
+end
+
+--- Registers bidirectional cursor sync between the source buffer and preview window.
+--- Uses the czm_template_render group so it's cleaned up automatically on disable.
+--- @param source_buf integer Buffer number of the template source file.
+local function enable_cursor_sync(source_buf)
+    local render_grp = vim.api.nvim_create_augroup("czm_template_render", { clear = false })
+
+    vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        group = render_grp,
+        buffer = source_buf,
+        callback = function()
+            if syncing or not preview_win or not vim.api.nvim_win_is_valid(preview_win) then
+                return
+            end
+            syncing = true
+            local src_win = vim.fn.bufwinid(source_buf)
+            if src_win ~= -1 then
+                local line = vim.api.nvim_win_get_cursor(src_win)[1]
+                local src_count = vim.api.nvim_buf_line_count(source_buf)
+                local preview_count = vim.api.nvim_buf_line_count(preview_buf or 0)
+                pcall(
+                    vim.api.nvim_win_set_cursor,
+                    preview_win,
+                    { proportional_line(line, src_count, preview_count), 0 }
+                )
+            end
+            syncing = false
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        group = render_grp,
+        buffer = preview_buf,
+        callback = function()
+            if syncing or not preview_win or not vim.api.nvim_win_is_valid(preview_win) then
+                return
+            end
+            syncing = true
+            local line = vim.api.nvim_win_get_cursor(preview_win)[1]
+            local preview_count = vim.api.nvim_buf_line_count(preview_buf or 0)
+            local src_win = vim.fn.bufwinid(source_buf)
+            if src_win ~= -1 then
+                local src_count = vim.api.nvim_buf_line_count(source_buf)
+                pcall(vim.api.nvim_win_set_cursor, src_win, { proportional_line(line, preview_count, src_count), 0 })
+            end
+            syncing = false
         end,
     })
 end
@@ -118,7 +193,11 @@ local function enable_preview_mode(buf_file, pattern)
     else
     end
 
+    local source_bufnr = vim.fn.bufnr(buf_file)
     enable_render_autocmds(pattern)
+    if source_bufnr ~= -1 then
+        enable_cursor_sync(source_bufnr)
+    end
     render_template(buf_file)
 end
 
