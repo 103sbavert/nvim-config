@@ -21,12 +21,38 @@ return {
             sh = { "shfmt" },
             bash = { "shfmt" },
             zsh = { "shfmt" },
+            cs = { "jb" },
         },
         formatters = {
             stylua = {},
             shfmt = {
                 args = { "-i", "4", "-ci" },
             },
+            jb = function()
+                local user_config_home = vim.env.XDG_CONFIG_HOME
+
+                if not user_config_home then
+                    user_config_home = vim.fs.joinpath(vim.env.HOME, ".config")
+                end
+
+                if not user_config_home then
+                    vim.notify("User config home could not be determined", vim.log.levels.WARN, { title = "Chezmoi" })
+                    return
+                end
+
+                local jb_global_config =
+                    vim.fs.joinpath(user_config_home, "JetBrains/Shared/vAny/GlobalSettingsStorage.DotSettings")
+
+                return {
+                    args = {
+                        "cleanupcode",
+                        "--include",
+                        "$FILENAME",
+                        "--profile",
+                        jb_global_config,
+                    },
+                }
+            end,
             prettier = {
                 args = {
                     "--log-level",
@@ -54,6 +80,7 @@ return {
             "stylua",
             "goimports",
         }
+
         require("config.mason").InstallTools(formatters)
 
         vim.api.nvim_create_user_command(
