@@ -47,13 +47,14 @@ vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHoldI" }, {
     group = roslyn_augroup,
     pattern = { "**/*.cs", "*.cs" },
     callback = function(args)
-        local clients = vim.lsp.get_clients({ name = "roslyn" })
+        local buf_id = args.buf
+
+        local clients = vim.lsp.get_clients({ bufnr = buf_id, name = "roslyn" })
         if not clients or #clients == 0 then
             return
         end
 
         local roslyn_client = clients[1]
-        local buf_id = args.buf
 
         local params = { textDocument = vim.lsp.util.make_text_document_params(buf_id) }
         roslyn_client:request("textDocument/diagnostic", params, nil, buf_id)
