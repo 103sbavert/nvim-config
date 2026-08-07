@@ -17,7 +17,7 @@ return {
                 before_init = function(_, _) require("roslyn").setup() end,
             },
             vtsls = {},
-            shuck = {},
+            bashls = {},
             gopls = {
                 settings = {
                     gopls = {
