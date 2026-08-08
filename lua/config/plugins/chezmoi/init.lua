@@ -1,3 +1,4 @@
+---@type LazySpec
 return {
     "103sbavert/nvim-chezmoi",
     dependencies = {
