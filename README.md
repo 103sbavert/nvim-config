@@ -1,11 +1,16 @@
 # NeoVim Config
 
-This config is uses https://github.com/nvim-lua/kickstart.nvim as the base repository template but has diverged significantly.
+This config is uses [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim)
+as the base repository template but has diverged significantly.
 
 ## Structure
 
-- Basic convenient keymaps and configurations from kickstart that do not depend on any plugins are kept in top level init.lua
-- All the plugins are installed in init.lua using the new `vim.pack()` API
-- All (except the colorscheme) plugin configurations are moved into the `lua/config/` directory
-- `lua/config/init.lua` loads plugin configurations in the order I deemed fit (probably could be improved)
-- Configurations for each plugin are in `lua/config/plugins`, generally in a `.lua` file named after the plugin or `.lua` files in the directory named after the plugin, however there are exceptions to this rule due to other constraints
+- Basic keymaps and sensible (or rather, preferred) configurations from
+kick start that do not depend on external plugins
+on any plugins are kept in top level `init.lua`
+- lazy.vim and bamboo vulagaris color theme are installed using `vim.pack`
+from NeoVim 0.12
+- Complex standalone configurations that are not dependent on any external
+plugins are sourced directly in lazy.vim as local modules from `config/`
+- All the plugins are installed by importing lazy specs from `lua/config/plugins`
+where they are also configured
