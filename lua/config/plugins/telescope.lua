@@ -11,14 +11,13 @@ return {
             cond = function() return vim.fn.executable("make") == 1 end,
         },
     },
+    opts = {
+        extensions = {
+            ["ui-select"] = { require("telescope.themes").get_dropdown() },
+        },
+    },
     config = function()
         local tsp = require("telescope")
-
-        tsp.setup({
-            extensions = {
-                ["ui-select"] = { require("telescope.themes").get_dropdown() },
-            },
-        })
 
         tsp.load_extension("fzf")
         tsp.load_extension("ui-select")
