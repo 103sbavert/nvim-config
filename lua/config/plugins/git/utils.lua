@@ -94,4 +94,6 @@ function M.pick_ref(callback)
     }):start()
 end
 
+function M.open_lazy_git() require("lazygit").lazygitcurrentfile() end
+
 return M
