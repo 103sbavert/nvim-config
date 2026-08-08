@@ -115,7 +115,7 @@ do
             "nvr",
             "--servername",
             vim.v.servername,
-            "--remote-quiet-wait",
+            "--remote-wait-silent",
         }
 
         local git_editor_cmd = vim.list_extend({}, editor_cmd)
