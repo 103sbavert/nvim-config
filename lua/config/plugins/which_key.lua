@@ -1,17 +1,15 @@
 return {
     "folke/which-key.nvim",
+    opts = {
+        delay = 0,
+        preset = "helix",
+        icons = { mappings = vim.g.have_nerd_font },
+        spec = {
+            { "gc", group = "Comments", mode = { "n", "v" } },
+        },
+    },
     config = function()
         local wk = require("which-key")
-
-        wk.setup({
-            delay = 0,
-            preset = "helix",
-            icons = { mappings = vim.g.have_nerd_font },
-            spec = {
-                { "gc", group = "Comments", mode = { "n", "v" } },
-            },
-        })
-
         local registered_groups = {}
 
         ---@param group_name string Label for the key group
