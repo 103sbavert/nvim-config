@@ -1,5 +1,6 @@
 ---@type LazySpec
 return {
+    main = "which-key",
     "folke/which-key.nvim",
     opts = {
         delay = 0,
@@ -9,8 +10,10 @@ return {
             { "gc", group = "Comments", mode = { "n", "v" } },
         },
     },
-    config = function()
-        local wk = require("which-key")
+    config = function(plugin, wk_opts)
+        local wk = require(plugin.main)
+        wk.setup(wk_opts)
+
         local registered_groups = {}
 
         ---@param group_name string Label for the key group
