@@ -44,7 +44,7 @@ return {
         fuzzy = { implementation = "prefer_rust" },
         signature = { enabled = true },
     },
-    config = function()
+    init = function()
         local blink_grp = vim.api.nvim_create_augroup("blink_autocomp", { clear = true })
 
         vim.api.nvim_create_autocmd("LspAttach", {
