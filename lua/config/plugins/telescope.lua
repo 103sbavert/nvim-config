@@ -1,5 +1,6 @@
 ---@type LazySpec
 return {
+    main = "telescope",
     "nvim-telescope/telescope.nvim",
     dependencies = {
         "nvim-lua/plenary.nvim",
@@ -17,8 +18,9 @@ return {
             ["ui-select"] = { require("telescope.themes").get_dropdown() },
         },
     },
-    config = function()
-        local tsp = require("telescope")
+    config = function(plugin, tsp_opts)
+        local tsp = require(plugin.main)
+        tsp.setup(tsp_opts)
 
         tsp.load_extension("fzf")
         tsp.load_extension("ui-select")

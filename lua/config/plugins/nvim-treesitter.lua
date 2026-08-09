@@ -1,9 +1,13 @@
 ---@type LazySpec
 return {
+    main = "nvim-treesitter",
     "nvim-treesitter/nvim-treesitter",
     dependencies = { "config.mason" },
     build = ":TSUpdate",
-    config = function()
+    config = function(plugin, treesitter_opts)
+        local treesitter = require(plugin.main)
+        treesitter.setup(treesitter_opts)
+
         require("config.mason").InstallTools({ "tree-sitter-cli" })
 
         -- Ensure basic parsers are installed
@@ -26,7 +30,7 @@ return {
             "vimdoc",
         }
 
-        require("nvim-treesitter").install(parsers)
+        treesitter.install(parsers)
 
         local function treesitter_try_attach(buf, language)
             if not vim.treesitter.language.add(language) then
@@ -42,7 +46,7 @@ return {
             end
         end
 
-        local available_parsers = require("nvim-treesitter").get_available()
+        local available_parsers = treesitter.get_available()
 
         vim.api.nvim_create_autocmd("FileType", {
             callback = function(args)
@@ -53,14 +57,12 @@ return {
                     return
                 end
 
-                local installed_parsers = require("nvim-treesitter").get_installed("parsers")
+                local installed_parsers = treesitter.get_installed("parsers")
 
                 if vim.tbl_contains(installed_parsers, language) then
                     treesitter_try_attach(buf, language)
                 elseif vim.tbl_contains(available_parsers, language) then
-                    require("nvim-treesitter")
-                        .install(language)
-                        :await(function() treesitter_try_attach(buf, language) end)
+                    treesitter.install(language):await(function() treesitter_try_attach(buf, language) end)
                 else
                     treesitter_try_attach(buf, language)
                 end
