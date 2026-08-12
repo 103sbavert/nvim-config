@@ -9,8 +9,6 @@ return {
         "L3MON4D3/LuaSnip",
     },
     config = function()
-        local common_utils = require("config.utils")
-
         vim.diagnostic.config({
             virtual_text = false,
             signs = true,
@@ -48,7 +46,7 @@ return {
             },
             pyright = {},
             lua_ls = {
-                on_attach = function() common_utils.lazy_require("luasnip")().setup() end,
+                on_attach = function() require("luasnip").setup() end,
                 on_init = function(client)
                     client.server_capabilities.documentFormattingProvider = false -- Disable formatting (formatting is done by stylua)
 
