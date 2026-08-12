@@ -11,6 +11,14 @@ return {
     config = function()
         local common_utils = require("config.utils")
 
+        vim.diagnostic.config({
+            virtual_text = false,
+            signs = true,
+            underline = true,
+            update_in_insert = false,
+            severity_sort = true,
+        })
+
         -- Enable the following language servers
         ---@type table<string, vim.lsp.Config>
         local server_config_map = {
