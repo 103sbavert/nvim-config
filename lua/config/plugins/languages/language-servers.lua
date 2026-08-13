@@ -5,6 +5,7 @@ return {
         "config.mason",
         { "seblyng/roslyn.nvim", lazy = true },
         "nvim-telescope/telescope.nvim",
+        "config.utils",
         "folke/which-key.nvim",
         "L3MON4D3/LuaSnip",
     },
@@ -91,8 +92,8 @@ return {
 
         require("config.mason").InstallTools(server_names)
 
-        require("config.plugins.lsp.actions")
-        require("config.plugins.lsp.auto_commands")
+        require("config.plugins.languages.internal.lsp-actions")
+        require("config.plugins.languages.internal.autocmds")
 
         for name, server_conf in pairs(server_config_map) do
             vim.lsp.config(name, server_conf)

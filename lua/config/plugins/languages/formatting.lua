@@ -1,6 +1,7 @@
 ---@type LazySpec
 return {
     "stevearc/conform.nvim",
+    main = "conform",
     opts = {
         notify_on_error = false,
         default_format_opts = {
@@ -69,8 +70,8 @@ return {
             },
         },
     },
-    config = function(_, opts)
-        local conform = require("conform")
+    config = function(plugin, opts)
+        local conform = require(plugin.main)
         conform.setup(opts)
 
         local formatters = {
