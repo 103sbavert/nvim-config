@@ -14,19 +14,7 @@ return {
                 highlight = "NeoTreeModified",
             },
             git_status = {
-                symbols = {
-                    -- Change type
-                    added = "𝗔",
-                    deleted = "𝗗",
-                    modified = "𝗠",
-                    renamed = "𝗥",
-                    -- Status type
-                    untracked = "？",
-                    conflict = "！",
-                    unstaged = "～",
-                    staged = "＋",
-                },
-                align = "right",
+                symbols = require("config.utils").neotree_git_glyphs[vim.g.have_nerd_font],
             },
         },
         open_files_do_not_replace_types = { "nofile", "terminal", "Trouble", "qf", "edgy" },

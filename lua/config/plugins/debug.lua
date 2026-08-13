@@ -29,17 +29,7 @@ return {
             icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
             ---@diagnostic disable-next-line: missing-fields
             controls = {
-                icons = {
-                    pause = "⏸",
-                    play = "▶",
-                    step_into = "⏎",
-                    step_over = "⏭",
-                    step_out = "⏮",
-                    step_back = "b",
-                    run_last = "▶▶",
-                    terminate = "⏹",
-                    disconnect = "⏏",
-                },
+                icons = require("config.utils").debug_button_glyphs[vim.g.have_nerd_font],
             },
             layouts = {
                 {
