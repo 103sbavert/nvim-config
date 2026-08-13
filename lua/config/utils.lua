@@ -1,5 +1,76 @@
 local M = {}
 
+---@type table<boolean, table<string,string>>
+M.neotree_git_glyphs = {
+    [true] = {
+        -- Change type
+        added = "",
+        deleted = "",
+        modified = "",
+        renamed = "",
+        -- Status type
+        untracked = "？",
+        conflict = "！",
+        unstaged = "～",
+        staged = "＋",
+    },
+    [false] = {
+        -- Change type
+        added = "𝗔",
+        deleted = "𝗗",
+        modified = "𝗠",
+        renamed = "𝗥",
+        -- Status type
+        untracked = "？",
+        conflict = "！",
+        unstaged = "～",
+        staged = "＋",
+    },
+}
+
+---@type table<boolean, dapui.Config.controls.icons>
+M.debug_button_glyphs = {
+    [true] = {
+        pause = "",
+        play = "",
+        step_into = "",
+        step_over = "",
+        step_out = "",
+        step_back = "",
+        run_last = "",
+        terminate = "",
+        disconnect = "",
+    },
+    [false] = {
+
+        pause = "⏸",
+        play = "▶",
+        step_into = "⏎",
+        step_over = "⏭",
+        step_out = "⏮",
+        step_back = "b",
+        run_last = "▶▶",
+        terminate = "⏹",
+        disconnect = "⏏",
+    },
+}
+
+---@type table<boolean, table<vim.diagnostic.Severity, string>>
+M.lsp_diagnostic_glyphs = {
+    [true] = {
+        [vim.diagnostic.severity.ERROR] = "",
+        [vim.diagnostic.severity.WARN] = "",
+        [vim.diagnostic.severity.INFO] = "",
+        [vim.diagnostic.severity.HINT] = "󰌵",
+    },
+    [false] = {
+        [vim.diagnostic.severity.ERROR] = "✖",
+        [vim.diagnostic.severity.WARN] = "!",
+        [vim.diagnostic.severity.INFO] = "ℹ",
+        [vim.diagnostic.severity.HINT] = "⚑",
+    },
+}
+
 --- Resolves the absolute file system path of the current target buffer.
 --- @param args table? Optional autocmd event payload parameters containing buffer context.
 --- @return string? Absolute file path string if valid, otherwise nil.
