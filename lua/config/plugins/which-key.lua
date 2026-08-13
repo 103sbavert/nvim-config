@@ -37,7 +37,8 @@ return {
             end
         end
 
-        local toggle_key_group = create_keymap_group("[t]oggle", "<leader>t", { "n" })
+        local toggle_key_group =
+            create_keymap_group("[t]oggle", "<leader>t", { "n" })
 
         ---@param keys string Key suffix
         ---@param func fun(): (string|nil, boolean|nil) Function returning message and notify flag
@@ -51,7 +52,12 @@ return {
             end
 
             toggle_key_group(keys, toggle_fn, desc)
-            vim.keymap.set({ "n" }, "<leader>t" .. keys, toggle_fn, { desc = desc })
+            vim.keymap.set(
+                { "n" },
+                "<leader>t" .. keys,
+                toggle_fn,
+                { desc = desc }
+            )
         end
     end,
 }

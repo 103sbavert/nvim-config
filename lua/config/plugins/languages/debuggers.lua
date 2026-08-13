@@ -59,11 +59,24 @@ return {
             clear_on_continue = true,
         })
 
-        local breakpoint_grp = create_keymap_group("[b]reakpoints", "<leader>b", { "n" })
-        local function prompt_breakpoint_expr() dap.set_breakpoint(vim.fn.input("Breakpoint condition: ")) end
+        local breakpoint_grp =
+            create_keymap_group("[b]reakpoints", "<leader>b", { "n" })
+        local function prompt_breakpoint_expr()
+            dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+        end
 
-        breakpoint_grp("<CR>", dap.toggle_breakpoint, "[t]oggle", { nowait = false })
-        breakpoint_grp("e", prompt_breakpoint_expr, "conditional [e]xpression", { nowait = false })
+        breakpoint_grp(
+            "<CR>",
+            dap.toggle_breakpoint,
+            "[t]oggle",
+            { nowait = false }
+        )
+        breakpoint_grp(
+            "e",
+            prompt_breakpoint_expr,
+            "conditional [e]xpression",
+            { nowait = false }
+        )
 
         vim.keymap.set("n", "<F5>", dap.continue)
         vim.keymap.set("n", "<S-F5>", dap.terminate)

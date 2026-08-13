@@ -12,7 +12,8 @@ local function has_staged_files()
         "--name-only",
     }
 
-    local result = vim.system(staged_cmd_parts, { text = true, cwd = cwd }):wait()
+    local result = vim.system(staged_cmd_parts, { text = true, cwd = cwd })
+        :wait()
 
     if result.stderr and vim.trim(result.stderr) ~= "" then
         return true
@@ -65,33 +66,37 @@ function M.pick_ref(callback)
     local entry_maker = make_entry.gen_from_git_commits({})
     local results = { "@ <HEAD>", "~1 <staged changes>" }
 
-    Job:new({
-        command = "git",
-        args = { "log", "--pretty=oneline", "--abbrev-commit", "--all" },
-        on_exit = function(j)
-            vim.list_extend(results, j:result())
+    Job
+        :new({
+            command = "git",
+            args = { "log", "--pretty=oneline", "--abbrev-commit", "--all" },
+            on_exit = function(j)
+                vim.list_extend(results, j:result())
 
-            vim.schedule(function()
-                local ref_picker = pickers.new({}, {
-                    prompt_title = "Diff Against",
-                    finder = finders.new_table({
-                        results = results,
-                        entry_maker = entry_maker,
-                    }),
-                    sorter = conf.file_sorter({}),
-                    attach_mappings = function(prompt_bufnr)
-                        actions.select_default:replace(function()
-                            actions.close(prompt_bufnr)
-                            callback(action_state.get_selected_entry().value)
-                        end)
-                        return true
-                    end,
-                })
+                vim.schedule(function()
+                    local ref_picker = pickers.new({}, {
+                        prompt_title = "Diff Against",
+                        finder = finders.new_table({
+                            results = results,
+                            entry_maker = entry_maker,
+                        }),
+                        sorter = conf.file_sorter({}),
+                        attach_mappings = function(prompt_bufnr)
+                            actions.select_default:replace(function()
+                                actions.close(prompt_bufnr)
+                                callback(
+                                    action_state.get_selected_entry().value
+                                )
+                            end)
+                            return true
+                        end,
+                    })
 
-                ref_picker:find()
-            end)
-        end,
-    }):start()
+                    ref_picker:find()
+                end)
+            end,
+        })
+        :start()
 end
 
 function M.open_lazy_git() require("lazygit").lazygitcurrentfile() end

@@ -39,10 +39,14 @@ return {
 
             vim.treesitter.start(buf, language)
 
-            local has_indent_query = vim.treesitter.query.get(language, "indents") ~= nil
+            local has_indent_query = vim.treesitter.query.get(
+                language,
+                "indents"
+            ) ~= nil
 
             if has_indent_query then
-                vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                vim.bo.indentexpr =
+                    "v:lua.require'nvim-treesitter'.indentexpr()"
             end
         end
 
@@ -62,7 +66,11 @@ return {
                 if vim.tbl_contains(installed_parsers, language) then
                     treesitter_try_attach(buf, language)
                 elseif vim.tbl_contains(available_parsers, language) then
-                    treesitter.install(language):await(function() treesitter_try_attach(buf, language) end)
+                    treesitter
+                        .install(language)
+                        :await(
+                            function() treesitter_try_attach(buf, language) end
+                        )
                 else
                     treesitter_try_attach(buf, language)
                 end
