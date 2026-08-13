@@ -1,7 +1,8 @@
 local M = {}
 
 local UT = require("config.utils")
-local get_cmd_src_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
+local get_cmd_src_path =
+    UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
 local get_cmd_edit = UT.lazy_require("nvim-chezmoi.chezmoi.commands.edit")
 local get_czm_cache = UT.lazy_require("nvim-chezmoi.chezmoi.cache")
 
@@ -29,9 +30,7 @@ end
 
 --- Returns the cached source directory (nil if not yet resolved).
 --- @return string?
-function M.get_cached_src_dir()
-    return cached_src_dir
-end
+function M.get_cached_src_dir() return cached_src_dir end
 
 --- Inspects and extracts the canonical tracked baseline directory for the chezmoi state store.
 --- Result is cached after the first successful resolution.
@@ -60,7 +59,9 @@ end
 
 --- @param src string Source file path.
 --- @return boolean True if the base filename starts with 'symlink_'.
-function M.has_symlink_attr(src) return vim.fs.basename(src):match("^symlink_") ~= nil end
+function M.has_symlink_attr(src)
+    return vim.fs.basename(src):match("^symlink_") ~= nil
+end
 
 --- Populates filetype cache for chezmoi source file.
 --- @param ft string? Filetype string.
@@ -82,7 +83,11 @@ function M.edit_chezmoi(file)
     local res = get_cmd_edit():exec(file)
 
     if not res or res.success then
-        vim.notify("Opened source file", vim.log.levels.INFO, { title = "Chezmoi" })
+        vim.notify(
+            "Opened source file",
+            vim.log.levels.INFO,
+            { title = "Chezmoi" }
+        )
     else
         local m = table.concat(res.data)
         vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })

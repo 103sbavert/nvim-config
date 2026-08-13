@@ -36,7 +36,13 @@ return {
 
         -- text & grep search
         map_search("/", builtin.live_grep, "[/] grep workspace")
-        map_search("w", builtin.grep_string, "search current [w]ord", nil, { "n", "v" })
+        map_search(
+            "w",
+            builtin.grep_string,
+            "search current [w]ord",
+            nil,
+            { "n", "v" }
+        )
         map_search(
             "o",
             function()
@@ -51,7 +57,12 @@ return {
         -- system & metadata
         map_search(
             "c",
-            function() builtin.find_files({ cwd = vim.fn.stdpath("config"), follow = true }) end,
+            function()
+                builtin.find_files({
+                    cwd = vim.fn.stdpath("config"),
+                    follow = true,
+                })
+            end,
             "[c]onfig files"
         )
         map_search("h", builtin.help_tags, "[h]elp tags")
@@ -66,10 +77,12 @@ return {
             "n",
             "<leader>/",
             function()
-                builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-                    winblend = 10,
-                    previewer = false,
-                }))
+                builtin.current_buffer_fuzzy_find(
+                    require("telescope.themes").get_dropdown({
+                        winblend = 10,
+                        previewer = false,
+                    })
+                )
             end,
             { desc = "[/] search in current buffer" }
         )

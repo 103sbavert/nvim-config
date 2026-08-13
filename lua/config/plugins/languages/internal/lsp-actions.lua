@@ -13,10 +13,15 @@ local lsp_key_group = create_keymap_group("[l]SP", "<leader>l", { "n", "v" })
 --- @param func function The execution callback logic.
 --- @param buf_id integer Target buffer sequence identifier.
 --- @param desc string Description detailing map functionality.
-local function map_lsp_key(keys, func, buf_id, desc) lsp_key_group(keys, func, desc, { buffer = buf_id }) end
+local function map_lsp_key(keys, func, buf_id, desc)
+    lsp_key_group(keys, func, desc, { buffer = buf_id })
+end
 
 vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("telescope_lsp_action", { clear = true }),
+    group = vim.api.nvim_create_augroup(
+        "telescope_lsp_action",
+        { clear = true }
+    ),
     callback = function(event)
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if not client then
@@ -73,7 +78,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
             },
             ["s"] = {
                 description = "LSP [s]ymbols",
-                search_action = function() ts_builtin.lsp_dynamic_workspace_symbols() end,
+                search_action = function()
+                    ts_builtin.lsp_dynamic_workspace_symbols()
+                end,
             },
         }
 

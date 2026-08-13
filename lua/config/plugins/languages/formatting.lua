@@ -24,6 +24,7 @@ return {
             bash = { "shfmt" },
             zsh = { "shfmt" },
             cs = { "jb" },
+            markdown = { "markdownlint" },
         },
         formatters = {
             stylua = {},
@@ -38,12 +39,18 @@ return {
                 end
 
                 if not user_config_home then
-                    vim.notify("User config home could not be determined", vim.log.levels.WARN, { title = "Chezmoi" })
+                    vim.notify(
+                        "User config home could not be determined",
+                        vim.log.levels.WARN,
+                        { title = "Chezmoi" }
+                    )
                     return
                 end
 
-                local jb_global_config =
-                    vim.fs.joinpath(user_config_home, "JetBrains/Shared/vAny/GlobalSettingsStorage.DotSettings")
+                local jb_global_config = vim.fs.joinpath(
+                    user_config_home,
+                    "JetBrains/Shared/vAny/GlobalSettingsStorage.DotSettings"
+                )
 
                 return {
                     args = {
@@ -91,6 +98,11 @@ return {
             { desc = "Format current buffer or visual selection" }
         )
 
-        vim.keymap.set({ "n", "v" }, "<leader>f", "<Cmd>Format<Cr>", { desc = "[f]ormat buffer or visual selection" })
+        vim.keymap.set(
+            { "n", "v" },
+            "<leader>f",
+            "<Cmd>Format<Cr>",
+            { desc = "[f]ormat buffer or visual selection" }
+        )
     end,
 }

@@ -1,7 +1,8 @@
 local M = {}
 
 local UT = require("config.utils")
-local get_cmd_src_path = UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
+local get_cmd_src_path =
+    UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
 
 local uv = vim.uv or vim.loop
 local shared = require("config.plugins.chezmoi.utils")

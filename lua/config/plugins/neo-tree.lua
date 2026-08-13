@@ -2,7 +2,14 @@
 return {
     "nvim-neo-tree/neo-tree.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
-    init = function() vim.keymap.set("n", "\\", "<Cmd>Neotree reveal<CR>", { desc = "NeoTree reveal", silent = true }) end,
+    init = function()
+        vim.keymap.set(
+            "n",
+            "\\",
+            "<Cmd>Neotree reveal<CR>",
+            { desc = "NeoTree reveal", silent = true }
+        )
+    end,
     opts = {
         enable_opened_markers = true,
         default_component_configs = {
@@ -17,7 +24,13 @@ return {
                 symbols = require("config.utils").neotree_git_glyphs[vim.g.have_nerd_font],
             },
         },
-        open_files_do_not_replace_types = { "nofile", "terminal", "Trouble", "qf", "edgy" },
+        open_files_do_not_replace_types = {
+            "nofile",
+            "terminal",
+            "Trouble",
+            "qf",
+            "edgy",
+        },
         filesystem = {
             filtered_items = {
                 hide_gitignored = true,

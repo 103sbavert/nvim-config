@@ -4,7 +4,11 @@ local edit_utils = require("config.plugins.chezmoi.edit_utils")
 local vulgaris = require("bamboo.palette").vulgaris
 local bg = vulgaris.purple
 local fg = vulgaris.contrast
-vim.api.nvim_set_hl(0, "MiniStatuslineChezmoi", { fg = fg, bg = bg, bold = true })
+vim.api.nvim_set_hl(
+    0,
+    "MiniStatuslineChezmoi",
+    { fg = fg, bg = bg, bold = true }
+)
 
 local UT = require("config.utils")
 local statusline = require("mini.statusline")

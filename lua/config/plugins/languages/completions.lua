@@ -45,7 +45,8 @@ return {
         signature = { enabled = true },
     },
     init = function()
-        local blink_grp = vim.api.nvim_create_augroup("blink_autocomp", { clear = true })
+        local blink_grp =
+            vim.api.nvim_create_augroup("blink_autocomp", { clear = true })
 
         vim.api.nvim_create_autocmd("LspAttach", {
             group = blink_grp,
@@ -54,7 +55,10 @@ return {
                 local client = vim.lsp.get_client_by_id(client_id)
 
                 if client then
-                    client.capabilities = require("blink.cmp").get_lsp_capabilities(client.capabilities)
+                    client.capabilities =
+                        require("blink.cmp").get_lsp_capabilities(
+                            client.capabilities
+                        )
                 end
             end,
         })

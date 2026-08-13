@@ -36,32 +36,39 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
                 local src = src_files[1]
 
-                edit_utils.should_ignore_src_file_async(src, function(should_ignore)
-                    if should_ignore then
-                        return
-                    end
+                edit_utils.should_ignore_src_file_async(
+                    src,
+                    function(should_ignore)
+                        if should_ignore then
+                            return
+                        end
 
-                    if not src or not vim.uv.fs_stat(src) or src == buf_file then
-                        return
-                    end
+                        if
+                            not src
+                            or not vim.uv.fs_stat(src)
+                            or src == buf_file
+                        then
+                            return
+                        end
 
-                    if shared.has_symlink_attr(src) then
-                        return
-                    end
+                        if shared.has_symlink_attr(src) then
+                            return
+                        end
 
-                    vim.schedule(function()
-                        edit_utils.ask_open_src_file(function(choice)
-                            if choice == 2 then
-                                local buf_type = vim.bo[args.buf].filetype
-                                shared.populate_ft_cache(buf_type, src)
+                        vim.schedule(function()
+                            edit_utils.ask_open_src_file(function(choice)
+                                if choice == 2 then
+                                    local buf_type = vim.bo[args.buf].filetype
+                                    shared.populate_ft_cache(buf_type, src)
 
-                                vim.cmd.edit(src)
-                            elseif choice == 3 then
-                                no_open_src_files = true
-                            end
+                                    vim.cmd.edit(src)
+                                elseif choice == 3 then
+                                    no_open_src_files = true
+                                end
+                            end)
                         end)
-                    end)
-                end)
+                    end
+                )
             end)
         end)
     end,

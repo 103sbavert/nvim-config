@@ -1,12 +1,22 @@
-local lsp_highlight_augroup = vim.api.nvim_create_augroup("highlights-lsp-attach", { clear = true })
+local lsp_highlight_augroup =
+    vim.api.nvim_create_augroup("highlights-lsp-attach", { clear = true })
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = lsp_highlight_augroup,
     callback = function(event)
         local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-        if client and client:supports_method("textDocument/documentHighlight", event.buf) then
-            local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+        if
+            client
+            and client:supports_method(
+                "textDocument/documentHighlight",
+                event.buf
+            )
+        then
+            local highlight_augroup = vim.api.nvim_create_augroup(
+                "kickstart-lsp-highlight",
+                { clear = false }
+            )
 
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
                 buffer = event.buf,
@@ -21,26 +31,38 @@ vim.api.nvim_create_autocmd("LspAttach", {
             })
 
             vim.api.nvim_create_autocmd("LspDetach", {
-                group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+                group = vim.api.nvim_create_augroup(
+                    "kickstart-lsp-detach",
+                    { clear = true }
+                ),
                 callback = function(event2)
                     vim.lsp.buf.clear_references()
-                    vim.api.nvim_clear_autocmds({ group = highlight_augroup, buffer = event2.buf })
+                    vim.api.nvim_clear_autocmds({
+                        group = highlight_augroup,
+                        buffer = event2.buf,
+                    })
                 end,
             })
         end
 
         local function toggle_hints()
-            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
+            vim.lsp.inlay_hint.enable(
+                not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf })
+            )
             return nil, false
         end
 
-        if client and client:supports_method("textDocument/inlayHint", event.buf) then
+        if
+            client
+            and client:supports_method("textDocument/inlayHint", event.buf)
+        then
             map_toggle_key("h", toggle_hints, "Inlay [h]ints")
         end
     end,
 })
 
-local roslyn_augroup = vim.api.nvim_create_augroup("roslyn-diagnostics-refresh", { clear = true })
+local roslyn_augroup =
+    vim.api.nvim_create_augroup("roslyn-diagnostics-refresh", { clear = true })
 
 -- See https://github.com/seblyng/roslyn.nvim/wiki/Home/6a92a1d9370a022d2f4545a1480b02416bb1e57e#diagnostic-refresh
 vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHoldI" }, {
@@ -56,7 +78,8 @@ vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHoldI" }, {
 
         local roslyn_client = clients[1]
 
-        local params = { textDocument = vim.lsp.util.make_text_document_params(buf_id) }
+        local params =
+            { textDocument = vim.lsp.util.make_text_document_params(buf_id) }
         roslyn_client:request("textDocument/diagnostic", params, nil, buf_id)
     end,
 })

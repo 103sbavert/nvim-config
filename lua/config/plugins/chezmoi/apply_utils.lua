@@ -84,7 +84,11 @@ function M.apply_chezmoi(file, opts)
     file = file or vim.api.nvim_buf_get_name(0)
 
     if not file or type(file) ~= "string" then
-        vim.notify("Filenames must be string", vim.log.levels.ERROR, { title = "Chezmoi" })
+        vim.notify(
+            "Filenames must be string",
+            vim.log.levels.ERROR,
+            { title = "Chezmoi" }
+        )
         return
     end
 
@@ -102,7 +106,11 @@ function M.apply_chezmoi(file, opts)
     end
 
     if not res or res.success then
-        vim.notify("Applied changes to target", vim.log.levels.INFO, { title = "Chezmoi" })
+        vim.notify(
+            "Applied changes to target",
+            vim.log.levels.INFO,
+            { title = "Chezmoi" }
+        )
     else
         local m = table.concat(res.data)
         vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })
