@@ -1,7 +1,3 @@
-local UT = require("config.utils")
-local utils = require("config.plugins.lsp.utils")
-local get_telescope_builtin = UT.lazy_require("telescope.builtin")
-
 --- @class LspJumpConfig
 --- @field jump_action function Callback function executed for standard language servers.
 --- @field description string Documentation string for the keymap decoration.
@@ -10,6 +6,15 @@ local get_telescope_builtin = UT.lazy_require("telescope.builtin")
 --- @field search_action function Callback function executed for standard language servers.
 --- @field description string Documentation string for the keymap decoration.
 
+local lsp_key_group = create_keymap_group("[l]SP", "<leader>l", { "n", "v" })
+
+--- Maps an LSP command to a buffer-local key sequence.
+--- @param keys string The key combination triggering the function.
+--- @param func function The execution callback logic.
+--- @param buf_id integer Target buffer sequence identifier.
+--- @param desc string Description detailing map functionality.
+local function map_lsp_key(keys, func, buf_id, desc) lsp_key_group(keys, func, desc, { buffer = buf_id }) end
+
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("telescope_lsp_action", { clear = true }),
     callback = function(event)
@@ -17,6 +22,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         if not client then
             return
         end
+
+        local ts_builtin = require("telescope.builtin")
 
         --- @type table<string, LspJumpConfig>
         local lsp_jump = {
@@ -33,19 +40,19 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 jump_action = vim.lsp.buf.declaration,
             },
             ["t"] = {
-                jump_action = function() get_telescope_builtin().lsp_type_definitions() end,
+                jump_action = function() ts_builtin.lsp_type_definitions() end,
                 description = "[t]ype definition",
             },
             ["r"] = {
-                jump_action = function() get_telescope_builtin().lsp_references() end,
+                jump_action = function() ts_builtin.lsp_references() end,
                 description = "[r]eferences",
             },
             ["i"] = {
-                jump_action = function() get_telescope_builtin().lsp_implementations() end,
+                jump_action = function() ts_builtin.lsp_implementations() end,
                 description = "[i]mplementation",
             },
             ["d"] = {
-                jump_action = function() get_telescope_builtin().lsp_definitions() end,
+                jump_action = function() ts_builtin.lsp_definitions() end,
                 description = "[d]efinition",
             },
         }
@@ -54,7 +61,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             local target_fn = config.jump_action
 
             if target_fn then
-                utils.map_lsp_key(key, target_fn, event.buf, config.description)
+                map_lsp_key(key, target_fn, event.buf, config.description)
             end
         end
 
@@ -62,11 +69,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local search_keywords = {
             ["w"] = {
                 description = "LSP [w]orkspace",
-                search_action = function() get_telescope_builtin().lsp_document_symbols() end,
+                search_action = function() ts_builtin.lsp_document_symbols() end,
             },
             ["s"] = {
                 description = "LSP [s]ymbols",
-                search_action = function() get_telescope_builtin().lsp_dynamic_workspace_symbols() end,
+                search_action = function() ts_builtin.lsp_dynamic_workspace_symbols() end,
             },
         }
 
@@ -74,7 +81,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             local target_fn = config.search_action
 
             if target_fn then
-                utils.map_lsp_key(key, target_fn, event.buf, config.description)
+                map_lsp_key(key, target_fn, event.buf, config.description)
             end
         end
     end,
