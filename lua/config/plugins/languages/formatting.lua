@@ -101,7 +101,7 @@ return {
         vim.keymap.set(
             { "n", "v" },
             "<leader>f",
-            "<Cmd>Format<Cr>",
+            function() conform.format({ async = true }) end,
             { desc = "[f]ormat buffer or visual selection" }
         )
 
