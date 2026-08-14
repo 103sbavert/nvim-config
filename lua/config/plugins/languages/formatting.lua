@@ -104,5 +104,7 @@ return {
             "<Cmd>Format<Cr>",
             { desc = "[f]ormat buffer or visual selection" }
         )
+
+        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,
 }
