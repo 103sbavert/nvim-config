@@ -124,6 +124,39 @@ end
 
 -- Basic keymaps (built in vim actions, without any plugin dependency)
 do
+    local unnamed_buf_wipe_grp =
+        vim.api.nvim_create_augroup("wipe_unnamed_buf", { clear = true })
+
+    -- Remove unnamed buf (such as the empty buffer created when neovim is first opened) when they are hidden if:
+    -- buffer is not modified
+    -- buffer id is still valid at the next tick
+    vim.api.nvim_create_autocmd("BufHidden", {
+        group = unnamed_buf_wipe_grp,
+        callback = function(ev)
+            local buf_id = ev.buf
+            local buf_name = vim.api.nvim_buf_get_name(buf_id)
+
+            -- Skip if has name
+            if buf_name ~= "" then
+                return
+            end
+
+            -- Skip if modified
+            if vim.bo[buf_id].modified then
+                return
+            end
+
+            -- Delete on next tick after hidden event
+            vim.schedule(function()
+                -- Check if buffer ID is still valid at this moment
+                if vim.api.nvim_buf_is_valid(buf_id) then
+                    -- Delete buffer
+                    vim.api.nvim_buf_delete(buf_id, {})
+                end
+            end)
+        end,
+    })
+
     -- [[ Basic Keymaps ]]
     --  See `:help vim.keymap.set()`
 
