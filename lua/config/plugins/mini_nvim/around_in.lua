@@ -1,13 +1,17 @@
--- Better Around/Inside textobjects
--- Examples:
---  - va)  - [V]isually select [A]round [)]paren
---  - yiiq - [Y]ank [I]nside [I]+1 [Q]uote
---  - ci'  - [C]hange [I]nside [']quote
-require("mini.ai").setup({
-    -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
-    mappings = {
-        around_next = "aa",
-        inside_next = "ii",
-    },
+local ai = require("mini.ai")
+local utils = require("config.plugins.mini_nvim.internals.ast-utils")
+
+ai.setup({
     n_lines = 500,
+    search_method = "cover_or_nearest",
+    custom_textobjects = {
+        -- Variable declarations / assignments (requires after/queries/<lang>/textobjects.scm)
+        d = utils.make_decl_textobj(),
+
+        -- Function definitions
+        F = utils.make_func_textobj(),
+
+        -- Blocks, loops, conditionals
+        s = utils.make_scope_textobj(),
+    },
 })
