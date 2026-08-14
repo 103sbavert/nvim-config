@@ -131,6 +131,17 @@ do
     --  See `:help hlsearch`
     vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
+    vim.keymap.set(
+        { "n", "i", "v", "x", "s", "o", "c", "t" },
+        "<C-n>",
+        "<Esc>",
+        { desc = "Alias for <Esc>" }
+    )
+
+    vim.keymap.set("t", "<C-n>", "<C-\\><C-n>", {
+        desc = "Exit terminal mode to normal mode",
+    })
+
     -- Diagnostic Config & Keymaps
     --  See `:help vim.diagnostic.Opts`
     vim.diagnostic.config({
