@@ -97,12 +97,10 @@ do
     vim.o.scrolloff = 5
 
     -- move to the last character of the last line
-
     vim.keymap.set({ "n", "o", "x" }, "G", "G$", { noremap = true })
+
     -- move to the first character of the first line
-
     vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
-
 
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = {
@@ -170,6 +168,8 @@ do
     -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
     -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
+    -- Key binds to navigate between tabs
+    -- Use ALT+<h,l> to navigate between adjacent tabs
     vim.keymap.set(
         "n",
         "<A-h>",
