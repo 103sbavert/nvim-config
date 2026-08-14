@@ -24,7 +24,7 @@ return {
             bash = { "shfmt" },
             zsh = { "shfmt" },
             cs = { "jb" },
-            markdown = { "markdownlint" },
+            markdown = { "prettier" },
         },
         formatters = {
             stylua = {},
