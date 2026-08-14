@@ -103,12 +103,6 @@ do
 
     vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 
-    -- interpret <ext>.tmpl same as <ext>
-    vim.filetype.add({
-        pattern = {
-            [".*%.([^%.]+)%.tmpl"] = function(_, _, ext) return ext end,
-        },
-    })
 
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = {
