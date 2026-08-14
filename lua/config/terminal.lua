@@ -1,6 +1,8 @@
 local term_buf = nil
 local term_win = nil
 
+--- Toggles terminal visibility if a valid buffer already exists, creates and
+--- presents new buffer if none
 local function toggle_terminal()
     -- Hide terminal if window is open and valid
     if term_win and vim.api.nvim_win_is_valid(term_win) then
