@@ -1,5 +1,11 @@
 local M = {}
 
+-- Initialize mappers
+M.git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
+M.git_reset_mapper = create_keymap_group("[r]eset", "<leader>gr", { "n", "v" })
+M.navigate_bw_mapper = create_keymap_group("[ backwards", "[", { "n", "v" })
+M.navigate_fw_mapper = create_keymap_group("] forwards", "]", { "n", "v" })
+
 local function has_staged_files()
     local cwd = vim.fn.getcwd()
 
@@ -31,16 +37,7 @@ function M.commit()
         return
     end
 
-    local editor_parts = {
-        "nvr",
-        "+'set bufhidden=wipe'",
-        "--servername",
-        vim.fn.shellescape(vim.v.servername),
-        "--remote-wait",
-    }
-
-    local editor = table.concat(editor_parts, " ")
-    local env = { GIT_EDITOR = editor }
+    local env = { GIT_EDITOR = vim.env.GIT_EDITOR }
     local commit_cmd = { "git", "-C", cwd, "commit" }
 
     vim.system(commit_cmd, {
@@ -48,7 +45,10 @@ function M.commit()
         env = env,
         text = true,
     }, function(result)
-        if result.code ~= 0 then
+        if result.code == 0 then
+            vim.notify("Changes committed", nopts)
+        else
+            vim.notify("Changes not committed", vim.log.levels.ERROR, nopts)
             vim.notify(result.stderr, vim.log.levels.ERROR, nopts)
         end
     end)
@@ -98,7 +98,5 @@ function M.pick_ref(callback)
         })
         :start()
 end
-
-function M.open_lazy_git() require("lazygit").lazygitcurrentfile() end
 
 return M
