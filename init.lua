@@ -1,3 +1,4 @@
+---
 ---Because most plugins are hosted on GitHub, you can use the helper
 ---function to have less repetition in the following sections.
 ---@param repo string
@@ -103,22 +104,16 @@ do
     vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 
     if vim.fn.executable("nvr") == 1 then
-        local editor_cmd = {
-            "nvr",
-            "--servername",
-            vim.v.servername,
-            "--remote-wait-silent",
-        }
+        local editor_cmd = "nvr --servername "
+            .. vim.fn.shellescape(vim.v.servername)
+            .. " --remote-silent -O"
 
-        local git_editor_cmd = vim.list_extend({}, editor_cmd)
+        local git_editor = "nvr --servername "
+            .. vim.fn.shellescape(vim.v.servername)
+            .. " -cc split --remote-wait +'set bufhidden=wipe'"
 
-        vim.list_extend(
-            git_editor_cmd,
-            { "-cc", "split", "+'set bufhidden=wipe'" }
-        )
-
-        vim.env.EDITOR = table.concat(editor_cmd, " ")
-        vim.env.GIT_EDITOR = table.concat(git_editor_cmd, " ")
+        vim.env.GIT_EDITOR = git_editor
+        vim.env.EDITOR = editor_cmd
     end
 end
 
