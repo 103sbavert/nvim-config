@@ -21,6 +21,8 @@ local function toggle_terminal()
     term_buf = vim.api.nvim_create_buf(false, false)
     term_win = vim.api.nvim_open_win(term_buf, true, { split = "below" })
 
+    vim.bo[term_buf].modifiable = false
+
     local chan_id = vim.fn.jobstart({ vim.o.shell }, { term = true })
     if chan_id <= 0 then
         vim.notify("Unable to open the terminal", vim.log.levels.ERROR)
