@@ -1,6 +1,6 @@
 ---@type LazySpec
 return {
-    "kdheepak/lazygit.nvim",
+    "103sbavert/lazygit.nvim",
     lazy = true,
     cmd = {
         "LazyGit",
