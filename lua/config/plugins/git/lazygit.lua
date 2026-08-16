@@ -13,7 +13,7 @@ return {
         "nvim-lua/plenary.nvim",
     },
     keys = {
-        { "<leader>gl", "<cmd>LazyGit<cr>", desc = "[l]azyGit" },
+        { "<leader>gl", "<cmd>LazyGitCurrentFile<cr>", desc = "[l]azyGit" },
     },
     config = function()
         vim.g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
