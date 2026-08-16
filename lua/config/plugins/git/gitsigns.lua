@@ -58,6 +58,7 @@ return {
                     nil,
                     { "v" }
                 )
+
                 utils.git_key_mapper(
                     " ",
                     gitsigns.stage_hunk,
@@ -69,12 +70,17 @@ return {
                 utils.git_key_mapper(
                     "s",
                     gitsigns.stage_buffer,
-                    "[s]tage buffer"
+                    "[s]tage buffer",
+                    nil,
+                    { "n" }
                 )
+
                 utils.git_key_mapper(
                     "u",
                     gitsigns.reset_buffer_index,
-                    "[u]nstage buffer"
+                    "[u]nstage buffer",
+                    nil,
+                    { "n" }
                 )
             end
 
