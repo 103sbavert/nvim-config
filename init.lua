@@ -106,7 +106,7 @@ do
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = "nvr --servername "
             .. vim.fn.shellescape(vim.v.servername)
-            .. " --remote-silent -O"
+            .. " --remote-silent"
 
         local git_editor = "nvr --servername "
             .. vim.fn.shellescape(vim.v.servername)
