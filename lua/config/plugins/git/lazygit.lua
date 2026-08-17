@@ -8,6 +8,7 @@ return {
         "LazyGitCurrentFile",
         "LazyGitFilter",
         "LazyGitFilterCurrentFile",
+        "LazyGitLog",
     },
     dependencies = {
         "nvim-lua/plenary.nvim",
@@ -15,9 +16,5 @@ return {
     keys = {
         { "<leader>gl", "<cmd>LazyGitCurrentFile<cr>", desc = "[l]azyGit" },
     },
-    config = function()
-        vim.g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
-        vim.g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
-        vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
-    end,
+    config = true,
 }
