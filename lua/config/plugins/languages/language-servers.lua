@@ -10,16 +10,6 @@ return {
         "L3MON4D3/LuaSnip",
     },
     config = function()
-        vim.diagnostic.config({
-            virtual_text = false,
-            signs = {
-                text = require("config.utils").lsp_diagnostic_glyphs[vim.g.have_nerd_font],
-            },
-            underline = true,
-            update_in_insert = false,
-            severity_sort = true,
-        })
-
         -- Enable the following language servers
         ---@type table<string, vim.lsp.Config>
         local server_config_map = {
