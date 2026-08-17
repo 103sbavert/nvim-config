@@ -7,45 +7,49 @@ return {
         "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
     },
-    config = function()
-        require("nvim-chezmoi").setup({
-            debug = false,
-            source_path = os.getenv("CHEZMOI_SOURCE_DIR"),
-            edit = {
-                apply_on_save = "never",
-            },
-            execute_template = {
-                open_in = "split",
-            },
-        })
-
-        local register_chezmoi_keymap =
-            create_keymap_group("Che[z]moi", "<leader>z", { "n" })
-
-        require("config.plugins.chezmoi.statusline")
-        require("config.plugins.chezmoi.auto_commands")
-        require("config.plugins.chezmoi.template")
-
+    main = "nvim-chezmoi",
+    opts = {
+        debug = false,
+        source_path = os.getenv("CHEZMOI_SOURCE_DIR"),
+        edit = {
+            apply_on_save = "never",
+        },
+        execute_template = {
+            open_in = "split",
+        },
+    },
+    cmd = {
+        "ChezmoiApply",
+        "ChezmoiEdit",
+        "ChezmoiManaged",
+        "ChezmoiFiles",
+    },
+    keys = function()
         local utils = require("config.plugins.chezmoi.utils")
         local apply_utils = require("config.plugins.chezmoi.apply_utils")
 
-        local mappings = {
-            e = {
+        return {
+            {
+                "<leader>ze",
                 utils.edit_chezmoi,
-                "[e]dit a chezmoi source file",
+                desc = "[e]dit a chezmoi source file",
             },
-            a = {
+            {
+                "<leader>za",
                 apply_utils.apply_chezmoi,
-                "[a]pply chezmoi changes",
+                desc = "[e]dit a chezmoi source file",
             },
-            s = {
+            {
+                "<leader>zs",
                 "<Cmd>ChezmoiManaged<Cr>",
-                "[s]earch managed files",
+                desc = "[s]earch managed files",
             },
         }
-
-        for key, def in pairs(mappings) do
-            register_chezmoi_keymap(key, def[1], def[2])
-        end
+    end,
+    config = function(plugin, opts)
+        require(plugin.main).setup(opts)
+        require("config.plugins.chezmoi.statusline")
+        require("config.plugins.chezmoi.auto_commands")
+        require("config.plugins.chezmoi.template")
     end,
 }
