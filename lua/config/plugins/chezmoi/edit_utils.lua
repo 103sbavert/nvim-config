@@ -53,9 +53,12 @@ end
 --- @param callback fun(src_files: string[]?)
 function M.get_src_file_async(file, callback)
     local args = {}
-    if file and file ~= "" then
-        table.insert(args, file)
+
+    if not file or file == "" then
+        return nil
     end
+
+    table.insert(args, file)
 
     get_cmd_src_path():async(args, function(result)
         if not result.success or not result.data or #result.data == 0 then
