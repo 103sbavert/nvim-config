@@ -32,12 +32,12 @@ return {
             {
                 "<leader>ze",
                 utils.edit_chezmoi,
-                desc = "[e]dit a chezmoi source file",
+                desc = "[e]dit source file",
             },
             {
                 "<leader>za",
                 apply_utils.apply_chezmoi,
-                desc = "[e]dit a chezmoi source file",
+                desc = "[a]pply to target",
             },
             {
                 "<leader>zs",
