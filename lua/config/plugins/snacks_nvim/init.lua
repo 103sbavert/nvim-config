@@ -20,6 +20,7 @@ return {
             end,
             desc = "[\\] Toggle Explorer Focus",
         },
+        { "<leader>gl", function() Snacks.lazygit() end, desc = "[l]azyGit" },
     },
     opts = {
         bigfile = { enabled = true },
@@ -37,6 +38,7 @@ return {
         statuscolumn = { enabled = true },
         scroll = { enabled = true },
         words = { enabled = true },
+        lazygit = { enabled = true },
     },
     config = function(plugin, opts) require(plugin.main).setup(opts) end,
 }
