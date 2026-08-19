@@ -429,17 +429,18 @@ end
 require("lazy").setup({
     spec = {
         { import = "config.plugins" },
-        { "j-hui/fidget.nvim" },
-        { "windwp/nvim-autopairs" },
+        { "j-hui/fidget.nvim", config = true },
+        { "windwp/nvim-autopairs", config = true },
         {
             "lukas-reineke/indent-blankline.nvim",
             main = "ibl",
+            config = true,
         },
-        { "NMAC427/guess-indent.nvim" },
+        { "NMAC427/guess-indent.nvim", config = true },
         {
             "folke/todo-comments.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
-            opts = { signs = false },
+            config = true,
         },
         {
             name = "config.utils",
