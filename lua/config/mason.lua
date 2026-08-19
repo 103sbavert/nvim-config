@@ -17,14 +17,7 @@ local InstallTools = function(tool_list)
         function(name) return lspconfig_to_mason[name] or name end,
         tool_list
     )
-
     vim.list_extend(cumulative_tool_tbl, mason_names)
-
-    installer.setup({
-        ensure_installed = cumulative_tool_tbl,
-        debounce_hours = debounce_hrs,
-        run_on_start = false,
-    })
 end
 
 local group =
@@ -32,7 +25,14 @@ local group =
 
 vim.api.nvim_create_autocmd("VimEnter", {
     group = group,
-    callback = function() installer.check_install(true, false) end,
+    callback = function()
+        installer.setup({
+            ensure_installed = cumulative_tool_tbl,
+            debounce_hours = debounce_hrs,
+            run_on_start = false,
+        })
+        installer.check_install(true, false)
+    end,
 })
 
 M.InstallTools = InstallTools
