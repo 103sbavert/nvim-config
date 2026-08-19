@@ -2,7 +2,7 @@ local ai = require("mini.ai")
 local utils = require("config.plugins.mini_nvim.internals.ast-utils")
 
 ai.setup({
-    n_lines = 500,
+    n_lines = 50,
     search_method = "cover_or_nearest",
     custom_textobjects = {
         -- Variable declarations / assignments (requires after/queries/<lang>/textobjects.scm)
