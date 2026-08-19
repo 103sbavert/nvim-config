@@ -51,6 +51,7 @@ return {
         end
 
         local available_parsers = treesitter.get_available()
+        local installed_parsers = treesitter.get_installed("parsers")
 
         vim.api.nvim_create_autocmd("FileType", {
             callback = function(args)
@@ -60,8 +61,6 @@ return {
                 if not language then
                     return
                 end
-
-                local installed_parsers = treesitter.get_installed("parsers")
 
                 if vim.tbl_contains(installed_parsers, language) then
                     treesitter_try_attach(buf, language)
