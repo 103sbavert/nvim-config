@@ -54,7 +54,7 @@ return {
                             vim.fn.line("v"),
                         })
                     end,
-                    "[ ] toggle hunk staging",
+                    "[ ] stage/unstage hunk",
                     nil,
                     { "v" }
                 )
@@ -62,7 +62,7 @@ return {
                 utils.git_key_mapper(
                     " ",
                     gitsigns.stage_hunk,
-                    "[ ] toggle hunk staging",
+                    "[ ] stage/unstage hunk",
                     nil,
                     { "n" }
                 )
