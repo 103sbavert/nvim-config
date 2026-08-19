@@ -2,6 +2,7 @@
 return {
     "lewis6991/gitsigns.nvim",
     event = { "VeryLazy" },
+    ---@type Gitsigns.Config
     opts = {
         signs = {
             add = { text = "+" },

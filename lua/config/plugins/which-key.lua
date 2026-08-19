@@ -2,6 +2,7 @@
 return {
     main = "which-key",
     "folke/which-key.nvim",
+    ---@type wk.Opts
     opts = {
         delay = 0,
         preset = "helix",

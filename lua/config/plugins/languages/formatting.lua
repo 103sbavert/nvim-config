@@ -2,6 +2,7 @@
 return {
     "stevearc/conform.nvim",
     main = "conform",
+    ---@type conform.setupOpts
     opts = {
         notify_on_error = false,
         default_format_opts = {
