@@ -7,6 +7,7 @@ return {
         "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
     },
+    event = "VeryLazy",
     main = "nvim-chezmoi",
     opts = {
         debug = false,
