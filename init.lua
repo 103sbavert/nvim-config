@@ -280,7 +280,6 @@ do
     vim.keymap.del("n", "grr")
     vim.keymap.del("n", "gri")
     vim.keymap.del("n", "grt")
-    vim.keymap.del("n", "gO")
 end
 
 -- vim.pack intro, build hooks
