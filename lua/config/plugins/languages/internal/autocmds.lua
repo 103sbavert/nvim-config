@@ -65,7 +65,7 @@ local roslyn_augroup =
     vim.api.nvim_create_augroup("roslyn-diagnostics-refresh", { clear = true })
 
 -- See https://github.com/seblyng/roslyn.nvim/wiki/Home/6a92a1d9370a022d2f4545a1480b02416bb1e57e#diagnostic-refresh
-vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHoldI" }, {
+vim.api.nvim_create_autocmd({ "InsertLeave" }, {
     group = roslyn_augroup,
     pattern = { "**/*.cs", "*.cs" },
     callback = function(args)
