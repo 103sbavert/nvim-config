@@ -59,10 +59,10 @@ return {
                         end
                     end
 
-                    client.config.settings.Lua = vim.tbl_deep_extend(
-                        "force",
-                        client.config.settings.Lua,
-                        {
+                    local lua_settings = client.config.settings.Lua
+                    ---@cast lua_settings table
+                    client.config.settings.Lua =
+                        vim.tbl_deep_extend("force", lua_settings, {
                             runtime = {
                                 version = "LuaJIT",
                                 path = { "lua/?.lua", "lua/?/init.lua" },
@@ -72,22 +72,14 @@ return {
                                 library = {
                                     vim.env.VIMRUNTIME,
                                     vim.fn.stdpath("config"),
-                                    vim.fs.joinpath(
-                                        vim.env.XDG_DATA_HOME,
-                                        "nvim/site/pack"
-                                    ),
-                                    vim.fs.joinpath(
-                                        vim.env.XDG_DATA_HOME,
-                                        "nvim/lazy"
-                                    ),
                                 },
                             },
-                        }
-                    )
+                        })
                 end,
                 settings = {
                     Lua = {
                         format = { enable = false },
+                        diagnostics = { disable = { "missing-fields" } },
                     },
                 },
             },
