@@ -372,6 +372,13 @@ vim.pack.add({ gh("folke/lazy.nvim") })
 -- Default colorscheme
 do
     vim.pack.add({ gh("ribru17/bamboo.nvim") })
+
+    local c = require("bamboo.palette")["vulgaris"]
+    local util = require("bamboo.util")
+    local bg1 = util.darken(c.bg1, 0.02)
+    local bg2 = util.darken(c.bg2, 0.02)
+    local bg3 = util.darken(c.bg3, 0.02)
+
     require("bamboo").setup({
         style = "vulgaris",
         transparent = false,
@@ -384,6 +391,36 @@ do
                 undercurl = true,
                 background = true,
             },
+        },
+        dim_inactive = true,
+        colors = {
+            bg1 = bg1,
+            bg2 = bg2,
+            bg3 = bg3,
+        },
+        highlights = {
+            -- Elevated float surface (lighter background) used by blink menus, doc windows, and noice hover.
+            ElevatedFloatNormal = { bg = bg1, fg = c.fg },
+            ElevatedFloatBorder = { bg = bg1, fg = bg1 },
+            ElevatedFloatSelection = { bg = bg2, bold = true },
+            ElevatedFloatSeparator = { bg = bg1, fg = bg2 },
+            ElevatedFloatCursorLine = { bg = bg2 },
+            ElevatedFloatScrollThumb = { bg = bg3 },
+            ElevatedFloatScrollGutter = { bg = bg2 },
+            CmdlineBackground = { bg = c.bg_d },
+            -- Blink highlights linked to above custom highlights
+            BlinkCmpMenu = { link = "ElevatedFloatNormal" },
+            BlinkCmpMenuBorder = { link = "ElevatedFloatBorder" },
+            BlinkCmpMenuSelection = { link = "ElevatedFloatSelection" },
+            BlinkCmpScrollBarThumb = { link = "ElevatedFloatScrollThumb" },
+            BlinkCmpScrollBarGutter = { link = "ElevatedFloatScrollGutter" },
+            BlinkCmpLabel = { link = "ElevatedFloatNormal" },
+            BlinkCmpDoc = { link = "ElevatedFloatNormal" },
+            BlinkCmpDocBorder = { link = "ElevatedFloatBorder" },
+            BlinkCmpDocSeparator = { link = "ElevatedFloatSeparator" },
+            BlinkCmpDocCursorLine = { link = "ElevatedFloatCursorLine" },
+            BlinkCmpSignatureHelp = { link = "ElevatedFloatNormal" },
+            BlinkCmpSignatureHelpBorder = { link = "ElevatedFloatBorder" },
         },
     })
     require("bamboo").load()

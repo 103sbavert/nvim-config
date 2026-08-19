@@ -1,86 +1,91 @@
 ---@type LazySpec
 return {
     "folke/noice.nvim",
-    dependencies = { "rcarriga/nvim-notify" },
-    config = function()
-        require("noice").setup({
-            lsp = {
-                override = {
-                    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-                    ["vim.lsp.util.stylize_markdown"] = true,
-                    ["cmp.entry.get_documentation"] = true,
+    opts = {
+        lsp = {
+            hover = { enabled = true },
+            progress = { enabled = false },
+            message = { enabled = false },
+            signature = { enabled = false },
+        },
+        override = {
+            ["vim.ui.input"] = false,
+            ["vim.ui.select"] = false,
+        },
+        popupmenu = { enabled = false },
+        notify = { enabled = false },
+        presets = {
+            long_message_to_split = true,
+        },
+        routes = {
+            {
+                view = "shell_display",
+                filter = {
+                    event = "msg_show",
+                    kind = { "shell_out", "shell_err" },
                 },
             },
-            presets = {
-                bottom_search = true,
-                command_palette = true,
-                long_message_to_split = true,
-                inc_rename = true,
-                lsp_doc_border = true,
+            {
+                filter = { kind = "confirm", find = "chezmoi" },
+                view = "chezmoi_confirm",
             },
-            popupmenu = {
-                enabled = false,
-            },
-            routes = {
-                {
-                    view = "shell_display",
-                    filter = {
-                        event = "msg_show",
-                        kind = {
-                            "shell_out",
-                            "shell_err",
-                        },
-                    },
-                },
-                {
-                    filter = {
-                        kind = "confirm",
-                        find = "chezmoi",
-                    },
-                    view = "chezmoi_confirm",
-                },
-            },
-            views = {
-                shell_display = {
-                    view = "split",
-                    size = "auto",
-                    enter = true,
-                    focusable = false,
-                    close = {
-                        keys = { "q", "<Esc>" },
-                    },
-                    buf_options = {
-                        filetype = "noice_shell_display",
-                    },
-                    format = {
-                        "{message}",
-                        "\n",
-                    },
-                },
-                cmdline_popup = {
-                    position = {
-                        row = 10,
-                        col = "50%",
-                    },
-                    size = {
-                        width = "25%",
-                        height = "auto",
-                    },
-                    border = {
-                        style = "rounded",
-                        padding = { 0, 1 },
-                    },
-                },
-                chezmoi_confirm = {
-                    view = "confirm",
-                    focusable = false,
-                    border = {
-                        text = {
-                            top = " Chezmoi ",
-                        },
+        },
+        views = {
+            cmdline_popup = {
+                position = { row = "100%", col = "0%" },
+                size = { width = "100%", height = "auto" },
+                border = { style = "none" },
+                win_options = {
+                    winhighlight = {
+                        Normal = "CmdlineBackground",
+                        FloatBorder = "ElevatedFloatBorder",
                     },
                 },
             },
+            hover = {
+                win_options = {
+                    winhighlight = {
+                        Normal = "ElevatedFloatNormal",
+                        FloatBorder = "ElevatedFloatBorder",
+                    },
+                },
+            },
+            shell_display = {
+                view = "split",
+                size = { height = "30%" },
+                enter = true,
+                close = { keys = { "<CR>", "q", "<Esc>" } },
+                buf_options = {
+                    filetype = "noice_shell_split",
+                    buftype = "nofile",
+                    bufhidden = "wipe",
+                },
+                format = { "{message}\n" },
+            },
+            chezmoi_confirm = {
+                view = "confirm",
+                focusable = false,
+                border = { text = { top = " Chezmoi " } },
+            },
+        },
+    },
+    init = function()
+        local shell_out_grp =
+            vim.api.nvim_create_augroup("ShellOutputGrp", { clear = true })
+
+        vim.api.nvim_create_autocmd("WinLeave", {
+            group = shell_out_grp,
+            callback = function(ev)
+                if vim.bo[ev.buf].filetype ~= "noice_shell_split" then
+                    return
+                end
+
+                vim.schedule(function()
+                    if vim.api.nvim_buf_is_valid(ev.buf) then
+                        vim.api.nvim_buf_delete(ev.buf, { force = true })
+                    end
+                end)
+            end,
         })
     end,
 }
