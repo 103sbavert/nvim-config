@@ -3,10 +3,11 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = {
         "config.mason",
-        { "seblyng/roslyn.nvim", lazy = true },
+        "seblyng/roslyn.nvim",
         "nvim-telescope/telescope.nvim",
         "config.utils",
         "folke/which-key.nvim",
+        "j-hui/fidget.nvim",
         "L3MON4D3/LuaSnip",
     },
     config = function()
