@@ -14,8 +14,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
             )
         then
             local highlight_augroup = vim.api.nvim_create_augroup(
-                "kickstart-lsp-highlight",
-                { clear = false }
+                "kickstart-lsp-highlight-" .. event.buf,
+                { clear = true }
             )
 
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
