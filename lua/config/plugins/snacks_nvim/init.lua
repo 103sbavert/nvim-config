@@ -19,6 +19,11 @@ return {
             end,
             desc = "[\\] Toggle Explorer Focus",
         },
+        {
+            "<leader>tt",
+            function() Snacks.terminal.toggle() end,
+            desc = "[t]erminal",
+        },
         { "<leader>gl", function() Snacks.lazygit() end, desc = "[l]azyGit" },
     },
     ---@type snacks.Config
@@ -38,7 +43,21 @@ return {
         statuscolumn = { enabled = true },
         scroll = { enabled = true },
         words = { enabled = true },
+        terminal = { enabled = true },
         lazygit = { enabled = true },
+        styles = {
+            terminal = {
+                keys = {
+                    term_normal = {
+                        "<C-n>",
+                        "<C-\\><C-n>",
+                        mode = "t",
+                        expr = true,
+                        desc = "Terminal normal",
+                    },
+                },
+            },
+        },
     },
     config = function(plugin, opts) require(plugin.main).setup(opts) end,
 }
