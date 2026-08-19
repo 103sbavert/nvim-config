@@ -24,7 +24,6 @@ return {
             function() Snacks.terminal.toggle() end,
             desc = "[t]erminal",
         },
-        { "<leader>gl", function() Snacks.lazygit() end, desc = "[l]azyGit" },
     },
     ---@type snacks.Config
     opts = {
@@ -52,7 +51,6 @@ return {
         scroll = { enabled = true },
         words = { enabled = true },
         terminal = { enabled = true },
-        lazygit = { enabled = true },
         styles = {
             terminal = {
                 keys = {
