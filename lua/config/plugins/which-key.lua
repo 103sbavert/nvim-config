@@ -4,10 +4,11 @@ return {
     "folke/which-key.nvim",
     ---@type wk.Opts
     opts = {
-        delay = 0,
+        delay = 250,
         preset = "helix",
         icons = { mappings = vim.g.have_nerd_font },
         spec = {
+            { "gq", desc = "Format" },
             { "gc", group = "Comments", mode = { "n", "v" } },
             { "<leader>F", group = "[F]ind", mode = { "n", "v" } },
             { "<leader>z", group = "Che[z]moi", mode = { "n" } },
