@@ -6,8 +6,17 @@ return {
         "L3MON4D3/LuaSnip",
     },
     build = function()
-        -- build the fuzzy matcher, optionally add a timeout to `pwait(timeout_ms)`
-        -- you can use `gb` in `:Lazy` to rebuild the plugin as needed
+        if not vim.fn.executable("cargo") then
+            vim.notify(
+                "Cargo is needed to build blink.cmp. Check if you have installed the Rust language toolchain or Cargo build tool",
+                vim.log.levels.ERROR,
+                {
+                    title = "blink.cmp",
+                }
+            )
+            return
+        end
+
         require("blink.cmp").build():pwait()
     end,
     ---@module 'blink.cmp'
