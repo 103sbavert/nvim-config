@@ -28,5 +28,3 @@ local function toggle_terminal()
         vim.notify("Unable to open the terminal", vim.log.levels.ERROR)
     end
 end
-
-map_toggle_key("t", toggle_terminal, "Bottom Terminal Pane")

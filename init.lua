@@ -160,15 +160,11 @@ do
     vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
     vim.keymap.set(
-        { "n", "i", "v", "x", "s", "o", "c", "t" },
+        { "n", "i", "v", "x", "s", "o", "c" },
         "<C-n>",
         "<Esc>",
         { desc = "Alias for <Esc>" }
     )
-
-    vim.keymap.set("t", "<C-n>", "<C-\\><C-n>", {
-        desc = "Exit terminal mode to normal mode",
-    })
 
     -- Diagnostic Config & Keymaps
     --  See `:help vim.diagnostic.Opts`
@@ -445,12 +441,6 @@ require("lazy").setup({
         {
             name = "config.utils",
             dir = vim.fn.stdpath("config"),
-        },
-        {
-            name = "config.terminal",
-            dir = vim.fn.stdpath("config"),
-            dependencies = { "folke/which-key.nvim" },
-            config = function() require("config.terminal") end,
         },
         {
             name = "config.mason",
