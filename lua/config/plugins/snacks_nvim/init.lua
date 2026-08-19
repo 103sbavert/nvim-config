@@ -3,7 +3,6 @@ return {
     priority = 1000,
     lazy = false,
     main = "snacks",
-    ---@type snacks.Config
     keys = {
         {
             "\\",
@@ -22,6 +21,7 @@ return {
         },
         { "<leader>gl", function() Snacks.lazygit() end, desc = "[l]azyGit" },
     },
+    ---@type snacks.Config
     opts = {
         bigfile = { enabled = true },
         explorer = {
