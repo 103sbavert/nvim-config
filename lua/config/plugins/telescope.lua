@@ -14,6 +14,13 @@ return {
         },
     },
     opts = {
+        defaults = {
+            layout_config = {
+                horizontal = {
+                    preview_width = 0.6,
+                },
+            },
+        },
         extensions = {
             ["ui-select"] = { require("telescope.themes").get_dropdown() },
         },
