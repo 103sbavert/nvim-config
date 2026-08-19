@@ -8,6 +8,7 @@ return {
         icons = { mappings = vim.g.have_nerd_font },
         spec = {
             { "gc", group = "Comments", mode = { "n", "v" } },
+            { "<leader>F", group = "[F]ind", mode = { "n", "v" } },
             { "<leader>z", group = "Che[z]moi", mode = { "n" } },
         },
     },
