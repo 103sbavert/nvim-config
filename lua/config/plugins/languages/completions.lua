@@ -1,23 +1,25 @@
----@type LazySpec
 return {
-    "Saghen/blink.cmp",
-    version = "*",
+    "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
-        "neovim/nvim-lspconfig",
+        "saghen/blink.lib",
         "L3MON4D3/LuaSnip",
     },
+    build = function()
+        -- build the fuzzy matcher, optionally add a timeout to `pwait(timeout_ms)`
+        -- you can use `gb` in `:Lazy` to rebuild the plugin as needed
+        require("blink.cmp").build():pwait()
+    end,
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
     opts = {
-        keymap = {
-            preset = "default",
-        },
         cmdline = {
             enabled = true,
             keymap = {
                 preset = "default",
             },
-            sources = { "buffer", "cmdline" },
             completion = {
+                documentation = { auto_show = true },
                 trigger = {
                     show_on_blocked_trigger_characters = {},
                     show_on_x_blocked_trigger_characters = {},
@@ -27,40 +29,19 @@ return {
                 ghost_text = { enabled = false },
             },
         },
+        keymap = { preset = "default" },
         appearance = {
             nerd_font_variant = "mono",
         },
         completion = {
-            documentation = { auto_show = false, auto_show_delay_ms = 500 },
-            menu = {
-                auto_show = true,
-            },
+            documentation = { auto_show = false },
+            menu = { auto_show = true },
             list = { selection = { preselect = true, auto_insert = false } },
+            ghost_text = { enabled = false },
         },
         sources = {
             default = { "lsp", "path", "snippets" },
         },
-        snippets = { preset = "luasnip" },
-        fuzzy = { implementation = "prefer_rust" },
-        signature = { enabled = true },
+        fuzzy = { implementation = "rust" },
     },
-    init = function()
-        local blink_grp =
-            vim.api.nvim_create_augroup("blink_autocomp", { clear = true })
-
-        vim.api.nvim_create_autocmd("LspAttach", {
-            group = blink_grp,
-            callback = function(args)
-                local client_id = args.data.client_id
-                local client = vim.lsp.get_client_by_id(client_id)
-
-                if client then
-                    client.capabilities =
-                        require("blink.cmp").get_lsp_capabilities(
-                            client.capabilities
-                        )
-                end
-            end,
-        })
-    end,
 }
