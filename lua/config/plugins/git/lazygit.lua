@@ -16,6 +16,7 @@ return {
     keys = {
         { "<leader>gl", "<cmd>LazyGitCurrentFile<cr>", desc = "[l]azyGit" },
     },
+    ---@type LazyGitConfig
     opts = {
         floating_window = {
             scaling_factor = 0.9,
