@@ -136,6 +136,11 @@ do
                 return
             end
 
+            -- Skip non-normal buffers
+            if vim.bo[buf_id].buftype ~= "" then
+                return
+            end
+
             -- Skip if modified
             if vim.bo[buf_id].modified then
                 return
