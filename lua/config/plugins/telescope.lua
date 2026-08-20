@@ -23,9 +23,9 @@ return {
         },
         -- Recent buffers
         {
-            "<leader>r",
+            "<leader><leader>",
             "<cmd>Telescope buffers<cr>",
-            desc = "find [r]ecent files",
+            desc = "find recent files",
         },
         -- Text search
         {
