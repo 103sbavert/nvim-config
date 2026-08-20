@@ -15,10 +15,7 @@ return {
             "delve",
         }
 
-        require("mason-nvim-dap").setup({
-            ensure_installed = mason_daps,
-            automatic_installation = true,
-        })
+        require("config.mason").InstallTools(mason_daps)
 
         local dap = require("dap")
         local dapui = require("dapui")
