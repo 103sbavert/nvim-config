@@ -101,9 +101,9 @@ return {
 
         vim.keymap.set(
             { "n", "v" },
-            "<leader>f",
+            "<leader>f", -- in normal mode, reformat the entire buffer
             function() conform.format({ async = true }) end,
-            { desc = "[f]ormat buffer or visual selection" }
+            { desc = "[F]ormat" }
         )
 
         vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
