@@ -38,6 +38,7 @@ return {
                     },
                 },
             },
+            gitlab_ci_ls = {},
             pyright = {},
             lua_ls = {
                 on_attach = function() require("luasnip").setup() end,
