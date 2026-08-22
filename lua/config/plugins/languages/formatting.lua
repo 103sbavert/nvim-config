@@ -1,3 +1,20 @@
+--- Returns effective indent size for bufnr: buffer-local shiftwidth (or tabstop
+--- when shiftwidth=0), cascading to global, with 4 as final safety fallback.
+---@param bufnr integer
+---@return integer
+local function get_indent(bufnr)
+    local sw = vim.bo[bufnr].shiftwidth
+    if sw ~= 0 then
+        return sw
+    end
+    -- shiftwidth=0 means "use tabstop"
+    local ts = vim.bo[bufnr].tabstop
+    if ts ~= 0 then
+        return ts
+    end
+    return 4
+end
+
 ---@type LazySpec
 return {
     "stevearc/conform.nvim",
@@ -30,7 +47,9 @@ return {
         formatters = {
             stylua = {},
             shfmt = {
-                args = { "-i", "4", "-ci" },
+                args = function(_, ctx)
+                    return { "-i", tostring(get_indent(ctx.buf)), "-ci" }
+                end,
             },
             jb = function()
                 local user_config_home = vim.env.XDG_CONFIG_HOME
@@ -64,17 +83,27 @@ return {
                 }
             end,
             prettier = {
-                args = {
-                    "--log-level",
-                    "error",
-                    "--tab-width",
-                    "4",
-                    "--stdin-filepath",
-                    "$FILENAME",
-                },
+                args = function(_, ctx)
+                    return {
+                        "--log-level",
+                        "error",
+                        "--tab-width",
+                        tostring(get_indent(ctx.buf)),
+                        "--stdin-filepath",
+                        "$FILENAME",
+                    }
+                end,
             },
             taplo = {
-                args = { "fmt", "--option", "indent_string=    ", "-" },
+                args = function(_, ctx)
+                    local indent_string = string.rep(" ", get_indent(ctx.buf))
+                    return {
+                        "fmt",
+                        "--option",
+                        "indent_string=" .. indent_string,
+                        "-",
+                    }
+                end,
             },
         },
     },
@@ -82,7 +111,7 @@ return {
         local conform = require(plugin.main)
         conform.setup(opts)
 
-        local formatters = {
+        local mason_formatters = {
             "shfmt",
             "taplo",
             "prettier",
@@ -91,7 +120,7 @@ return {
             "goimports",
         }
 
-        require("config.mason").InstallTools(formatters)
+        require("config.mason").InstallTools(mason_formatters)
 
         vim.api.nvim_create_user_command(
             "Format",
