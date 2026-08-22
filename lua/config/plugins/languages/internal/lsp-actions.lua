@@ -34,11 +34,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         -- Remaining LSP actions kept under <leader>l
         --- @type table<string, LspKeyConfig>
         local lsp_jump = {
-            ["gD"] = {
-                jump_action = vim.lsp.buf.declaration,
-                description = "[g]oto [D]eclaration",
-                capability = "textDocument/declaration",
-            },
             ["<leader>ln"] = {
                 description = "Re[n]ame Symbol",
                 jump_action = vim.lsp.buf.rename,
