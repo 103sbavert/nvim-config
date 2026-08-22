@@ -317,7 +317,20 @@ require("lazy").setup({
             main = "ibl",
             config = true,
         },
-        { "NMAC427/guess-indent.nvim", config = true },
+        {
+            "NMAC427/guess-indent.nvim",
+            opts = {
+                on_tab_options = {
+                    ["expandtab"] = true,
+                },
+                on_space_options = {
+                    ["expandtab"] = true,
+                    ["tabstop"] = "detected",
+                    ["softtabstop"] = "detected",
+                    ["shiftwidth"] = "detected",
+                },
+            },
+        },
         {
             "folke/todo-comments.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
