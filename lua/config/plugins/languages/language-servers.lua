@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -11,7 +11,7 @@ return {
     },
     config = function()
         -- Enable the following language servers
-        ---@type table<string, vim.lsp.Config>
+        --- @type table<string, vim.lsp.Config>
         local server_config_map = {
             roslyn_ls = {
                 before_init = function(_, _) require("roslyn").setup() end,
@@ -62,7 +62,7 @@ return {
                     end
 
                     local lua_settings = client.config.settings.Lua
-                    ---@cast lua_settings table
+                    --- @cast lua_settings table
                     client.config.settings.Lua =
                         vim.tbl_deep_extend("force", lua_settings, {
                             runtime = {

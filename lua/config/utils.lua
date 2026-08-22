@@ -1,6 +1,6 @@
 local M = {}
 
----@type table<boolean, table<string,string>>
+--- @type table<boolean, table<string,string>>
 M.neotree_git_glyphs = {
     [true] = {
         -- Change type
@@ -28,7 +28,7 @@ M.neotree_git_glyphs = {
     },
 }
 
----@type table<boolean, dapui.Config.controls.icons>
+--- @type table<boolean, dapui.Config.controls.icons>
 M.debug_button_glyphs = {
     [true] = {
         pause = "",
@@ -55,7 +55,7 @@ M.debug_button_glyphs = {
     },
 }
 
----@type table<boolean, table<vim.diagnostic.Severity, string>>
+--- @type table<boolean, table<vim.diagnostic.Severity, string>>
 M.lsp_diagnostic_glyphs = {
     [true] = {
         [vim.diagnostic.severity.ERROR] = "",

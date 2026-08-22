@@ -1,8 +1,8 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "lewis6991/gitsigns.nvim",
     event = { "VeryLazy" },
-    ---@type Gitsigns.Config
+    --- @type Gitsigns.Config
     opts = {
         signs = {
             add = { text = "+" },
@@ -17,8 +17,8 @@ return {
             local gitsigns = require("gitsigns")
             local utils = require("config.plugins.git.utils")
 
-            ---@type Gitsigns.NavOpts
-            ---@diagnostic disable-next-line: missing-fields
+            --- @type Gitsigns.NavOpts
+            --- @diagnostic disable-next-line: missing-fields
             local navopts = { foldopen = true, target = "all", wrap = true }
 
             -- Navigation

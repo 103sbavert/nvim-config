@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -21,10 +21,10 @@ return {
         local dapui = require("dapui")
         require("dap-go").setup()
 
-        ---@diagnostic disable-next-line: missing-fields
+        --- @diagnostic disable-next-line: missing-fields
         dapui.setup({
             icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
-            ---@diagnostic disable-next-line: missing-fields
+            --- @diagnostic disable-next-line: missing-fields
             controls = {
                 icons = require("config.utils").debug_button_glyphs[vim.g.have_nerd_font],
             },

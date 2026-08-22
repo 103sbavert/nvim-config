@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     main = "nvim-treesitter",
     "nvim-treesitter/nvim-treesitter",

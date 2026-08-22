@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "folke/snacks.nvim",
     priority = 1000,
@@ -14,7 +14,7 @@ return {
             },
         })
     end,
-    ---@type snacks.Config
+    --- @type snacks.Config
     opts = {
         bigfile = { enabled = true },
         explorer = {

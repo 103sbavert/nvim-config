@@ -2,7 +2,7 @@ local get_lang_mod = function(modname)
     return "config.plugins.languages." .. modname
 end
 
----@type LazySpec[]
+--- @type LazySpec[]
 return {
     require(get_lang_mod("completions")),
     require(get_lang_mod("debuggers")),
