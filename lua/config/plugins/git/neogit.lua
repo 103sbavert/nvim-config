@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "NeogitOrg/neogit",
     lazy = true,

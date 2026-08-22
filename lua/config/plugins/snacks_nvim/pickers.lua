@@ -1,4 +1,4 @@
----@type LazyKeysSpec[]
+--- @type LazyKeysSpec[]
 return {
     -- File explorer
     {

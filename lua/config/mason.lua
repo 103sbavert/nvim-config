@@ -9,7 +9,7 @@ local installer = require("mason-tool-installer")
 local cumulative_tool_tbl = {}
 local debounce_hrs = 6
 
----@param tool_list string[]
+--- @param tool_list string[]
 local InstallTools = function(tool_list)
     local lspconfig_to_mason =
         require("mason-lspconfig").get_mappings().lspconfig_to_package
