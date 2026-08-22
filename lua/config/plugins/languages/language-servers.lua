@@ -8,7 +8,6 @@ return {
         "config.utils",
         "folke/which-key.nvim",
         "j-hui/fidget.nvim",
-        "L3MON4D3/LuaSnip",
     },
     config = function()
         -- Enable the following language servers
@@ -41,10 +40,12 @@ return {
             gitlab_ci_ls = {},
             pyright = {},
             lua_ls = {
-                on_attach = function() require("luasnip").setup() end,
                 on_init = function(client)
-                    client.server_capabilities.documentFormattingProvider =
-                        false -- Disable formatting (formatting is done by stylua)
+                    -- lazydev.nvim handles Neovim workspace types when active.
+                    -- Fall back to manual workspace setup only if it's absent.
+                    if package.loaded["lazydev"] then
+                        return
+                    end
 
                     if client.workspace_folders then
                         local path = client.workspace_folders[1].name
