@@ -1,9 +1,9 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LspAttach",
     dependencies = "neovim/nvim-lspconfig",
-    ---@type PluginConfig
+    --- @type PluginConfig
     opts = {
         preset = "modern",
         options = {

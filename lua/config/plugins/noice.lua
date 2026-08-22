@@ -1,7 +1,7 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "folke/noice.nvim",
-    ---@type NoiceConfig
+    --- @type NoiceConfig
     opts = {
         lsp = {
             hover = { enabled = true },

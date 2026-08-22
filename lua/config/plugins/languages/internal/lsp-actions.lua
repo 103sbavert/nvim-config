@@ -3,10 +3,10 @@
 --- @field description string Documentation string for the keymap decoration.
 --- @field capability? string Optional LSP method required to enable this keymap.
 
----@param key string
----@param lsp_config LspKeyConfig
----@param client vim.lsp.Client
----@param buf_id integer
+--- @param key string
+--- @param lsp_config LspKeyConfig
+--- @param client vim.lsp.Client
+--- @param buf_id integer
 local function map_if_capable(key, lsp_config, client, buf_id)
     -- Only map if no specific capability is required, or if the client supports it
     if

@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
@@ -19,7 +19,7 @@ return {
 
         require("blink.cmp").build():pwait()
     end,
-    ---@type blink.cmp.Config
+    --- @type blink.cmp.Config
     opts = {
         cmdline = {
             enabled = true,

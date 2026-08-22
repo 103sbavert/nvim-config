@@ -1,7 +1,7 @@
 --- Returns effective indent size for bufnr: buffer-local shiftwidth (or tabstop
 --- when shiftwidth=0), cascading to global, with 4 as final safety fallback.
----@param bufnr integer
----@return integer
+--- @param bufnr integer
+--- @return integer
 local function get_indent(bufnr)
     local sw = vim.bo[bufnr].shiftwidth
     if sw ~= 0 then
@@ -15,11 +15,11 @@ local function get_indent(bufnr)
     return 4
 end
 
----@type LazySpec
+--- @type LazySpec
 return {
     "stevearc/conform.nvim",
     main = "conform",
-    ---@type conform.setupOpts
+    --- @type conform.setupOpts
     opts = {
         notify_on_error = false,
         default_format_opts = {

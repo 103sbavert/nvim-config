@@ -38,7 +38,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
 -- Cache the original function to keep standard file info intact
 local orig_section_fileinfo = statusline.section_fileinfo
 
----@diagnostic disable-next-line: duplicate-set-field
+--- @diagnostic disable-next-line: duplicate-set-field
 statusline.section_fileinfo = function(args)
     local fileinfo = orig_section_fileinfo(args)
     local src_file = UT.get_current_file()

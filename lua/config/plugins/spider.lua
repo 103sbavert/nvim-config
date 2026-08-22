@@ -1,4 +1,4 @@
----@type LazySpec
+--- @type LazySpec
 return {
     "chrisgrieser/nvim-spider",
     dependencies = { "folke/which-key.nvim" },
