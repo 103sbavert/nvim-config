@@ -4,7 +4,6 @@ return {
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         "saghen/blink.lib",
-        "L3MON4D3/LuaSnip",
     },
     build = function()
         if not vim.fn.executable("cargo") then
