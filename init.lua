@@ -104,13 +104,9 @@ do
     vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
 
     if vim.fn.executable("nvr") == 1 then
-        local editor_cmd = "nvr --servername "
-            .. vim.fn.shellescape(vim.v.servername)
-            .. " --remote-silent"
+        local editor_cmd = "nvr --remote-silent -o"
 
-        local git_editor = "nvr --servername "
-            .. vim.fn.shellescape(vim.v.servername)
-            .. " -cc split --remote-wait +'set bufhidden=wipe'"
+        local git_editor = "nvr --remote-tab-wait-silent +'set bufhidden=wipe'"
 
         vim.env.GIT_EDITOR = git_editor
         vim.env.EDITOR = editor_cmd
