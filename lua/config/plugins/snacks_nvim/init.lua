@@ -4,28 +4,16 @@ return {
     priority = 1000,
     lazy = false,
     main = "snacks",
-    keys = {
-        {
-            "\\",
-            function()
-                local explorer = Snacks.picker.get({ source = "explorer" })[1]
-
-                if not explorer then
-                    Snacks.explorer()
-                elseif explorer:is_focused() then
-                    vim.cmd.wincmd("p")
-                else
-                    explorer:focus()
-                end
-            end,
-            desc = "[\\] Toggle Explorer Focus",
-        },
-        {
-            "<leader>tt",
-            function() Snacks.terminal.toggle() end,
-            desc = "[t]erminal",
-        },
-    },
+    keys = function()
+        local pickers = require("config.plugins.snacks_nvim.pickers")
+        return vim.list_extend(pickers, {
+            {
+                "<leader>tt",
+                function() Snacks.terminal.toggle() end,
+                desc = "[t]erminal",
+            },
+        })
+    end,
     ---@type snacks.Config
     opts = {
         bigfile = { enabled = true },
