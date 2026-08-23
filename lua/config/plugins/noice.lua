@@ -9,10 +9,6 @@ return {
             message = { enabled = false },
             signature = { enabled = false },
         },
-        override = {
-            ["vim.ui.input"] = false,
-            ["vim.ui.select"] = false,
-        },
         popupmenu = { enabled = false },
         notify = { enabled = false },
         presets = {
@@ -35,13 +31,34 @@ return {
             cmdline_popup = {
                 position = { row = "100%", col = "0%" },
                 size = { width = "100%", height = "auto" },
-                border = { style = "none" },
+                border = { style = "none", padding = { 0, 0 } },
                 win_options = {
                     winhighlight = {
                         Normal = "CmdlineBackground",
-                        FloatBorder = "ElevatedFloatBorder",
                     },
                 },
+            },
+            confirm = {
+                border = {
+                    style = "rounded",
+                    padding = { 0, 0 },
+                },
+                size = {
+                    width = "auto",
+                    height = "auto",
+                },
+                position = { row = "8%", col = "50%" },
+            },
+            cmdline_input = {
+                border = {
+                    style = "rounded",
+                    padding = { 0, 0 },
+                },
+                size = {
+                    width = "auto",
+                    height = "auto",
+                },
+                position = { row = "8%", col = "50%" },
             },
             hover = {
                 win_options = {
@@ -51,6 +68,7 @@ return {
                     },
                 },
             },
+            -- Custom views
             shell_display = {
                 view = "split",
                 size = { height = "30%" },
