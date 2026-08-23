@@ -108,6 +108,7 @@ return {
         },
     },
     config = function(plugin, opts)
+        --- @module "conform"
         local conform = require(plugin.main)
         conform.setup(opts)
 
