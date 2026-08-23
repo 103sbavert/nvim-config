@@ -41,12 +41,6 @@ return {
             pyright = {},
             lua_ls = {
                 on_init = function(client)
-                    -- lazydev.nvim handles Neovim workspace types when active.
-                    -- Fall back to manual workspace setup only if it's absent.
-                    if package.loaded["lazydev"] then
-                        return
-                    end
-
                     if client.workspace_folders then
                         local path = client.workspace_folders[1].name
 
@@ -74,6 +68,7 @@ return {
                                 library = {
                                     vim.env.VIMRUNTIME,
                                     vim.fn.stdpath("config"),
+                                    vim.fn.stdpath("data"),
                                 },
                             },
                         })

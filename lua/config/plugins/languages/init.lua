@@ -9,7 +9,6 @@ return {
     require(get_lang_mod("diagnostics")),
     require(get_lang_mod("formatting")),
     require(get_lang_mod("language-servers")),
-    require(get_lang_mod("lazydev")),
     require(get_lang_mod("linters")),
     require(get_lang_mod("treesitters")),
 }
