@@ -68,7 +68,14 @@ return {
                                 library = {
                                     vim.env.VIMRUNTIME,
                                     vim.fn.stdpath("config"),
-                                    vim.fn.stdpath("data"),
+                                    vim.fs.joinpath(
+                                        vim.fn.stdpath("data"),
+                                        "site/pack/core/opt"
+                                    ),
+                                    vim.fs.joinpath(
+                                        vim.fn.stdpath("data"),
+                                        "lazy"
+                                    ),
                                 },
                             },
                         })
