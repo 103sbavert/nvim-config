@@ -256,9 +256,9 @@ do
 
     local c = require("bamboo.palette")["vulgaris"]
     local util = require("bamboo.util")
-    local bg1 = util.darken(c.bg1, 0.02)
-    local bg2 = util.darken(c.bg2, 0.02)
-    local bg3 = util.darken(c.bg3, 0.02)
+    local bg1 = util.darken(c.bg1, 0.03)
+    local bg2 = util.darken(c.bg2, 0.03)
+    local bg3 = util.darken(c.bg3, 0.03)
 
     require("bamboo").setup({
         style = "vulgaris",
@@ -289,6 +289,10 @@ do
             ElevatedFloatScrollThumb = { bg = bg3 },
             ElevatedFloatScrollGutter = { bg = bg2 },
             CmdlineBackground = { bg = c.bg_d },
+            FloatBorder = { fg = c.purple },
+            -- Noice Popup highlights
+            NoiceConfirm = { link = "NormalFloat" },
+            NoiceConfirmBorder = { link = "FloatBorder" },
             -- Blink highlights linked to above custom highlights
             BlinkCmpMenu = { link = "ElevatedFloatNormal" },
             BlinkCmpMenuBorder = { link = "ElevatedFloatBorder" },
