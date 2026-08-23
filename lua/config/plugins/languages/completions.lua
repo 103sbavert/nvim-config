@@ -42,7 +42,10 @@ return {
             nerd_font_variant = "mono",
         },
         completion = {
-            documentation = { auto_show = false },
+            documentation = {
+                auto_show = true,
+                auto_show_delay_ms = 500,
+            },
             menu = { auto_show = true },
             list = { selection = { preselect = true, auto_insert = false } },
             ghost_text = { enabled = false },
@@ -51,5 +54,6 @@ return {
             default = { "lsp", "path", "snippets", "buffer" },
         },
         fuzzy = { implementation = "rust" },
+        signature = { enabled = true },
     },
 }
