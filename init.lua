@@ -94,8 +94,8 @@ do
     -- undo/redo history persists until session closes
     vim.o.undofile = false
 
-    -- 8 lines of context around cursor when scrolling
-    vim.o.scrolloff = 5
+    -- 4 lines of context around cursor when scrolling
+    vim.o.scrolloff = 4
 
     -- move to the last character of the last line
     vim.keymap.set({ "n", "o", "x" }, "G", "G$", { noremap = true })
