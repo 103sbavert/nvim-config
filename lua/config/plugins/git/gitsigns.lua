@@ -47,18 +47,10 @@ return {
             -- Staging
             do
                 -- hunk
-                utils.git_key_mapper(
-                    " ",
-                    function()
-                        gitsigns.stage_hunk({
-                            vim.fn.line("."),
-                            vim.fn.line("v"),
-                        })
-                    end,
-                    "[ ] stage/unstage hunk",
-                    nil,
-                    { "v" }
-                )
+                utils.git_key_mapper(" ", function()
+                    local range = { vim.fn.line("."), vim.fn.line("v") }
+                    gitsigns.stage_hunk(range, { greedy = false })
+                end, "[ ] stage/unstage hunk", nil, { "v" })
 
                 utils.git_key_mapper(
                     " ",
@@ -89,47 +81,44 @@ return {
             do
                 utils.git_key_mapper(
                     "b",
+                    function() gitsigns.blame({ ignore_whitespace = false }) end,
+                    "[b]lame buffer"
+                )
+                utils.git_key_mapper(
+                    "i",
                     function() gitsigns.blame_line({ full = true }) end,
-                    "[b]lame line"
+                    "blame [i]nline"
                 )
                 utils.git_key_mapper(
                     "p",
                     gitsigns.preview_hunk,
-                    "[p]review current hunk"
+                    "[p]review hunk"
                 )
                 utils.git_key_mapper(
                     "D",
-                    function() utils.pick_ref(gitsigns.diffthis) end,
-                    "View [D]iff against ref"
+                    function() utils.pick_diff_base(gitsigns.diffthis) end,
+                    "View [D]iff against thing"
                 )
             end
 
             -- Resets
             do
-                utils.git_reset_mapper(
-                    "h",
+                utils.git_key_mapper(
+                    "r",
                     gitsigns.reset_hunk,
-                    "Reset [h]unk changes",
+                    "[r]eset cursor hunk",
                     nil,
                     { "n" }
                 )
-                utils.git_reset_mapper(
-                    "b",
+                utils.git_key_mapper(
+                    "R",
                     gitsigns.reset_buffer,
-                    "Reset [b]uffer changes"
+                    "[R]eset buffer"
                 )
-                utils.git_reset_mapper(
-                    "h",
-                    function()
-                        gitsigns.reset_hunk({
-                            vim.fn.line("."),
-                            vim.fn.line("v"),
-                        })
-                    end,
-                    "Reset [h]unk changes",
-                    nil,
-                    { "v" }
-                )
+                utils.git_key_mapper("r", function()
+                    local range = { vim.fn.line("."), vim.fn.line("v") }
+                    gitsigns.reset_hunk(range, { greedy = false })
+                end, "[r]eset visual selection", nil, { "v" })
             end
 
             -- Text object
