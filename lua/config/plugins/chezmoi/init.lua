@@ -4,7 +4,6 @@ return {
     dependencies = {
         "nvim-mini/mini.nvim",
         "nvim-lua/plenary.nvim",
-        "nvim-telescope/telescope.nvim",
         "folke/which-key.nvim",
     },
     event = "VeryLazy",
@@ -22,8 +21,6 @@ return {
     cmd = {
         "ChezmoiApply",
         "ChezmoiEdit",
-        "ChezmoiManaged",
-        "ChezmoiFiles",
     },
     keys = function()
         local utils = require("config.plugins.chezmoi.utils")
@@ -39,11 +36,6 @@ return {
                 "<leader>za",
                 apply_utils.apply_chezmoi,
                 desc = "[a]pply to target",
-            },
-            {
-                "<leader>zs",
-                "<Cmd>ChezmoiManaged<Cr>",
-                desc = "[s]earch managed files",
             },
         }
     end,
