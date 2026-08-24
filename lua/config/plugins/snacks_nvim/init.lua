@@ -3,7 +3,6 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
-    main = "snacks",
     keys = function()
         local pickers = require("config.plugins.snacks_nvim.pickers")
         return vim.list_extend(pickers, {
@@ -51,5 +50,5 @@ return {
             },
         },
     },
-    config = function(plugin, opts) require(plugin.main).setup(opts) end,
+    config = true,
 }

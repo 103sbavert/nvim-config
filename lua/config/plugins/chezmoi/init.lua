@@ -48,6 +48,7 @@ return {
         }
     end,
     config = function(plugin, opts)
+        --- @module "nvim-chezmoi"
         require(plugin.main).setup(opts)
         require("config.plugins.chezmoi.statusline")
         require("config.plugins.chezmoi.template")

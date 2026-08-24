@@ -4,9 +4,10 @@ return {
     "nvim-treesitter/nvim-treesitter",
     dependencies = { "config.mason" },
     build = ":TSUpdate",
-    config = function(plugin, treesitter_opts)
+    config = function(plugin, opts)
+        --- @module "nvim-treesitter"
         local treesitter = require(plugin.main)
-        treesitter.setup(treesitter_opts)
+        treesitter.setup(opts)
 
         require("config.mason").InstallTools({ "tree-sitter-cli" })
 
