@@ -4,7 +4,6 @@ return {
     dependencies = {
         "config.mason",
         "seblyng/roslyn.nvim",
-        "nvim-telescope/telescope.nvim",
         "config.utils",
         "folke/which-key.nvim",
         "j-hui/fidget.nvim",
