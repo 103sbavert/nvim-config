@@ -2,6 +2,7 @@
 --- @field jump_action function Callback function executed for standard language servers.
 --- @field description string Documentation string for the keymap decoration.
 --- @field capability? string Optional LSP method required to enable this keymap.
+--- @field modes? string|string[] Optional mode override for this keymap or nil to use 'normal'
 
 --- @param key string
 --- @param lsp_config LspKeyConfig
@@ -15,7 +16,7 @@ local function map_if_capable(key, lsp_config, client, buf_id)
     then
         -- Mapped directly via vim.keymap.set to bypass <leader>l
         vim.keymap.set(
-            "n",
+            lsp_config.modes or "n",
             key,
             lsp_config.jump_action,
             { buffer = buf_id, desc = lsp_config.description }
@@ -40,9 +41,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 capability = "textDocument/rename",
             },
             ["<leader>la"] = {
-                description = "[a]ction",
+                description = "Code [a]ction",
                 jump_action = vim.lsp.buf.code_action,
                 capability = "textDocument/codeAction",
+                modes = { "n", "v" },
             },
         }
 
