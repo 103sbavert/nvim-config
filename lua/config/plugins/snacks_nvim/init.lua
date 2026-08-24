@@ -29,6 +29,11 @@ return {
                 explorer = {
                     hidden = true,
                 },
+                lsp_symbols = {
+                    filter = {
+                        ["lua"] = true,
+                    },
+                },
             },
         },
         notifier = { enabled = true },

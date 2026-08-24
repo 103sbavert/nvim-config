@@ -9,8 +9,10 @@ return {
         icons = { mappings = vim.g.have_nerd_font },
         spec = {
             { "gq", desc = "Format" },
+            { "ga", group = "[g]oto c[a]lls", mode = { "n", "v" } },
             { "gc", group = "Comments", mode = { "n", "v" } },
-            { "<leader>F", group = "[F]ind", mode = { "n", "v" } },
+            { "<leader>s", group = "[s]earch", mode = { "n", "v" } },
+            { "<leader>l", group = "[l]SP", mode = { "n", "v" } },
             { "<leader>z", group = "Che[z]moi", mode = { "n" } },
         },
     },

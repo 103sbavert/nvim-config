@@ -244,6 +244,7 @@ do
     vim.keymap.del({ "n", "x" }, "gra")
     vim.keymap.del("n", "grr")
     vim.keymap.del("n", "gri")
+    vim.keymap.del("n", "gO") -- [gs] with Snacks.picker is used instead
     vim.keymap.del("n", "grt")
 end
 
