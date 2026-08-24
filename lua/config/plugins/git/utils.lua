@@ -2,7 +2,6 @@ local M = {}
 
 -- Initialize mappers
 M.git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
-M.git_reset_mapper = create_keymap_group("[r]eset", "<leader>gr", { "n", "v" })
 M.navigate_bw_mapper = create_keymap_group("[ backwards", "[", { "n", "v" })
 M.navigate_fw_mapper = create_keymap_group("] forwards", "]", { "n", "v" })
 
@@ -54,49 +53,118 @@ function M.commit()
     end)
 end
 
-function M.pick_ref(callback)
-    local actions = require("telescope.actions")
-    local action_state = require("telescope.actions.state")
-    local pickers = require("telescope.pickers")
-    local finders = require("telescope.finders")
-    local make_entry = require("telescope.make_entry")
-    local conf = require("telescope.config").values
-    local Job = require("plenary.job")
+local snacks_picker = require("snacks.picker")
+local snacks_align = snacks_picker.util.align
 
-    local entry_maker = make_entry.gen_from_git_commits({})
-    local results = { "@ <HEAD>", "~1 <staged changes>" }
+local function get_git_status()
+    local result = vim.system({ "git", "status", "--porcelain" }):wait()
+    local staged, unstaged, untracked = 0, 0, 0
+    local files = {}
 
-    Job
-        :new({
-            command = "git",
-            args = { "log", "--pretty=oneline", "--abbrev-commit", "--all" },
-            on_exit = function(j)
-                vim.list_extend(results, j:result())
+    if result.code == 0 and result.stdout then
+        for line in
+            vim.gsplit(result.stdout, "\n", { plain = true, trimempty = true })
+        do
+            local x = line:sub(1, 1)
+            local y = line:sub(2, 2)
+            local file = line:sub(4)
 
-                vim.schedule(function()
-                    local ref_picker = pickers.new({}, {
-                        prompt_title = "Diff Against",
-                        finder = finders.new_table({
-                            results = results,
-                            entry_maker = entry_maker,
-                        }),
-                        sorter = conf.file_sorter({}),
-                        attach_mappings = function(prompt_bufnr)
-                            actions.select_default:replace(function()
-                                actions.close(prompt_bufnr)
-                                callback(
-                                    action_state.get_selected_entry().value
-                                )
-                            end)
-                            return true
-                        end,
-                    })
+            if file:find(" -> ") then
+                file = file:match("->%s*(.*)$") or file
+            end
+            table.insert(files, file)
 
-                    ref_picker:find()
-                end)
-            end,
-        })
-        :start()
+            if x ~= " " and x ~= "?" then
+                staged = staged + 1
+            end
+            if y ~= " " and y ~= "?" then
+                unstaged = unstaged + 1
+            end
+            if x == "?" and y == "?" then
+                untracked = untracked + 1
+            end
+        end
+    end
+    return staged, unstaged, untracked, files
+end
+
+local function index_formatter(item, picker)
+    return {
+        { snacks_align(item.name, 15), "SnacksPickerLabel" },
+        {
+            snacks_align("A " .. item.staged .. " ", 6),
+            "SnacksPickerGitAdd",
+        },
+        {
+            snacks_align("M " .. item.unstaged .. " ", 6),
+            "SnacksPickerGitChange",
+        },
+        {
+            snacks_align("U " .. item.untracked .. " ", 6),
+            "SnacksPickerComment",
+        },
+        { " " },
+    }
+end
+
+local function git_log_formatter(head_sha, item, picker)
+    local formatted_item = require("snacks.picker.format").git_log(item, picker)
+    local is_head = item.commit and vim.startswith(head_sha, item.commit)
+    local symbol = is_head and "@" or ""
+    local hl = is_head and "SnacksPickerSpecial" or nil
+
+    table.insert(formatted_item, 3, { snacks_align(symbol, 4), hl })
+    return formatted_item
+end
+
+function M.pick_diff_base(callback)
+    local head_short_sha =
+        vim.trim(vim.system({ "git", "rev-parse", "HEAD" }):wait().stdout)
+
+    snacks_picker.pick({
+        multi = {
+            {
+                preview = "git_diff",
+                finder = function()
+                    local staged, unstaged, untracked, files = get_git_status()
+                    local text = table.concat(files, "\n")
+                    return {
+                        {
+                            name = "Index",
+                            commit = "Index",
+                            text = text,
+                            staged = staged,
+                            unstaged = unstaged,
+                            untracked = untracked,
+                        },
+                    }
+                end,
+                format = index_formatter,
+            },
+            {
+                preview = "git_show",
+                finder = "git_log",
+                format = function(item, picker)
+                    return git_log_formatter(head_short_sha, item, picker)
+                end,
+            },
+        },
+        confirm = function(picker, item)
+            picker:close()
+
+            local ref = item and (item.name or item.commit or item.branch)
+            if not ref then
+                vim.notify(
+                    "No branch or commit found",
+                    vim.log.levels.WARN,
+                    { title = "Gitsigns" }
+                )
+                return
+            end
+
+            callback(ref)
+        end,
+    })
 end
 
 return M
