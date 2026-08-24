@@ -5,7 +5,7 @@ return {
     dependencies = {
         "sindrets/diffview.nvim",
         "m00qek/baleia.nvim",
-        "nvim-telescope/telescope.nvim",
+        "folke/snacks.nvim",
     },
     cmd = "Neogit",
     keys = {
