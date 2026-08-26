@@ -125,7 +125,7 @@ return {
 
         vim.api.nvim_create_user_command(
             "Format",
-            function(_) conform.format({ async = true }) end,
+            function() conform.format({ async = true }) end,
             { desc = "Format current buffer or visual selection" }
         )
 
