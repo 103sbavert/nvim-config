@@ -8,7 +8,8 @@ return {
         preset = "helix",
         icons = { mappings = vim.g.have_nerd_font },
         spec = {
-            { "gq", desc = "Format" },
+            { "gw", desc = "Text formatting", mode = { "n", "v" } },
+            { "gq", desc = "LSP formatting", mode = { "n", "v" } },
             { "ga", group = "[g]oto c[a]lls", mode = { "n", "v" } },
             { "gc", group = "Comments", mode = { "n", "v" } },
             { "<leader>s", group = "[s]earch", mode = { "n", "v" } },
