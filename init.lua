@@ -102,6 +102,8 @@ do
 
     -- move to the first character of the first line
     vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
+    -- last non-whitespace character of the current line (inverse of `_`)
+    vim.keymap.set({ "n", "o", "x" }, "=", "g_", { noremap = true })
 
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = "nvr --remote-silent -o"
