@@ -1,7 +1,7 @@
 local M = {}
 
 --- @type table<boolean, table<string,string>>
-M.neotree_git_glyphs = {
+M.git_diff_glyphs = {
     [true] = {
         -- Change type
         added = "",

@@ -88,7 +88,7 @@ local function get_git_status()
     return staged, unstaged, untracked, files
 end
 
-local function index_formatter(item, picker)
+local function index_formatter(item, _)
     return {
         { snacks_align(item.name, 15), "SnacksPickerLabel" },
         {
@@ -139,6 +139,7 @@ function M.pick_diff_base(callback)
                         },
                     }
                 end,
+
                 format = index_formatter,
             },
             {
