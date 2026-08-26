@@ -98,10 +98,20 @@ do
     vim.o.scrolloff = 4
 
     -- move to the last character of the last line
-    vim.keymap.set({ "n", "o", "x" }, "G", "G$", { noremap = true })
+    vim.keymap.set({ "n", "o", "x" }, "G", function()
+        local last_line = vim.api.nvim_buf_line_count(0)
+        local last_col = #vim.api.nvim_buf_get_lines(0, -2, -1, false)[1] - 1
+        vim.api.nvim_win_set_cursor(0, { last_line, math.max(0, last_col) })
+    end, { noremap = true })
 
     -- move to the first character of the first line
-    vim.keymap.set({ "n", "o", "x" }, "gg", "gg0", { noremap = true })
+    vim.keymap.set(
+        { "n", "o", "x" },
+        "gg",
+        function() vim.api.nvim_win_set_cursor(0, { 1, 0 }) end,
+        { noremap = true }
+    )
+
     -- last non-whitespace character of the current line (inverse of `_`)
     vim.keymap.set({ "n", "o", "x" }, "=", "g_", { noremap = true })
 
