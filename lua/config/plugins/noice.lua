@@ -71,15 +71,18 @@ return {
             -- Custom views
             shell_display = {
                 view = "split",
-                size = { height = "30%" },
+                size = { height = "40%" },
                 enter = true,
-                close = { keys = { "<CR>", "q", "<Esc>" } },
+                close = {
+                    events = { "BufLeave", "CmdlineEnter" },
+                    keys = { "<CR>", "q", "<Esc>" },
+                },
                 buf_options = {
                     filetype = "noice_shell_split",
                     buftype = "nofile",
                     bufhidden = "wipe",
                 },
-                format = { "{message}\n" },
+                format = { "{cmdline}\n", "{message}\n" },
             },
             chezmoi_confirm = {
                 view = "confirm",
