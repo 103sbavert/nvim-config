@@ -39,7 +39,6 @@ return {
         notifier = { enabled = true },
         quickfile = { enabled = true },
         scope = { enabled = true },
-        statuscolumn = { enabled = true },
         terminal = { enabled = true },
         styles = {
             terminal = {
