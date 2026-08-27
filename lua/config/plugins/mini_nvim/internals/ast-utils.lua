@@ -17,8 +17,8 @@ end
 --- Function definitions
 M.make_func_textobj = function()
     return treesitter_spec({
-        a = { "@function.outer", "@call.outer" },
-        i = { "@function.inner", "@call.inner" },
+        a = "@function.outer",
+        i = "@function.inner",
     }, opts)
 end
 
