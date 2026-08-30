@@ -269,9 +269,14 @@ do
 
     local c = require("bamboo.palette")["vulgaris"]
     local util = require("bamboo.util")
+
     local bg1 = util.darken(c.bg1, 0.03)
     local bg2 = util.darken(c.bg2, 0.03)
     local bg3 = util.darken(c.bg3, 0.03)
+
+    local hl_write = util.blend(bg1, c.blue, 0.2)
+    local hl_read = util.blend(bg1, c.green, 0.1)
+    local hl_text = util.blend(bg1, c.green, 0.1)
 
     require("bamboo").setup({
         style = "vulgaris",
@@ -303,6 +308,10 @@ do
             ElevatedFloatScrollGutter = { bg = bg2 },
             CmdlineBackground = { bg = c.bg_d },
             FloatBorder = { fg = c.purple },
+            -- LSP highlights
+            LspReferenceWrite = { bg = hl_write },
+            LspReferenceRead = { bg = hl_read },
+            LspReferenceText = { bg = hl_text },
             -- Noice Popup highlights
             NoiceConfirm = { link = "NormalFloat" },
             NoiceConfirmBorder = { link = "FloatBorder" },
