@@ -21,25 +21,65 @@ vim.api.nvim_create_autocmd("LspAttach", {
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
                 buffer = event.buf,
                 group = highlight_augroup,
-                callback = vim.lsp.buf.document_highlight,
+                callback = function()
+                    local win = vim.api.nvim_get_current_win()
+                    if vim.api.nvim_win_get_buf(win) ~= event.buf then
+                        return
+                    end
+
+                    local request_pos = vim.api.nvim_win_get_cursor(win)
+                    local params = vim.lsp.util.make_position_params(
+                        win,
+                        client.offset_encoding
+                    )
+
+                    client:request(
+                        "textDocument/documentHighlight",
+                        params,
+                        function(err, result, ctx, config)
+                            if
+                                not result
+                                or vim.api.nvim_get_current_buf()
+                                    ~= event.buf
+                            then
+                                return
+                            end
+
+                            local current_pos = vim.api.nvim_win_get_cursor(win)
+                            if
+                                current_pos[1] == request_pos[1]
+                                and current_pos[2] == request_pos[2]
+                            then
+                                vim.lsp.buf.clear_references()
+                                vim.lsp.handlers["textDocument/documentHighlight"](
+                                    err,
+                                    result,
+                                    ctx,
+                                    config
+                                )
+                            end
+                        end,
+                        event.buf
+                    )
+                end,
             })
 
             vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
                 buffer = event.buf,
                 group = highlight_augroup,
-                callback = vim.lsp.buf.clear_references,
+                callback = function() vim.lsp.buf.clear_references() end,
             })
 
             vim.api.nvim_create_autocmd("LspDetach", {
                 group = vim.api.nvim_create_augroup(
-                    "kickstart-lsp-detach",
+                    "kickstart-lsp-detach-" .. event.buf,
                     { clear = true }
                 ),
-                callback = function(event2)
+                buffer = event.buf,
+                callback = function()
                     vim.lsp.buf.clear_references()
                     vim.api.nvim_clear_autocmds({
                         group = highlight_augroup,
-                        buffer = event2.buf,
                     })
                 end,
             })
@@ -56,30 +96,33 @@ vim.api.nvim_create_autocmd("LspAttach", {
             client
             and client:supports_method("textDocument/inlayHint", event.buf)
         then
-            map_toggle_key("h", toggle_hints, "Inlay [h]ints")
-        end
-    end,
-})
-
-local roslyn_augroup =
-    vim.api.nvim_create_augroup("roslyn-diagnostics-refresh", { clear = true })
-
--- See https://github.com/seblyng/roslyn.nvim/wiki/Home/6a92a1d9370a022d2f4545a1480b02416bb1e57e#diagnostic-refresh
-vim.api.nvim_create_autocmd({ "InsertLeave" }, {
-    group = roslyn_augroup,
-    pattern = { "**/*.cs", "*.cs" },
-    callback = function(args)
-        local buf_id = args.buf
-
-        local clients = vim.lsp.get_clients({ bufnr = buf_id, name = "roslyn" })
-        if not clients or #clients == 0 then
-            return
+            if type(map_toggle_key) == "function" then
+                map_toggle_key("h", toggle_hints, "Inlay [h]ints")
+            end
         end
 
-        local roslyn_client = clients[1]
-
-        local params =
-            { textDocument = vim.lsp.util.make_text_document_params(buf_id) }
-        roslyn_client:request("textDocument/diagnostic", params, nil, buf_id)
+        if client and client.name == "roslyn" then
+            local roslyn_buf_augroup = vim.api.nvim_create_augroup(
+                "roslyn-diagnostics-refresh-" .. event.buf,
+                { clear = true }
+            )
+            vim.api.nvim_create_autocmd("InsertLeave", {
+                buffer = event.buf,
+                group = roslyn_buf_augroup,
+                callback = function()
+                    local params = {
+                        textDocument = vim.lsp.util.make_text_document_params(
+                            event.buf
+                        ),
+                    }
+                    client:request(
+                        "textDocument/diagnostic",
+                        params,
+                        nil,
+                        event.buf
+                    )
+                end,
+            })
+        end
     end,
 })
