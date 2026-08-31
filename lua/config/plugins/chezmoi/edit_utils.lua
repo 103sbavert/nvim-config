@@ -4,6 +4,9 @@ local UT = require("config.utils")
 local get_cmd_src_path =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
 
+---@type fun(): ChezmoiEdit
+local get_cmd_edit = UT.lazy_require("nvim-chezmoi.chezmoi.commands.edit")
+
 local uv = vim.uv or vim.loop
 local shared = require("config.plugins.chezmoi.utils")
 
@@ -120,6 +123,28 @@ function M.should_ignore_src_file_async(file, callback)
 
             callback(false)
         end)
+    end)
+end
+
+--- Opens chezmoi source file for editing via chezmoi edit command.
+--- @param file string?
+function M.edit_chezmoi(file)
+    local id = tostring(math.random(1e9))
+    UT.notify_progress("Looking for source...")
+
+    file = file or vim.api.nvim_buf_get_name(0)
+    get_cmd_edit():async(file, function(res)
+        Snacks.notifier.hide(id)
+        if not res or res.success then
+            vim.notify(
+                "Opened source file",
+                vim.log.levels.INFO,
+                { title = "Chezmoi" }
+            )
+        else
+            local m = table.concat(res.data)
+            vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })
+        end
     end)
 end
 

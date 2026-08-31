@@ -3,7 +3,6 @@ local M = {}
 local UT = require("config.utils")
 local get_cmd_src_path =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
-local get_cmd_edit = UT.lazy_require("nvim-chezmoi.chezmoi.commands.edit")
 local get_czm_cache = UT.lazy_require("nvim-chezmoi.chezmoi.cache")
 
 local cached_src_dir = nil
@@ -73,24 +72,6 @@ function M.populate_ft_cache(ft, src_file)
             success = true,
             data = { ft = ft },
         })
-    end
-end
-
---- Opens chezmoi source file for editing via chezmoi edit command.
---- @param file string?
-function M.edit_chezmoi(file)
-    file = file or vim.api.nvim_buf_get_name(0)
-    local res = get_cmd_edit():exec(file)
-
-    if not res or res.success then
-        vim.notify(
-            "Opened source file",
-            vim.log.levels.INFO,
-            { title = "Chezmoi" }
-        )
-    else
-        local m = table.concat(res.data)
-        vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })
     end
 end
 
