@@ -7,6 +7,7 @@ return {
         "folke/which-key.nvim",
     },
     event = "VeryLazy",
+    lazy = false,
     main = "nvim-chezmoi",
     opts = {
         debug = false,
@@ -44,13 +45,6 @@ return {
         require(plugin.main).setup(opts)
         require("config.plugins.chezmoi.statusline")
         require("config.plugins.chezmoi.template")
-        local aucmd = require("config.plugins.chezmoi.aucmd")
-
-        -- manual invocation on initialization if the aucmds registered too for first buffer
-        if not vim.g.initial_trigger_done then
-            aucmd.chezmoi_edit_autocmd_cb({
-                buf = 0,
-            })
-        end
+        require("config.plugins.chezmoi.aucmd")
     end,
 }
