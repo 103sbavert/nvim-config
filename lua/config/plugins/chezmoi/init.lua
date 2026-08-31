@@ -5,7 +5,6 @@ return {
         "nvim-mini/mini.nvim",
         "nvim-lua/plenary.nvim",
         "folke/snacks.nvim",
-        "folke/which-key.nvim",
     },
     event = "VeryLazy",
     lazy = false,
