@@ -24,13 +24,13 @@ return {
         "ChezmoiEdit",
     },
     keys = function()
-        local utils = require("config.plugins.chezmoi.utils")
+        local edit_utils = require("config.plugins.chezmoi.edit_utils")
         local apply_utils = require("config.plugins.chezmoi.apply_utils")
 
         return {
             {
                 "<leader>ze",
-                utils.edit_chezmoi,
+                edit_utils.edit_chezmoi,
                 desc = "[e]dit source file",
             },
             {
