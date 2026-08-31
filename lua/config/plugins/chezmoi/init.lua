@@ -4,6 +4,7 @@ return {
     dependencies = {
         "nvim-mini/mini.nvim",
         "nvim-lua/plenary.nvim",
+        "folke/snacks.nvim",
         "folke/which-key.nvim",
     },
     event = "VeryLazy",
@@ -18,10 +19,6 @@ return {
         execute_template = {
             open_in = "split",
         },
-    },
-    cmd = {
-        "ChezmoiApply",
-        "ChezmoiEdit",
     },
     keys = function()
         local edit_utils = require("config.plugins.chezmoi.edit_utils")
