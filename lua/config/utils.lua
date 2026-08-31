@@ -113,9 +113,27 @@ function M.to_str(args)
     return args
 end
 
+--- Makes a progress notifier with Snack
+--- @param msg string
+--- @param id? string
+--- @param opts? { title: string, timeout: boolean, history: boolean }
+function M.notify_progress(msg, id, opts)
+    --- @type snacks.notifier.Notif.opts
+    local notifier_opts = opts or {}
+
+    notifier_opts.id = id or tostring(math.random(1e9))
+    notifier_opts.title = opts and opts.title or "Information"
+    notifier_opts.history = opts and opts.history or false
+    notifier_opts.timeout = opts and opts.timeout or false
+    notifier_opts.opts = function(n) n.icon = Snacks.util.spinner() end
+
+    Snacks.notifier.notify(msg, vim.log.levels.INFO, opts)
+end
+
 --- Returns a function that calls require when invoked
---- @param modname string
---- @return fun(): any
+--- @generic T
+--- @param modname `T`
+--- @return fun(): T
 function M.lazy_require(modname)
     return function() return require(modname) end
 end
