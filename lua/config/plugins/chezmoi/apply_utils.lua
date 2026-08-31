@@ -1,6 +1,8 @@
 local M = {}
 
 local UT = require("config.utils")
+
+--- @type fun(): ChezmoiApply
 local get_cmd_apply = UT.lazy_require("nvim-chezmoi.chezmoi.commands.apply")
 
 local uv = vim.uv or vim.loop

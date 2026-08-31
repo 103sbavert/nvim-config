@@ -1,6 +1,8 @@
 local M = {}
 
 local UT = require("config.utils")
+
+---@type fun(): ChezmoiSourcePath
 local get_cmd_src_path =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
 
