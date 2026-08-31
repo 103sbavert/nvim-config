@@ -1,8 +1,12 @@
 local M = {}
 
 local UT = require("config.utils")
+
+--- @type fun(): ChezmoiSourcePath
 local get_cmd_src_path =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.source_path")
+
+--- @type fun(): ChezmoiCache
 local get_czm_cache = UT.lazy_require("nvim-chezmoi.chezmoi.cache")
 
 local cached_src_dir = nil

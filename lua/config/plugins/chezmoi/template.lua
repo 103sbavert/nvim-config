@@ -1,5 +1,6 @@
 local UT = require("config.utils")
 
+---@type fun(): ChezmoiExecuteTemplate
 local get_cmd_execute_template =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.execute_template")
 
