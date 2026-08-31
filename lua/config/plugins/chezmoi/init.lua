@@ -5,6 +5,7 @@ return {
         "nvim-mini/mini.nvim",
         "nvim-lua/plenary.nvim",
         "folke/snacks.nvim",
+        "j-hui/fidget.nvim",
     },
     event = "VeryLazy",
     lazy = false,

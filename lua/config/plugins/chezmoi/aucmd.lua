@@ -23,30 +23,48 @@ local function chezmoi_edit_aucmd_cb(args)
 
     local buf_file = UT.get_current_file(args)
 
+    local handle = require("fidget.progress").handle.create({
+        title = "Chezmoi",
+        message = "Checking file...",
+        lsp_client = { name = "chezmoi" },
+        cancellable = false,
+    })
+
     edit_utils.is_src_file_async(buf_file, function(is_src)
         if is_src then
+            handle:finish()
             return
         end
 
+        handle.message = "Looking up source file..."
+
         edit_utils.get_src_file_async(buf_file, function(src_files)
             if not src_files or #src_files == 0 then
+                handle:finish()
                 return
             end
 
             local src = src_files[1]
 
+            handle.message = "Checking ignore rules..."
+
             edit_utils.should_ignore_src_file_async(src, function(should_ignore)
                 if should_ignore then
+                    handle:finish()
                     return
                 end
 
                 if not src or not vim.uv.fs_stat(src) or src == buf_file then
+                    handle:finish()
                     return
                 end
 
                 if shared.has_symlink_attr(src) then
+                    handle:finish()
                     return
                 end
+
+                handle:finish()
 
                 vim.schedule(function()
                     edit_utils.ask_open_src_file(function(choice)
@@ -101,14 +119,46 @@ local function chezmoi_apply_aucmd_cb(args)
         return
     end
 
+    local handle = require("fidget.progress").handle.create({
+        title = "Chezmoi",
+        message = "Applying...",
+        lsp_client = { name = "chezmoi" },
+        cancellable = false,
+    })
+
+    local grp = vim.api.nvim_create_augroup(
+        "PlenaryGroup-" .. tostring(math.random()),
+        { clear = true }
+    )
+
+    local on_done = function()
+        vim.api.nvim_clear_autocmds({ group = grp })
+        handle:finish()
+    end
+
+    ---@type Job?
+    local job
+
+    vim.api.nvim_create_autocmd({ "ExitPre" }, {
+        group = grp,
+        once = true,
+        callback = function()
+            handle.message = "Inhibiting exit..."
+            if job then
+                job:co_wait(1)
+            end
+        end,
+    })
+
     if watched_src_files[buf_file] then
-        apply_utils.apply_chezmoi(buf_file, { quiet = true })
+        job =
+            apply_utils.apply_chezmoi_async(buf_file, { quiet = true }, on_done)
         return
     end
 
-    apply_utils.ask_apply_src_file(function(choice)
+    job = apply_utils.ask_apply_src_file(function(choice)
         if choice == 2 or choice == 4 then
-            apply_utils.apply_chezmoi(buf_file)
+            apply_utils.apply_chezmoi_async(buf_file, nil, on_done)
         end
 
         if choice == 3 then
