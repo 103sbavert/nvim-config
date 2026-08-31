@@ -117,6 +117,52 @@ function M.apply_chezmoi(file, opts)
     end
 end
 
+--- Async chezmoi apply.
+--- @param file string?
+--- @param opts? { quiet: boolean }
+--- @param on_done? fun()
+function M.apply_chezmoi_async(file, opts, on_done)
+    file = file or vim.api.nvim_buf_get_name(0)
+
+    if not file or type(file) ~= "string" then
+        vim.notify(
+            "Filenames must be string",
+            vim.log.levels.ERROR,
+            { title = "Chezmoi" }
+        )
+        if on_done then
+            on_done()
+        end
+        return
+    end
+
+    local args
+    if M.is_src_file(file) then
+        args = { "--source-path", file }
+    else
+        args = { file }
+    end
+
+    return get_cmd_apply():async(args, function(res)
+        if not (opts and opts.quiet) then
+            if not res or res.success then
+                vim.notify(
+                    "Applied changes to target",
+                    vim.log.levels.INFO,
+                    { title = "Chezmoi" }
+                )
+            else
+                local m = table.concat(res.data)
+                vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })
+            end
+        end
+
+        if on_done then
+            on_done()
+        end
+    end)
+end
+
 --- Prompts to apply chezmoi source file to target.
 --- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
 function M.ask_apply_src_file(callback)
