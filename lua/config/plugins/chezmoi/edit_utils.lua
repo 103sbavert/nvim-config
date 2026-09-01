@@ -132,11 +132,12 @@ end
 --- @param file string?
 function M.edit_chezmoi(file)
     local id = tostring(math.random(1e9))
-    UT.notify_progress("Looking for source...")
+    UT.notify_progress("Looking for source...", id, { title = "chezmoi" })
 
     file = file or vim.api.nvim_buf_get_name(0)
     get_cmd_edit():async(file, function(res)
         Snacks.notifier.hide(id)
+
         if not res or res.success then
             vim.notify(
                 "Opened source file",
