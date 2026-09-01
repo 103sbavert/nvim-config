@@ -145,7 +145,36 @@ function M.apply_chezmoi_async(file, opts, on_done)
         args = { file }
     end
 
-    return get_cmd_apply():async(args, function(res)
+    local handle = require("fidget.progress").handle.create({
+        title = "Chezmoi",
+        message = "Applying...",
+        lsp_client = { name = "chezmoi" },
+        cancellable = false,
+    })
+
+    local inhibit_grp = vim.api.nvim_create_augroup(
+        "ChezmoiApplyInhibit-" .. tostring(math.random()),
+        { clear = true }
+    )
+
+    ---@type Job?
+    local job
+
+    vim.api.nvim_create_autocmd({ "ExitPre" }, {
+        group = inhibit_grp,
+        once = true,
+        callback = function()
+            if job then
+                handle.message = "Inhibiting exit..."
+                job:wait(7000, 10, true)
+            end
+        end,
+    })
+
+    job = get_cmd_apply():async(args, function(res)
+        vim.api.nvim_clear_autocmds({ group = inhibit_grp })
+        handle:finish()
+
         if not (opts and opts.quiet) then
             if not res or res.success then
                 vim.notify(
