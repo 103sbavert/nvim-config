@@ -32,7 +32,7 @@ return {
             },
             {
                 "<leader>za",
-                apply_utils.apply_chezmoi,
+                apply_utils.apply_chezmoi_async,
                 desc = "[a]pply to target",
             },
         }
