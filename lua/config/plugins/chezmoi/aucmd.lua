@@ -61,9 +61,9 @@ local function chezmoi_edit_aucmd_cb(args)
                     return
                 end
 
-                handle:finish()
-
+                handle.message = "Opening source file..."
                 vim.schedule(function()
+                    handle:finish()
                     edit_utils.ask_open_src_file(function(choice)
                         if choice == 2 then
                             local buf_type = vim.bo[args.buf].filetype
