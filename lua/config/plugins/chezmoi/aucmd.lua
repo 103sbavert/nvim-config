@@ -141,10 +141,10 @@ local function chezmoi_apply_aucmd_cb(args)
     clear_state_on_delete(buf_id, buf_file)
 end
 
-vim.api.nvim_create_autocmd("BufReadPost", {
-    group = chezmoi_edit_grp,
-    callback = chezmoi_edit_aucmd_cb,
-})
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--     group = chezmoi_edit_grp,
+--     callback = chezmoi_edit_aucmd_cb,
+-- })
 
 shared.get_src_dir_async(
     function(src_dir)
@@ -155,8 +155,3 @@ shared.get_src_dir_async(
         })
     end
 )
-
-return {
-    chezmoi_edit_autocmd_cb = chezmoi_edit_aucmd_cb,
-    chezmoi_apply_autocmd_cb = chezmoi_apply_aucmd_cb,
-}
