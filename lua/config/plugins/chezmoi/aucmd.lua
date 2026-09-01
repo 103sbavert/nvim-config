@@ -69,7 +69,7 @@ local function chezmoi_edit_aucmd_cb(args)
                             local buf_type = vim.bo[args.buf].filetype
                             shared.populate_ft_cache(buf_type, src)
 
-                            vim.cmd.edit(src)
+                            vim.cmd.tabedit(src)
                         elseif choice == 3 then
                             no_open_src_files = true
                         end
