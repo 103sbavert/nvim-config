@@ -1,150 +1,64 @@
-local shared = require("config.plugins.chezmoi.utils")
-local edit_utils = require("config.plugins.chezmoi.edit_utils")
-local apply_utils = require("config.plugins.chezmoi.apply_utils")
 local UT = require("config.utils")
-
-local chezmoi_edit_grp = vim.api.nvim_create_augroup("open_czm_src", {
-    clear = true,
-})
+local UI = require("config.plugins.chezmoi.ui")
+local shared = require("config.plugins.chezmoi.utils")
+local state = require("config.plugins.chezmoi.state")
+local actions = require("config.plugins.chezmoi.actions")
 
 local chezmoi_apply_grp = vim.api.nvim_create_augroup("apply_czm_src", {
     clear = true,
 })
 
-local no_open_src_files = false
-local no_apply_src_files = {}
-local watched_src_files = {}
-
-local function chezmoi_edit_aucmd_cb(args)
-    vim.g.initial_trigger_done = true
-    if no_open_src_files then
+--- Decides what to do with a saved source file.
+--- @param file string
+local function prompt_apply(file)
+    if state.is_watched(file) then
+        actions.apply(file, { quiet = true, is_src = true })
         return
     end
 
-    local buf_file = UT.get_current_file(args)
-    local handle = require("fidget.progress").handle.create({
-        title = "Chezmoi",
-        message = "Checking file...",
-        lsp_client = { name = "chezmoi" },
-        cancellable = false,
-    })
-
-    edit_utils.is_src_file_async(buf_file, function(is_src)
-        if is_src then
-            handle:finish()
-            return
+    UI.ask_apply(function(choice)
+        if choice == UI.CHOICE.yes or choice == UI.CHOICE.watch then
+            actions.apply(file, { is_src = true })
         end
 
-        handle.message = "Looking up source file..."
-        edit_utils.get_src_file_async(buf_file, function(src_files)
-            if not src_files or #src_files == 0 then
-                handle:finish()
-                return
-            end
-
-            local src = src_files[1]
-
-            handle.message = "Checking ignore rules..."
-            edit_utils.should_ignore_src_file_async(src, function(should_ignore)
-                if should_ignore then
-                    handle:finish()
-                    return
-                end
-
-                if not src or not vim.uv.fs_stat(src) or src == buf_file then
-                    handle:finish()
-                    return
-                end
-
-                if shared.has_symlink_attr(src) then
-                    handle:finish()
-                    return
-                end
-
-                handle.message = "Opening source file..."
-                vim.schedule(function()
-                    handle:finish()
-                    edit_utils.ask_open_src_file(function(choice)
-                        if choice == 2 then
-                            local buf_type = vim.bo[args.buf].filetype
-                            shared.populate_ft_cache(buf_type, src)
-
-                            vim.cmd.tabedit(src)
-                        elseif choice == 3 then
-                            no_open_src_files = true
-                        end
-                    end)
-                end)
-            end)
-        end)
+        if choice == UI.CHOICE.never then
+            state.mute(file)
+        elseif choice == UI.CHOICE.watch then
+            state.watch(file)
+            UI.notify_ok("File will be auto-applied on save")
+        end
     end)
-end
-
-local function clear_state_on_delete(buf_id, buf_file)
-    if not buf_id or not buf_file then
-        return
-    end
-
-    vim.api.nvim_create_autocmd({ "BufDelete", "BufFilePre" }, {
-        buf = buf_id,
-        once = true,
-        group = chezmoi_apply_grp,
-        callback = function()
-            no_apply_src_files[buf_file] = nil
-            watched_src_files[buf_file] = nil
-        end,
-    })
 end
 
 local function chezmoi_apply_aucmd_cb(args)
-    local buf_id = args.buf or 0
     local buf_file = UT.get_current_file(args)
 
-    if not buf_file then
+    if not buf_file or state.is_muted(buf_file) then
         return
     end
 
-    if no_apply_src_files[buf_file] then
+    -- Warm by construction: this autocmd is only registered from inside
+    -- get_src_dir_async's callback below.
+    local src_dir = shared.get_cached_src_dir()
+    if not src_dir then
         return
     end
 
-    if apply_utils.should_ignore_src_file(buf_file) then
-        return
-    end
+    state.track_buf(args.buf, buf_file)
 
-    if not apply_utils.is_src_file(buf_file) then
-        return
-    end
+    local progress = UT.progress("Checking file...", { title = "Chezmoi" })
 
-    if watched_src_files[buf_file] then
-        apply_utils.apply_chezmoi_async(buf_file, { quiet = true })
-        return
-    end
+    shared.classify_async(buf_file, { src_dir = src_dir }, function(class)
+        progress:finish()
 
-    apply_utils.ask_apply_src_file(function(choice)
-        if choice == 2 or choice == 4 then
-            apply_utils.apply_chezmoi_async(buf_file, nil)
+        if not class.is_src or class.ignored then
+            return
         end
 
-        if choice == 3 then
-            no_apply_src_files[buf_file] = true
-        elseif choice == 4 then
-            watched_src_files[buf_file] = true
-            vim.notify(
-                "File will be auto-applied on save",
-                vim.log.levels.INFO,
-                { title = "Chezmoi" }
-            )
-        end
+        -- vim.fn.confirm cannot run in a fast-event context.
+        vim.schedule(function() prompt_apply(buf_file) end)
     end)
-
-    clear_state_on_delete(buf_id, buf_file)
 end
-
--- vim.api.nvim_create_autocmd("BufReadPost", {
---     group = chezmoi_edit_grp,
---     callback = chezmoi_edit_aucmd_cb,
--- })
 
 shared.get_src_dir_async(
     function(src_dir)
@@ -155,3 +69,67 @@ shared.get_src_dir_async(
         })
     end
 )
+
+-- local chezmoi_edit_grp = vim.api.nvim_create_augroup("open_czm_src", {
+--     clear = true,
+-- })
+--
+-- local no_open_src_files = false
+--
+-- local function chezmoi_edit_aucmd_cb(args)
+--     if no_open_src_files then
+--         return
+--     end
+--
+--     local buf_file = UT.get_current_file(args)
+--     local progress = UT.progress("Checking file...", { title = "Chezmoi" })
+--
+--     shared.is_src_file_async(buf_file, function(is_src)
+--         if is_src then
+--             progress:finish()
+--             return
+--         end
+--
+--         progress:step("Looking up source file...")
+--         shared.get_src_file_async(buf_file, function(src_files)
+--             local src = src_files and src_files[1]
+--
+--             if not src or src == buf_file then
+--                 progress:finish()
+--                 return
+--             end
+--
+--             progress:step("Checking ignore rules...")
+--             shared.classify_async(src, nil, function(class)
+--                 if class.ignored or not vim.uv.fs_stat(src) then
+--                     progress:finish()
+--                     return
+--                 end
+--
+--                 if shared.has_symlink_attr(src) then
+--                     progress:finish()
+--                     return
+--                 end
+--
+--                 progress:finish()
+--
+--                 -- vim.fn.confirm cannot run in a fast-event context.
+--                 vim.schedule(function()
+--                     UI.ask_open(function(choice)
+--                         if choice == UI.CHOICE.yes then
+--                             shared.populate_ft_cache(vim.bo[args.buf].filetype, src)
+--                             vim.cmd.tabedit(src)
+--                         elseif choice == UI.CHOICE.never then
+--                             no_open_src_files = true
+--                         end
+--                     end)
+--                 end)
+--             end)
+--         end)
+--     end)
+-- end
+--
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--     group = chezmoi_edit_grp,
+--     callback = chezmoi_edit_aucmd_cb,
+-- })

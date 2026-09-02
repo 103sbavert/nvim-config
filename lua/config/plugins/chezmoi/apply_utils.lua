@@ -5,166 +5,20 @@ local UT = require("config.utils")
 --- @type fun(): ChezmoiApply
 local get_cmd_apply = UT.lazy_require("nvim-chezmoi.chezmoi.commands.apply")
 
-local uv = vim.uv or vim.loop
-local shared = require("config.plugins.chezmoi.utils")
-
---- Synchronous check if path is inside dir.
---- @param path string?
---- @param dir string?
---- @return boolean
-function M.is_path_inside_dir(path, dir)
-    local path_abs = shared.get_clean_absolute_path(path)
-    local dir_abs = shared.get_clean_absolute_path(dir)
-
-    if not path_abs or not dir_abs then
-        return false
-    end
-
-    if not vim.endswith(dir_abs, "/") then
-        dir_abs = dir_abs .. "/"
-    end
-
-    local stat = uv.fs_stat(path_abs)
-    if not stat then
-        return false
-    end
-
-    return path_abs:find(dir_abs, 1, true) == 1
-end
-
---- Synchronous check if file is a chezmoi source file.
---- @param file string?
---- @return boolean
-function M.is_src_file(file)
-    local src_dir = shared.get_cached_src_dir()
-    if not src_dir then
-        return false
-    end
-    return M.is_path_inside_dir(file, src_dir)
-end
-
---- Synchronous check if source file should be ignored.
---- @param file string?
---- @return boolean
-function M.should_ignore_src_file(file)
-    if not file or file == "" then
-        return false
-    end
-
-    local src_dir = shared.get_cached_src_dir()
-    if not src_dir then
-        return false
-    end
-
-    if not M.is_path_inside_dir(file, src_dir) then
-        return false
-    end
-
-    local rel_path = vim.fs.relpath(src_dir, file)
-    if not rel_path or rel_path == "" then
-        return false
-    end
-
-    local normal_rel_path = vim.fs.normalize(rel_path)
-    if UT.has_hidden_component(normal_rel_path) then
-        return true
-    end
-
-    for _, pattern in ipairs(shared.ignore_patterns) do
-        if normal_rel_path:match(pattern) then
-            return true
-        end
-    end
-
-    return false
-end
-
---- Async chezmoi apply.
---- @param file string?
---- @param opts? { quiet: boolean }
---- @param on_done? fun()
-function M.apply_chezmoi_async(file, opts, on_done)
-    file = file or vim.api.nvim_buf_get_name(0)
-
-    if not file or type(file) ~= "string" then
-        vim.notify(
-            "Filenames must be string",
-            vim.log.levels.ERROR,
-            { title = "Chezmoi" }
-        )
-        if on_done then
-            on_done()
-        end
-        return
-    end
-
+--- Spawns `chezmoi apply` for one path. No UI, no state, no classification.
+--- @param file string Absolute path to a target or source file.
+--- @param is_src boolean True when `file` is a chezmoi source path.
+--- @param on_exit fun(res: table?) Command result; may run in job context.
+--- @return Job? job nil when the command failed to spawn.
+function M.apply(file, is_src, on_exit)
     local args
-    if M.is_src_file(file) then
+    if is_src then
         args = { "--source-path", file }
     else
         args = { file }
     end
 
-    local handle = require("fidget.progress").handle.create({
-        title = "Chezmoi",
-        message = "Applying...",
-        lsp_client = { name = "chezmoi" },
-        cancellable = false,
-    })
-
-    local inhibit_grp = vim.api.nvim_create_augroup(
-        "ChezmoiApplyInhibit-" .. tostring(math.random()),
-        { clear = true }
-    )
-
-    ---@type Job?
-    local job
-
-    vim.api.nvim_create_autocmd({ "ExitPre" }, {
-        group = inhibit_grp,
-        once = true,
-        callback = function()
-            if job then
-                handle.message = "Inhibiting exit..."
-                job:wait(7000, 10, true)
-            end
-        end,
-    })
-
-    job = get_cmd_apply():async(args, function(res)
-        vim.api.nvim_clear_autocmds({ group = inhibit_grp })
-        handle:finish()
-
-        if not (opts and opts.quiet) then
-            if not res or res.success then
-                vim.notify(
-                    "Applied changes to target",
-                    vim.log.levels.INFO,
-                    { title = "Chezmoi" }
-                )
-            else
-                local m = table.concat(res.data)
-                vim.notify(m, vim.log.levels.ERROR, { title = "Chezmoi" })
-            end
-        end
-
-        if on_done then
-            on_done()
-        end
-    end)
-end
-
---- Prompts to apply chezmoi source file to target.
---- @param callback fun(choice: integer) 1 = No, 2 = Yes, 3 = Don't ask again, 4 = Watch, 0 = dismissed
-function M.ask_apply_src_file(callback)
-    callback(
-        vim.fn.confirm(
-            "Apply to the chezmoi target now?\n",
-            "&no" .. "\n&yes" .. "\n&don't ask again" .. "\n&watch this file",
-            1,
-            "Question"
-        )
-    )
+    return get_cmd_apply():async(args, on_exit)
 end
 
 return M
