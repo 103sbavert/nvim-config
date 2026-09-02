@@ -7,9 +7,9 @@ return {
         "folke/snacks.nvim",
         "j-hui/fidget.nvim",
     },
+    main = "nvim-chezmoi",
     event = "VeryLazy",
     lazy = false,
-    main = "nvim-chezmoi",
     opts = {
         debug = false,
         source_path = os.getenv("CHEZMOI_SOURCE_DIR"),
@@ -21,22 +21,27 @@ return {
         },
     },
     keys = function()
-        local edit_utils = require("config.plugins.chezmoi.edit_utils")
-        local apply_utils = require("config.plugins.chezmoi.apply_utils")
+        local actions = require("config.plugins.chezmoi.actions")
 
         return {
             {
                 "<leader>ze",
-                edit_utils.edit_chezmoi,
+                actions.edit,
                 desc = "[e]dit source file",
             },
             {
                 "<leader>za",
-                apply_utils.apply_chezmoi_async,
+                actions.apply,
                 desc = "[a]pply to target",
             },
         }
     end,
+    cmd = {
+        "ChezmoiEdit",
+        "ChezmoiApply",
+        "ChezmoiManaged",
+        "ChezmoiFiles",
+    },
     config = function(plugin, opts)
         --- @module "nvim-chezmoi"
         require(plugin.main).setup(opts)
