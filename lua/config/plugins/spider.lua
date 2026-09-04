@@ -8,21 +8,6 @@ MODES = { "n", "o", "x" }
 DEFAULT_QUERY_STR =
     "[(identifier) (property_name) (variable_name) (type_identifier) (name)] @id"
 
-LANG_QUERIES_STR = {
-    lua = "((identifier) @id)",
-    python = "((identifier) @id)",
-    javascript = "((identifier) @id)",
-    typescript = "((identifier) @id)",
-    tsx = "((identifier) @id)",
-    c = "((identifier) @id)",
-    cpp = "((identifier) @id)",
-    go = "((identifier) @id)",
-    rust = "[(identifier) (field_identifier) (type_identifier)] @id",
-    sh = "((variable_name) @id)",
-    bash = "((variable_name) @id)",
-    css = "((property_name) @id)",
-}
-
 QUERY_CACHE = {}
 
 --- Retrieves or parses the Tree-sitter query for a given language.
@@ -33,11 +18,11 @@ local function get_treesitter_query(lang)
         return QUERY_CACHE[lang]
     end
 
-    -- Language-specific string query
-    local query_str = LANG_QUERIES_STR[lang] or DEFAULT_QUERY_STR
-
     --- @type boolean,vim.treesitter.Query?
-    local ok, query = pcall(vim.treesitter.query.parse, lang, query_str)
+    local ok, query
+
+    -- Load language-specific spider query from @after/queries/[lang]/spider.scm
+    ok, query = pcall(vim.treesitter.query.get, lang, "spider")
 
     -- Fallback to default query string
     if not ok or not query then
