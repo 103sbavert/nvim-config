@@ -6,7 +6,7 @@ return {
     opts = {
         delay = 250,
         preset = "helix",
-        icons = { mappings = vim.g.have_nerd_font },
+        icons = { mappings = false },
         spec = {
             { "gw", desc = "Text formatting", mode = { "n", "v" } },
             { "gq", desc = "LSP formatting", mode = { "n", "v" } },
