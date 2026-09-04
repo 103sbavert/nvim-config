@@ -86,16 +86,6 @@ return {
         desc = "[r]ecent Files",
     },
     {
-        "<leader>sg",
-        function() Snacks.picker.git_log() end,
-        desc = "[g]it Status",
-    },
-    {
-        "<leader>sg",
-        function() Snacks.picker.git_status() end,
-        desc = "[g]it Status",
-    },
-    {
         "<leader>sw",
         function() Snacks.picker.grep_word() end,
         desc = "Search Current [w]ord",
