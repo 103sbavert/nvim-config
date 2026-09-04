@@ -5,6 +5,30 @@ M.git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
 M.navigate_bw_mapper = create_keymap_group("[ backwards", "[", { "n", "v" })
 M.navigate_fw_mapper = create_keymap_group("] forwards", "]", { "n", "v" })
 
+local commit_popup = nil
+local function commit_popup_cb()
+    commit_popup = commit_popup
+        or require("neogit.lib.popup")
+            .builder()
+            :name("NeogitCommitPopup")
+            :build()
+    require("neogit.popups.commit.actions").commit(commit_popup)
+end
+
+function M.open_commit_tab()
+    local git = require("neogit.lib.git")
+    if git.repo.state.hooks == nil then
+        git.repo:dispatch_refresh({
+            source = "commit-keymap",
+            callback = function()
+                require("neogit.lib.async").void(commit_popup_cb)()
+            end,
+        })
+    else
+        require("neogit.lib.async").void(commit_popup_cb)()
+    end
+end
+
 local function git_log_formatter(head_sha, item, picker)
     local formatted_item = Snacks.picker.format.git_log(item, picker)
 
