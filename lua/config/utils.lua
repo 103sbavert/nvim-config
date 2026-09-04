@@ -194,4 +194,51 @@ function M.inhibit_exit(get_job, opts)
     end
 end
 
+--- Executes a system command with standardized error handling and safe callback invocation.
+--- Always invokes callback (even on error); errors also trigger vim.notify.
+--- @param cmd string[] Command and arguments to execute.
+--- @param callback fun(result: vim.SystemCompleted) Invoked in scheduled context after command completes.
+--- @param opts? { error_title?: string, notify_on_error?: boolean } Configuration.
+---   - error_title: Title for error notifications (default: command name).
+---   - notify_on_error: Whether to notify on exit code ~= 0 (default: true).
+function M.git_run(cmd, callback, opts)
+    opts = opts or {}
+    local error_title = opts.error_title or (cmd[1] or "cmd")
+    local notify_on_error = opts.notify_on_error ~= false
+
+    vim.system(cmd, {}, function(result)
+        vim.schedule(function()
+            if result.code ~= 0 and notify_on_error then
+                local msg = vim.trim((result.stderr or result.stdout or ""))
+                vim.notify(
+                    msg ~= "" and msg or "Command failed: " .. error_title,
+                    vim.log.levels.ERROR,
+                    { title = error_title }
+                )
+            end
+            callback(result)
+        end)
+    end)
+end
+
+--- Checks if a file is tracked in git. Always invokes callback.
+--- Automatically notifies on git errors.
+--- @param file_path string Absolute file path to check.
+--- @param callback fun(is_tracked: boolean, status_line: string) Invoked in scheduled context.
+---   - is_tracked: true if file is tracked (has git history), false if new/untracked.
+---   - status_line: Raw git status output (e.g., "M ", "??", "A ").
+function M.is_file_tracked(file_path, callback)
+    M.git_run(
+        { "git", "--no-pager", "status", "--porcelain", "--", file_path },
+        function(result)
+            local status_line = vim.trim(result.stdout or "")
+            -- File is new/untracked if status starts with ?? or A
+            local is_new = vim.startswith(status_line, "??")
+                or vim.startswith(status_line, "A")
+            callback(not is_new, status_line)
+        end,
+        { error_title = "Git Status", notify_on_error = true }
+    )
+end
+
 return M
