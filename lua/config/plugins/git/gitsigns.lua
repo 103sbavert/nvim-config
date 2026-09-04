@@ -94,11 +94,6 @@ return {
                     gitsigns.preview_hunk,
                     "[p]review hunk"
                 )
-                utils.git_key_mapper(
-                    "D",
-                    function() utils.pick_diff_base(gitsigns.diffthis) end,
-                    "View [D]iff against thing"
-                )
             end
 
             -- Resets
@@ -128,17 +123,6 @@ return {
                     "ih",
                     ":<C-U>Gitsigns select_hunk<CR>",
                     { buffer = bufnr, desc = "Select hunk" }
-                )
-            end
-
-            -- Commit
-            do
-                utils.git_key_mapper(
-                    "c",
-                    utils.commit,
-                    "[c]ommit staged changes",
-                    nil,
-                    { "n" }
                 )
             end
 
