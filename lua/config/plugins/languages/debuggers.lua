@@ -8,7 +8,6 @@ return {
         "williamboman/mason.nvim",
         "jay-babu/mason-nvim-dap.nvim",
         "leoluz/nvim-dap-go",
-        "folke/which-key.nvim",
     },
     config = function()
         local mason_daps = {

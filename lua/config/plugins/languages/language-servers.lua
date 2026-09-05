@@ -5,7 +5,6 @@ return {
         "config.mason",
         "seblyng/roslyn.nvim",
         "config.utils",
-        "folke/which-key.nvim",
         "j-hui/fidget.nvim",
     },
     config = function()
