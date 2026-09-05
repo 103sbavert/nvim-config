@@ -326,14 +326,17 @@ require("lazy").setup({
             "NMAC427/guess-indent.nvim",
             opts = {
                 auto_cmd = true,
+                --- @type vim.bo
                 on_tab_options = {
-                    ["expandtab"] = true,
+                    expandtab = true,
+                    softtabstop = -1,
                 },
+                --- @type vim.bo
                 on_space_options = {
-                    ["expandtab"] = true,
-                    ["tabstop"] = "detected",
-                    ["softtabstop"] = "detected",
-                    ["shiftwidth"] = "detected",
+                    expandtab = true,
+                    tabstop = "detected",
+                    softtabstop = "detected",
+                    shiftwidth = "detected",
                 },
             },
         },
