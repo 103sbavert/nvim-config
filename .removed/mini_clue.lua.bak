@@ -1,0 +1,181 @@
+local MiniClue = require("mini.clue")
+
+--- Setup mini.clue with triggers and clues for all keymap groups
+MiniClue.setup({
+    triggers = {
+        -- Leader key (covers all <leader>* with auto-narrowing)
+        { mode = "n", keys = "<leader>" },
+
+        -- Built-in vim prefixes
+        { mode = { "n", "x" }, keys = "g" },
+        { mode = { "n", "x" }, keys = "z" },
+        { mode = { "n", "x" }, keys = "[" },
+        { mode = { "n", "x" }, keys = "]" },
+
+        -- Marks and registers
+        { mode = { "n", "x" }, keys = "'" },
+        { mode = { "n", "x" }, keys = "`" },
+        { mode = { "n", "x" }, keys = '"' },
+        { mode = { "i", "c" }, keys = "<C-r>" },
+
+        -- Window commands
+        { mode = "n", keys = "<C-w>" },
+
+        -- Completion in insert mode
+        { mode = "i", keys = "<C-x>" },
+    },
+
+    clues = {
+        { mode = "n", keys = "g0", desc = "Go to leftmost visible column" },
+        {
+            mode = "n",
+            keys = "gE",
+            desc = "Go backwards to end of previous WORD",
+        },
+        {
+            mode = "n",
+            keys = "ge",
+            desc = "Go backwards to end of previous word",
+        },
+        {
+            mode = "n",
+            keys = "gF",
+            desc = "Edit file under cursor at line",
+        },
+        { mode = "n", keys = "gf", desc = "Edit file under cursor" },
+        { mode = "n", keys = "gg", desc = "Go to buffer top" },
+        { mode = "n", keys = "gH", desc = "Start Select line mode" },
+        { mode = "n", keys = "gh", desc = "Start Select mode" },
+        { mode = "n", keys = "gi", desc = "Continue last insert" },
+        {
+            mode = "n",
+            keys = "gJ",
+            desc = "Join lines without extra spaces",
+        },
+        { mode = "n", keys = "gj", desc = "Go down by screen lines" },
+        { mode = "n", keys = "gk", desc = "Go up by screen lines" },
+        { mode = "n", keys = "gM", desc = "Go to middle of text line" },
+        { mode = "n", keys = "gm", desc = "Go to middle of screen line" },
+        { mode = "n", keys = "gN", desc = "Select previous search match" },
+        { mode = "n", keys = "gn", desc = "Select next search match" },
+        {
+            mode = "n",
+            keys = "gP",
+            desc = "Put text before cursor",
+        },
+        {
+            mode = "n",
+            keys = "gp",
+            desc = "Put text after cursor",
+        },
+        { mode = "n", keys = "gQ", desc = 'Enable "Ex" mode' },
+        { mode = "n", keys = "gR", desc = "Virtual Replace mode" },
+        { mode = "n", keys = "gT", desc = "Go to previous tabpage" },
+        { mode = "n", keys = "gt", desc = "Go to next tabpage" },
+        { mode = "n", keys = "gU", desc = "Make UPPERCASE (op)" },
+        { mode = "n", keys = "gu", desc = "Make lowercase (op)" },
+        {
+            mode = "n",
+            keys = "gx",
+            desc = "Execute app for file under cursor",
+        },
+        { mode = "n", keys = "g<C-]>", desc = "`:tjump` to tag under cursor" },
+        { mode = "n", keys = "g<C-g>", desc = "Show information about cursor" },
+        { mode = "n", keys = "g<C-h>", desc = "Start Select block mode" },
+        { mode = "n", keys = "g<Tab>", desc = "Go to last accessed tabpage" },
+        {
+            mode = "n",
+            keys = "g'",
+            desc = "Jump to mark (don't affect jumplist)",
+        },
+        {
+            mode = "n",
+            keys = "g#",
+            desc = "Search backwards word under cursor",
+        },
+        { mode = "n", keys = "g%", desc = "Cycle through matching groups" },
+        { mode = "n", keys = "g&", desc = "Repeat last `:s` on all lines" },
+        { mode = "n", keys = "g*", desc = "Search word under cursor" },
+        {
+            mode = "n",
+            keys = "g,",
+            desc = "Go to newer position in change list",
+        },
+        {
+            mode = "n",
+            keys = "g;",
+            desc = "Go to older position in change list",
+        },
+        {
+            mode = "n",
+            keys = "g<",
+            desc = "Display previous command output",
+        },
+        { mode = "n", keys = "g?", desc = "Rot13 encode (op)" },
+        {
+            mode = "n",
+            keys = "g@",
+            desc = "Call 'opfunc' (op)",
+        },
+        { mode = "n", keys = "g]", desc = "`:tselect` tag under cursor" },
+        {
+            mode = "n",
+            keys = "g`",
+            desc = "Jump to mark (don't affect jumplist)",
+        },
+        { mode = "n", keys = "g~", desc = "Swap case (op)" },
+
+        { mode = "x", keys = "gf", desc = "Edit selected file" },
+        {
+            mode = "x",
+            keys = "gJ",
+            desc = "Join selected lines without extra spaces",
+        },
+        { mode = "x", keys = "gV", desc = "Avoid reselect" },
+        { mode = "x", keys = "g<C-]>", desc = "`:tjump` to selected tag" },
+        { mode = "x", keys = "g<C-a>", desc = "Increment with compound" },
+        {
+            mode = "x",
+            keys = "g<C-g>",
+            desc = "Show information about selection",
+        },
+        { mode = "x", keys = "g<C-x>", desc = "Decrement with compound" },
+        { mode = "x", keys = "g]", desc = "`:tselect` selected tag" },
+        { mode = "x", keys = "g?", desc = "Rot13 encode selection" },
+
+        -- Built-in vim clues (placed first so custom group clues below can override)
+        MiniClue.gen_clues.z(),
+        MiniClue.gen_clues.builtin_completion(),
+        MiniClue.gen_clues.square_brackets(),
+        MiniClue.gen_clues.registers(),
+        MiniClue.gen_clues.windows(),
+
+        -- Group headers for visual organization (override built-in desc where keys collide, e.g. "ga")
+        { mode = "n", keys = "gq", desc = "Smart format" },
+        { mode = "n", keys = "gw", desc = "Text format" },
+        { mode = "n", keys = "ga", desc = "[g]o [t]o c[a]lls" },
+
+        { mode = "n", keys = "<leader>g", desc = "[g]it" },
+        { mode = "n", keys = "<leader>b", desc = "[b]reakpoints" },
+        { mode = "n", keys = "<leader>t", desc = "[t]oggle" },
+        { mode = "n", keys = "<leader>z", desc = "Che[z]moi" },
+        { mode = "n", keys = "<leader>s", desc = "[s]earch" },
+        { mode = "n", keys = "<leader>l", desc = "[l]SP" },
+    },
+
+    window = {
+        delay = 200,
+        config = function(buf_id)
+            local v_max = math.floor(vim.o.lines * 0.5)
+            local h_max = math.floor(vim.o.columns * 0.25)
+
+            local v_auto_clamped =
+                math.min(vim.api.nvim_buf_line_count(buf_id), v_max)
+
+            return {
+                width = h_max,
+                height = v_auto_clamped,
+            }
+        end,
+    },
+})
