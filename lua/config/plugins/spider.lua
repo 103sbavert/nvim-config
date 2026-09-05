@@ -132,7 +132,6 @@ return {
     "chrisgrieser/nvim-spider",
     event = "FileType",
     dependencies = {
-        "folke/which-key.nvim",
         "nvim-treesitter/nvim-treesitter",
     },
     keys = {
