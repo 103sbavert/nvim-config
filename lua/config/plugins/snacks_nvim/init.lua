@@ -36,11 +36,17 @@ return {
                 },
             },
         },
-        notifier = { enabled = true },
+        notifier = {
+            enabled = true,
+            style = "compact",
+        },
         quickfile = { enabled = true },
         scope = { enabled = true },
         terminal = { enabled = true },
         styles = {
+            notification = {
+                border = "rounded",
+            },
             terminal = {
                 keys = {
                     term_normal = {
