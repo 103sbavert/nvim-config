@@ -173,10 +173,10 @@ do
     vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
     vim.keymap.set(
-        { "n", "i", "v", "x", "s", "o", "c" },
+        { "i", "c", "v", "x", "s", "o", "t", "l" },
         "<C-n>",
-        "<Esc>",
-        { desc = "Alias for <Esc>" }
+        "<C-\\><C-n>",
+        { desc = "Exit to Normal mode" }
     )
 
     -- TIP: Disable arrow keys in normal mode
