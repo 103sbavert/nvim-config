@@ -34,7 +34,7 @@ return {
                 border = { style = "none", padding = { 0, 0 } },
                 win_options = {
                     winhighlight = {
-                        Normal = "CmdlineBackground",
+                        Normal = "NormalFloat",
                     },
                 },
             },
@@ -63,8 +63,8 @@ return {
             hover = {
                 win_options = {
                     winhighlight = {
-                        Normal = "ElevatedFloatNormal",
-                        FloatBorder = "ElevatedFloatBorder",
+                        Normal = "NormalFloat",
+                        FloatBorder = "FloatBorder",
                     },
                 },
             },
