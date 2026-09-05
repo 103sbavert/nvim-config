@@ -25,7 +25,7 @@ return {
     {
         "<leader><leader>",
         function() Snacks.picker.buffers() end,
-        desc = "[<leader>] Recent Files",
+        desc = "[ ] Recent Files",
     },
     {
         "<leader>?",
