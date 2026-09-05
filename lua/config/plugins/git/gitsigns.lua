@@ -113,7 +113,7 @@ return {
                 utils.git_key_mapper("r", function()
                     local range = { vim.fn.line("."), vim.fn.line("v") }
                     gitsigns.reset_hunk(range, { greedy = false })
-                end, "[r]eset visual selection", nil, { "v" })
+                end, "[r]eset selection", nil, { "v" })
             end
 
             -- Text object
