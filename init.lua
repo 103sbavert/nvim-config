@@ -298,15 +298,7 @@ do
             bg3 = bg3,
         },
         highlights = {
-            -- Elevated float surface (lighter background) used by blink menus, doc windows, and noice hover.
-            ElevatedFloatNormal = { bg = bg1, fg = c.fg },
-            ElevatedFloatBorder = { bg = bg1, fg = bg1 },
-            ElevatedFloatSelection = { bg = bg2, bold = true },
-            ElevatedFloatSeparator = { bg = bg1, fg = bg2 },
-            ElevatedFloatCursorLine = { bg = bg2 },
-            ElevatedFloatScrollThumb = { bg = bg3 },
-            ElevatedFloatScrollGutter = { bg = bg2 },
-            CmdlineBackground = { bg = c.bg_d },
+            NormalFloat = { bg = c.bg_d },
             FloatBorder = { fg = c.purple },
             -- LSP highlights
             LspReferenceWrite = { bg = hl_write },
@@ -315,19 +307,6 @@ do
             -- Noice Popup highlights
             NoiceConfirm = { link = "NormalFloat" },
             NoiceConfirmBorder = { link = "FloatBorder" },
-            -- Blink highlights linked to above custom highlights
-            BlinkCmpMenu = { link = "ElevatedFloatNormal" },
-            BlinkCmpMenuBorder = { link = "ElevatedFloatBorder" },
-            BlinkCmpMenuSelection = { link = "ElevatedFloatSelection" },
-            BlinkCmpScrollBarThumb = { link = "ElevatedFloatScrollThumb" },
-            BlinkCmpScrollBarGutter = { link = "ElevatedFloatScrollGutter" },
-            BlinkCmpLabel = { link = "ElevatedFloatNormal" },
-            BlinkCmpDoc = { link = "ElevatedFloatNormal" },
-            BlinkCmpDocBorder = { link = "ElevatedFloatBorder" },
-            BlinkCmpDocSeparator = { link = "ElevatedFloatSeparator" },
-            BlinkCmpDocCursorLine = { link = "ElevatedFloatCursorLine" },
-            BlinkCmpSignatureHelp = { link = "ElevatedFloatNormal" },
-            BlinkCmpSignatureHelpBorder = { link = "ElevatedFloatBorder" },
         },
     })
     require("bamboo").load()
