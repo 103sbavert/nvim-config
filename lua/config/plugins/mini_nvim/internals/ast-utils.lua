@@ -1,30 +1,28 @@
 local M = {}
 
-local treesitter_spec = require("mini.ai").gen_spec.treesitter
-
 local opts = {
     use_nvim_treesitter = true,
 }
 
---- Variable declarations / assignments
+-- Variable declarations / assignments
 M.make_decl_textobj = function()
-    return treesitter_spec({
+    return require("mini.ai").gen_spec.treesitter({
         a = "@assignment.outer",
         i = "@assignment.rhs",
     }, opts)
 end
 
---- Function definitions
+-- Function definitions
 M.make_func_textobj = function()
-    return treesitter_spec({
+    return require("mini.ai").gen_spec.treesitter({
         a = "@function.outer",
         i = "@function.inner",
     }, opts)
 end
 
---- Blocks, loops, conditionals
+-- Blocks, loops, conditionals
 M.make_scope_textobj = function()
-    return treesitter_spec({
+    return require("mini.ai").gen_spec.treesitter({
         a = { "@block.outer", "@loop.outer", "@conditional.outer" },
         i = { "@block.inner", "@loop.inner", "@conditional.inner" },
     }, opts)
