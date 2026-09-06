@@ -25,8 +25,8 @@ return {
             height = { max = math.floor(vim.o.lines * 0.5) },
         },
         keys = {
-            scroll_up = "<C-A>",
-            scroll_down = "<C-D>",
+            scroll_up = "<C-a>",
+            scroll_down = "<C-b>",
         },
         filter = function(mapping)
             return mapping.desc and vim.trim(mapping.desc) ~= "" -- exclude if no descripton is found
