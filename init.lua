@@ -188,16 +188,23 @@ do
     -- Key binds to navigate between tabs
     -- Use ALT+<h,l> to navigate between adjacent tabs
     vim.keymap.set(
-        "n",
+        { "n", "i", "t" },
         "<A-h>",
         vim.cmd.tabprevious,
         { silent = true, desc = "Previous tab" }
     )
     vim.keymap.set(
-        "n",
+        { "n", "i", "t" },
         "<A-l>",
         vim.cmd.tabnext,
         { silent = true, desc = "Next tab" }
+    )
+
+    vim.keymap.set(
+        { "n", "i", "t" },
+        "<A-t>",
+        function() vim.cmd.wincmd("T") end,
+        { silent = true, desc = "Move window to new tab" }
     )
 
     -- Keybinds to make split navigation easier.
@@ -205,28 +212,24 @@ do
     --
     --  See `:help wincmd` for a list of all window commands
     vim.keymap.set(
-        "n",
+        { "n", "i", "t" },
         "<C-h>",
-        "<C-w><C-h>",
-        { desc = "Move focus to the left window" }
+        function() vim.cmd.wincmd("h") end
     )
     vim.keymap.set(
-        "n",
-        "<C-l>",
-        "<C-w><C-l>",
-        { desc = "Move focus to the right window" }
-    )
-    vim.keymap.set(
-        "n",
+        { "n", "i", "t" },
         "<C-j>",
-        "<C-w><C-j>",
-        { desc = "Move focus to the lower window" }
+        function() vim.cmd.wincmd("j") end
     )
     vim.keymap.set(
-        "n",
+        { "n", "i", "t" },
         "<C-k>",
-        "<C-w><C-k>",
-        { desc = "Move focus to the upper window" }
+        function() vim.cmd.wincmd("k") end
+    )
+    vim.keymap.set(
+        { "n", "i", "t" },
+        "<C-l>",
+        function() vim.cmd.wincmd("l") end
     )
 
     -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
