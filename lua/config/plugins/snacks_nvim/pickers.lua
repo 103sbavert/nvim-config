@@ -37,6 +37,22 @@ return {
         function() Snacks.picker.lines() end,
         desc = "[/] Grep Buffer",
     },
+    {
+        "<leader>q",
+        function()
+            Snacks.picker.diagnostics_buffer({
+                layout = "ivy_split",
+                jump = { close = false },
+                auto_close = false,
+                focus = "list",
+                win = {
+                    input = { minimal = true },
+                    list = { minimal = true },
+                },
+            })
+        end,
+        desc = "[q]uick fix diagnostics",
+    },
     -- LSP jump bindings
     {
         "gs",
