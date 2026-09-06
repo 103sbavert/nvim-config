@@ -8,9 +8,9 @@ Originally based on
 
 - **Plugin Manager:** [lazy.nvim](https://github.com/folke/lazy.nvim)
 - **Bootstrapping:** Installed via Neovim 0.12+
-[`vim.pack`](https://neovim.io/doc/user/pack/) API
+  [`vim.pack`](https://neovim.io/doc/user/pack/) API
 - **Theme:** [bamboo.nvim](https://github.com/ribru17/bamboo.nvim) (vulgaris
-variant)
+  variant)
 
 ## Requirements
 
@@ -48,17 +48,17 @@ nvim
 ### Path Conventions
 
 - `init.lua`: This is the main entry point. It contains basic configuration
-that does not require external dependencies, theme setup, `lazy.nvim`
-bootstrapping via `vim.pack`, and module imports.
+  that does not require external dependencies, theme setup, `lazy.nvim`
+  bootstrapping via `vim.pack`, and module imports.
 - `lua/config/health.lua`: Checks required host binaries, run only by explicit
-invocation (`:checkhealth`). Also, see [Requirements](#requirements).
+  invocation (`:checkhealth`). Also, see [Requirements](#requirements).
 - `lua/config/<module>.lua`: This contains more complex, but still non-plugin
-settings or re-usable utilities for other modules.
+  settings or re-usable utilities for other modules.
 - `lua/config/plugins/<simple-plugin>.lua`: Single-file plugin configurations.
-Used when setup logic fits cleanly in one file named after the plugin or
-feature.
+  Used when setup logic fits cleanly in one file named after the plugin or
+  feature.
 - `lua/config/plugins/<complex-feature>/`: Multi-file plugin configurations.
-Used when setup requires modularization across multiple files.
+  Used when setup requires modularization across multiple files.
   - `init.lua`: Main entry point for the feature module.
   - `<module>.lua`: Reusable utilities or sub-configurations loaded by
-  `init.lua`.
+    `init.lua`.
