@@ -25,6 +25,16 @@ return {
         input = { enabled = true },
         picker = {
             enabled = true,
+            win = {
+                input = {
+                    keys = {
+                        -- always re-enter search insert mode when pressing "/"
+                        -- regardless of focused window
+                        ["/"] = function() vim.cmd("startinsert") end,
+                        mode = { "n" },
+                    },
+                },
+            },
             sources = {
                 explorer = {
                     hidden = true,
