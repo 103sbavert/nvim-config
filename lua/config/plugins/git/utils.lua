@@ -119,7 +119,9 @@ function M.open_commit_picker(callback)
                 end,
                 current_file = true,
                 title = "Pick diff base",
-                confirm = function() on_ref_confirm(callback) end,
+                confirm = function(picker, item)
+                    on_ref_confirm(picker, item, callback)
+                end,
             }
 
             Snacks.picker.git_log(git_log_opts)
