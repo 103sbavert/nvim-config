@@ -94,6 +94,10 @@ function M.get_current_file(args)
     return buf_name
 end
 
+--- Checks whether any path segment is hidden (dotfile/dotdir), ignoring
+--- the special "." and ".." segments.
+--- @param path string File system path to check.
+--- @return boolean True if any segment starts with ".".
 function M.has_hidden_component(path)
     for segment in path:gmatch("[^/]+") do
         if segment:match("^%.") and segment ~= "." and segment ~= ".." then
