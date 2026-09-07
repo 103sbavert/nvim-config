@@ -34,17 +34,17 @@ return {
         spec = {
             -- `g` prefix groups
             -- { "gc", desc = "Comment", mode = "n" },
-            { "gq", desc = "Format (smart)", mode = "n" },
-            { "gw", desc = "Format (dumb)", mode = "n" },
+            { "gq", desc = "Format (smart)", mode = { "x", "n" } },
+            { "gw", desc = "Format (dumb)", mode = { "x", "n" } },
             { "gx", desc = "open URI/path under cusor", mode = { "x", "n" } },
 
             -- `<leader>` prefix groups
-            { "<leader>g", group = "[g]it", mode = "n" },
+            { "<leader>g", group = "[g]it", mode = { "x", "n" } },
             { "<leader>b", group = "[b]reakpoints", mode = "n" },
             { "<leader>t", group = "[t]oggle", mode = "n" },
             { "<leader>z", group = "Che[z]moi", mode = "n" },
-            { "<leader>s", group = "[s]earch", mode = "n" },
-            { "<leader>l", group = "[l]SP", mode = "n" },
+            { "<leader>s", group = "[s]earch", mode = { "x", "n" } },
+            { "<leader>l", group = "[l]SP", mode = { "x", "n" } },
         },
     },
 }
