@@ -32,7 +32,7 @@ return {
             vim.api.nvim_create_augroup("lint", { clear = true })
 
         vim.api.nvim_create_autocmd(
-            { "BufReadPost", "BufWritePost", "InsertLeave" },
+            { "BufReadPost", "BufWritePost", "CursorHold", "InsertLeave" },
             {
                 group = lint_augroup,
                 callback = function()
