@@ -11,8 +11,8 @@ return {
         default_format_opts = {
             lsp_format = "fallback", -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
         },
-        format_after_save = {
-            async = true,
+        format_on_save = {
+            async = false,
             timeout_ms = 500,
         },
         formatters_by_ft = {
