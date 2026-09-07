@@ -246,11 +246,10 @@ function M.is_file_tracked(file_path, callback)
 end
 
 --- Create a keymap group that returns a function for setting keymaps
---- @param group_name string Label for the key group, shown in mini.clue popup
 --- @param prefix_keys string Group prefix key sequence (such as "<leader>g" for all key maps starting in "<leader>g")
 --- @param default_modes string|string[] Default vim modes
 --- @return fun(keys: string, func: string|function, desc: string, opts: table?, modes?: string|string[]): nil
-function _G.create_keymap_group(group_name, prefix_keys, default_modes)
+function _G.create_keymap_group(prefix_keys, default_modes)
     return function(keys, func, desc, keymap_opts, modes)
         local final_opts = vim.tbl_deep_extend("force", {}, keymap_opts or {})
         final_opts.desc = desc
@@ -272,7 +271,7 @@ function _G.map_toggle_key(keys, func, desc)
         end
     end
 
-    local toggle_key_group = create_keymap_group("[t]oggle", "<leader>t", { "n" })
+    local toggle_key_group = create_keymap_group("<leader>t", { "n" })
     toggle_key_group(keys, toggle_fn, desc)
 end
 
