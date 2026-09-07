@@ -1,5 +1,50 @@
 local M = {}
 
+--- @param key string
+--- @param lsp_config LspKeyConfig
+--- @param client vim.lsp.Client
+--- @param bufnr integer
+local function map_if_capable(key, lsp_config, client, bufnr)
+    local client_id = client.id
+
+    -- Skip if client does not support this capability
+    if
+        lsp_config.capability
+        and not client:supports_method(lsp_config.capability, bufnr)
+    then
+        return
+    end
+
+    vim.keymap.set(lsp_config.modes or "n", key, function()
+        if client:is_stopped() then
+            vim.notify(
+                string.format(
+                    "%s: client %d is no longer attached",
+                    lsp_config.description,
+                    client_id
+                ),
+                vim.log.levels.WARN
+            )
+            return
+        end
+
+        lsp_config.jump_action(bufnr)
+    end, { buffer = bufnr, desc = lsp_config.description })
+end
+
+local lsp_jump =
+    require("config.plugins.languages.internal.lsp-actions").lsp_jump
+
+--- @param client vim.lsp.Client
+--- @param bufnr integer
+function M.map_lsp_actions(client, bufnr)
+    for key, config in pairs(lsp_jump) do
+        if config.jump_action then
+            map_if_capable(key, config, client, bufnr)
+        end
+    end
+end
+
 --- Returns effective indent size for bufnr: buffer-local shiftwidth (or tabstop
 --- when shiftwidth=0), cascading to global, with 4 as final safety fallback.
 --- @param bufnr integer The buffer handle/number to evaluate.
