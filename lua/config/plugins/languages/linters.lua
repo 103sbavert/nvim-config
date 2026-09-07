@@ -8,17 +8,18 @@ return {
         local lint = require("lint")
 
         require("config.mason").InstallTools(linters)
-
         lint.linters_by_ft = {
-            markdown = { "markdownlint" },
+            markdown = { "markdownlint-cli2" },
             javascript = { "eslint_d" },
             typescript = { "eslint_d" },
         }
 
         -- Create autocommand which carries out the actual linting
         -- on the specified events.
+
         local lint_augroup =
             vim.api.nvim_create_augroup("lint", { clear = true })
+
         vim.api.nvim_create_autocmd(
             { "BufReadPost", "BufWritePost", "InsertLeave" },
             {
