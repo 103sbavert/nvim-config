@@ -32,7 +32,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
             return
         end
 
-        -- Remaining LSP actions kept under <leader>l
+        -- LSP keybinds/actions with no Snacks dependency
         --- @type table<string, LspKeyConfig>
         local lsp_jump = {
             ["<leader>ln"] = {
@@ -40,7 +40,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 jump_action = vim.lsp.buf.rename,
                 capability = "textDocument/rename",
             },
-            ["<leader>la"] = {
+            ["ga"] = {
                 description = "Code [a]ction",
                 jump_action = vim.lsp.buf.code_action,
                 capability = "textDocument/codeAction",
