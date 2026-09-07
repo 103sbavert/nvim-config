@@ -30,13 +30,13 @@ return {
             timeout_ms = 500,
         },
         formatters_by_ft = {
-            lua = { "stylua" },
             python = { "isort" },
-            go = { "goimports" },
             javascript = { "prettier" },
             typescript = { "prettier" },
             json = { "prettier" },
             yaml = { "prettier" },
+            lua = { lsp_format = "prefer" }, -- uses stylua as an LS, not lua_ls
+            go = { lsp_format = "prefer" },
             toml = { "taplo" },
             sh = { "shfmt" },
             bash = { "shfmt" },
@@ -44,7 +44,6 @@ return {
             markdown = { "prettier" },
         },
         formatters = {
-            stylua = {},
             shfmt = {
                 args = function(_, ctx)
                     return { "-i", tostring(get_indent(ctx.buf)), "-ci" }
@@ -85,8 +84,6 @@ return {
             "taplo",
             "prettier",
             "isort",
-            "stylua",
-            "goimports",
         }
 
         require("config.mason").InstallTools(mason_formatters)
