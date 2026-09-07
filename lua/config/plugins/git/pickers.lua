@@ -2,6 +2,7 @@
 return {
     "esmuellert/codediff.nvim",
     dependencies = {
+        "config.utils",
         "folke/snacks.nvim",
     },
     keys = {

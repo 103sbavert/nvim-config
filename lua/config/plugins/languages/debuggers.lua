@@ -2,6 +2,7 @@
 return {
     "mfussenegger/nvim-dap",
     dependencies = {
+        "config.utils",
         "rcarriga/nvim-dap-ui",
         "nvim-neotest/nvim-nio",
         "theHamsta/nvim-dap-virtual-text",
@@ -55,8 +56,7 @@ return {
             clear_on_continue = true,
         })
 
-        local breakpoint_grp =
-            create_keymap_group("[b]reakpoints", "<leader>b", { "n" })
+        local breakpoint_grp = create_keymap_group("<leader>b", { "n" })
         local function prompt_breakpoint_expr()
             dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
         end
