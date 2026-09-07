@@ -31,17 +31,22 @@ return {
         },
         formatters_by_ft = {
             python = { "isort" },
-            javascript = { "prettier" },
-            typescript = { "prettier" },
-            json = { "prettier" },
-            yaml = { "prettier" },
             lua = { lsp_format = "prefer" }, -- uses stylua as an LS, not lua_ls
             go = { lsp_format = "prefer" },
+            javascript = { "prettierd" },
+            typescript = { "prettierd" },
+            javascriptreact = { "prettierd" },
+            typescriptreact = { "prettierd" },
+            json = { "prettierd" },
+            jsonc = { "prettierd" },
+            css = { "prettierd" },
+            graphql = { "prettierd" },
+            markdown = { "prettierd" },
+            yaml = { "prettierd" },
             toml = { "taplo" },
             sh = { "shfmt" },
             bash = { "shfmt" },
             zsh = { "shfmt" },
-            markdown = { "prettier" },
         },
         formatters = {
             shfmt = {
@@ -52,12 +57,9 @@ return {
             prettierd = {
                 env = function(_, ctx)
                     return {
-                        "--log-level",
-                        "error",
-                        "--tab-width",
-                        tostring(get_indent(ctx.buf)),
-                        "--stdin-filepath",
-                        "$FILENAME",
+                        PRETTIERD_DEFAULT_CONFIG = vim.fn.json_encode({
+                            tabWidth = get_indent(ctx.buf),
+                        }),
                     }
                 end,
             },
@@ -82,7 +84,7 @@ return {
         local mason_formatters = {
             "shfmt",
             "taplo",
-            "prettier",
+            "prettierd",
             "isort",
         }
 
