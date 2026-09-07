@@ -41,7 +41,6 @@ return {
             sh = { "shfmt" },
             bash = { "shfmt" },
             zsh = { "shfmt" },
-            cs = { "jb" },
             markdown = { "prettier" },
         },
         formatters = {
@@ -51,39 +50,8 @@ return {
                     return { "-i", tostring(get_indent(ctx.buf)), "-ci" }
                 end,
             },
-            jb = function()
-                local user_config_home = vim.env.XDG_CONFIG_HOME
-
-                if not user_config_home then
-                    user_config_home = vim.fs.joinpath(vim.env.HOME, ".config")
-                end
-
-                if not user_config_home then
-                    vim.notify(
-                        "User config home could not be determined",
-                        vim.log.levels.WARN,
-                        { title = "Chezmoi" }
-                    )
-                    return
-                end
-
-                local jb_global_config = vim.fs.joinpath(
-                    user_config_home,
-                    "JetBrains/Shared/vAny/GlobalSettingsStorage.DotSettings"
-                )
-
-                return {
-                    args = {
-                        "cleanupcode",
-                        "--include",
-                        "$FILENAME",
-                        "--profile",
-                        jb_global_config,
-                    },
-                }
-            end,
-            prettier = {
-                args = function(_, ctx)
+            prettierd = {
+                env = function(_, ctx)
                     return {
                         "--log-level",
                         "error",
