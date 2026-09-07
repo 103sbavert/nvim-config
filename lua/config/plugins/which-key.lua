@@ -36,7 +36,6 @@ return {
             -- { "gc", desc = "Comment", mode = "n" },
             { "gq", desc = "Format (smart)", mode = "n" },
             { "gw", desc = "Format (dumb)", mode = "n" },
-            { "ga", group = "[g]o [t]o c[a]lls", mode = "n" },
 
             -- `<leader>` prefix groups
             { "<leader>g", group = "[g]it", mode = "n" },

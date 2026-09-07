@@ -85,15 +85,16 @@ return {
         function() Snacks.picker.lsp_type_definitions() end,
         desc = "[g]oto t[y]pe Definition",
     },
+    -- <leader>l LSP group
     {
-        "gai",
+        "<leader>lc",
         function() Snacks.picker.lsp_incoming_calls() end,
-        desc = "[i]ncoming",
+        desc = "in[c]oming calls",
     },
     {
-        "gao",
+        "<leader>lg",
         function() Snacks.picker.lsp_outgoing_calls() end,
-        desc = "[o]utgoing",
+        desc = "out[g]oing calls",
     },
     -- <leader>s group pickers
     {
