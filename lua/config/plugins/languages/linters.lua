@@ -10,6 +10,8 @@ return {
             markdown = { "markdownlint-cli2" },
             javascript = { "eslint_d" },
             typescript = { "eslint_d" },
+            javascriptreact = { "eslint_d" },
+            typescriptreact = { "eslint_d" },
         }
 
         -- Force markdownlint-cli2 to accept input via stdin instead of reading disk files
