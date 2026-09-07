@@ -19,6 +19,8 @@ return {
             gopls = {
                 settings = {
                     gopls = {
+                        gofumpt = true,
+                        semanticTokens = true,
                         hints = {
                             assignVariableTypes = true,
                             compositeLiteralFields = true,
@@ -30,6 +32,7 @@ return {
                         },
                         analyses = {
                             unusedparams = true,
+                            shadow = true,
                         },
                         staticcheck = true,
                     },
@@ -37,7 +40,14 @@ return {
             },
             gitlab_ci_ls = {},
             pyright = {},
+            stylua = {},
             lua_ls = {
+                on_attach = function(client)
+                    client.server_capabilities.documentFormattingProvider =
+                        false
+                    client.server_capabilities.documentRangeFormattingProvider =
+                        false
+                end,
                 on_init = function(client)
                     if client.workspace_folders then
                         local path = client.workspace_folders[1].name
