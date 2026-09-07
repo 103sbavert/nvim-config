@@ -4,18 +4,24 @@ return {
     dependencies = { "config.mason" },
     event = { "VeryLazy" },
     config = function()
-        local linters = { "markdownlint", "eslint_d" }
         local lint = require("lint")
 
-        require("config.mason").InstallTools(linters)
         lint.linters_by_ft = {
             markdown = { "markdownlint-cli2" },
             javascript = { "eslint_d" },
             typescript = { "eslint_d" },
         }
 
-        -- Create autocommand which carries out the actual linting
-        -- on the specified events.
+        -- Force markdownlint-cli2 to accept input via stdin instead of reading disk files
+        lint.linters["markdownlint-cli2"].args = { "-" }
+        lint.linters["markdownlint-cli2"].stdin = true
+
+        local linters = {}
+        for _, ft_linters in pairs(lint.linters_by_ft or {}) do
+            vim.list_extend(linters, ft_linters)
+        end
+
+        require("config.mason").InstallTools(linters)
 
         local lint_augroup =
             vim.api.nvim_create_augroup("lint", { clear = true })
