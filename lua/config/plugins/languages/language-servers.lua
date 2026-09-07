@@ -8,11 +8,13 @@ return {
         "j-hui/fidget.nvim",
     },
     config = function()
+        local lang_utils = require("config.plugins.languages.internal.utils")
+
         -- Enable the following language servers
         --- @type table<string, vim.lsp.Config>
         local server_config_map = {
             roslyn_ls = {
-                before_init = function(_, _) require("roslyn").setup() end,
+                before_init = function() require("roslyn").setup() end,
             },
             vtsls = {},
             bashls = {},
@@ -49,44 +51,17 @@ return {
                         false
                 end,
                 on_init = function(client)
-                    if client.workspace_folders then
-                        local path = client.workspace_folders[1].name
-
-                        if
-                            path ~= vim.fn.stdpath("config")
-                            and (
-                                vim.uv.fs_stat(path .. "/.luarc.json")
-                                or vim.uv.fs_stat(path .. "/.luarc.jsonc")
-                            )
-                        then
-                            return
-                        end
+                    if
+                        not lang_utils.is_nvim_config(client.workspace_folders)
+                        and lang_utils.has_lua_config(client.workspace_folders)
+                    then
+                        return
                     end
 
-                    local lua_settings = client.config.settings.Lua
-                    --- @cast lua_settings table
+                    local base_ls_opts = client.config.settings.Lua
+                    --- @cast base_ls_opts table
                     client.config.settings.Lua =
-                        vim.tbl_deep_extend("force", lua_settings, {
-                            runtime = {
-                                version = "LuaJIT",
-                                path = { "lua/?.lua", "lua/?/init.lua" },
-                            },
-                            workspace = {
-                                checkThirdParty = false,
-                                library = {
-                                    vim.env.VIMRUNTIME,
-                                    vim.fn.stdpath("config"),
-                                    vim.fs.joinpath(
-                                        vim.fn.stdpath("data"),
-                                        "site/pack/core/opt"
-                                    ),
-                                    vim.fs.joinpath(
-                                        vim.fn.stdpath("data"),
-                                        "lazy"
-                                    ),
-                                },
-                            },
-                        })
+                        lang_utils.get_nvim_lua_opts(base_ls_opts)
                 end,
                 settings = {
                     Lua = {
