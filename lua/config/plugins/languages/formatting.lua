@@ -1,20 +1,6 @@
---- Returns effective indent size for bufnr: buffer-local shiftwidth (or tabstop
---- when shiftwidth=0), cascading to global, with 4 as final safety fallback.
---- @param bufnr integer
---- @return integer
-local function get_indent(bufnr)
-    local sw = vim.bo[bufnr].shiftwidth
-    if sw ~= 0 then
-        return sw
-    end
-    -- shiftwidth=0 means "use tabstop"
-    local ts = vim.bo[bufnr].tabstop
-    if ts ~= 0 then
-        return ts
-    end
-    return 4
+local getutils = function()
+    return require("config.plugins.languages.internal.utils")
 end
-
 --- @type LazySpec
 return {
     "stevearc/conform.nvim",
@@ -30,9 +16,10 @@ return {
             timeout_ms = 500,
         },
         formatters_by_ft = {
-            python = { "isort" },
+            -- LS formatters
             lua = { lsp_format = "prefer" }, -- uses stylua as an LS, not lua_ls
             go = { lsp_format = "prefer" },
+            -- Custom/CLI formatters
             javascript = { "prettierd" },
             typescript = { "prettierd" },
             javascriptreact = { "prettierd" },
@@ -44,6 +31,7 @@ return {
             markdown = { "prettierd" },
             yaml = { "prettierd" },
             toml = { "taplo" },
+            python = { "isort" },
             sh = { "shfmt" },
             bash = { "shfmt" },
             zsh = { "shfmt" },
@@ -51,21 +39,26 @@ return {
         formatters = {
             shfmt = {
                 args = function(_, ctx)
-                    return { "-i", tostring(get_indent(ctx.buf)), "-ci" }
+                    return {
+                        "-i",
+                        tostring(getutils().get_indent(ctx.buf)),
+                        "-ci",
+                    }
                 end,
             },
             prettierd = {
                 env = function(_, ctx)
                     return {
                         PRETTIERD_DEFAULT_CONFIG = vim.fn.json_encode({
-                            tabWidth = get_indent(ctx.buf),
+                            tabWidth = getutils().get_indent(ctx.buf),
                         }),
                     }
                 end,
             },
             taplo = {
                 args = function(_, ctx)
-                    local indent_string = string.rep(" ", get_indent(ctx.buf))
+                    local indent_string =
+                        string.rep(" ", getutils().get_indent(ctx.buf))
                     return {
                         "fmt",
                         "--option",
@@ -98,7 +91,7 @@ return {
 
         vim.keymap.set(
             { "n", "v" },
-            "<leader>f", -- in normal mode, reformat the entire buffer
+            "<leader>f",
             function() conform.format({ async = true }) end,
             { desc = "[F]ormat" }
         )
