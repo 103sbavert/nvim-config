@@ -21,8 +21,8 @@ return {
         },
         icons = { mappings = false },
         win = {
-            width = math.floor(vim.o.columns * 0.35),
-            height = { max = math.floor(vim.o.lines * 0.5) },
+            width = math.floor(vim.o.columns * 0.30),
+            height = { max = math.floor(vim.o.lines * 0.6) },
         },
         keys = {
             scroll_up = "<C-a>",
