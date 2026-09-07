@@ -316,6 +316,7 @@ do
 end
 
 require("lazy").setup({
+    --- @type LazySpec[]
     spec = {
         { import = "config.plugins" },
         { "j-hui/fidget.nvim", config = true },
@@ -351,6 +352,7 @@ require("lazy").setup({
         {
             name = "config.utils",
             dir = vim.fn.stdpath("config"),
+            dependencies = "j-hui/fidget.nvim",
         },
         {
             name = "config.mason",

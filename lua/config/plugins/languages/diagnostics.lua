@@ -2,7 +2,7 @@
 return {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LspAttach",
-    dependencies = "neovim/nvim-lspconfig",
+    dependencies = { "neovim/nvim-lspconfig", "config.utils" },
     --- @type PluginConfig
     opts = {
         preset = "modern",
