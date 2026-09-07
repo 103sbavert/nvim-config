@@ -36,6 +36,7 @@ return {
             -- { "gc", desc = "Comment", mode = "n" },
             { "gq", desc = "Format (smart)", mode = "n" },
             { "gw", desc = "Format (dumb)", mode = "n" },
+            { "gx", desc = "open URI/path under cusor", mode = { "x", "n" } },
 
             -- `<leader>` prefix groups
             { "<leader>g", group = "[g]it", mode = "n" },
