@@ -93,7 +93,7 @@ return {
             { "n", "v" },
             "<leader>f",
             function() conform.format({ async = true }) end,
-            { desc = "[F]ormat" }
+            { desc = "[f]ormat" }
         )
 
         vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
