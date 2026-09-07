@@ -2,11 +2,11 @@ local M = {}
 
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
-M.git_key_mapper = create_keymap_group("[g]it", "<leader>g", { "n", "v" })
+M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
 --- Keymap group for backward hunk/change navigation, mapped under "[".
-M.navigate_bw_mapper = create_keymap_group("[ backwards", "[", { "n", "v" })
+M.navigate_bw_mapper = create_keymap_group("[", { "n", "v" })
 --- Keymap group for forward hunk/change navigation, mapped under "]".
-M.navigate_fw_mapper = create_keymap_group("] forwards", "]", { "n", "v" })
+M.navigate_fw_mapper = create_keymap_group("]", { "n", "v" })
 
 -- Cached Neogit commit popup instance, built lazily on first use.
 local commit_popup = nil
