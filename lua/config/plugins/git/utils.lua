@@ -86,8 +86,7 @@ end
 local function on_ref_confirm(picker, item, callback)
     picker:close()
 
-    local hash = item and item.commit or nil
-    if not hash or hash == "" then
+    if not item or not item.commit or item.commit == "" then
         vim.notify(
             "No commit selected",
             vim.log.levels.WARN,
@@ -96,7 +95,7 @@ local function on_ref_confirm(picker, item, callback)
         return
     end
 
-    callback(hash)
+    callback(item.commit)
 end
 
 --- Cached layout config for Snacks.picker.git_log using default options but
