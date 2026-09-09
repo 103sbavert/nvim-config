@@ -41,21 +41,29 @@ end
 
 --- Formats a git log picker item, prefixing it with a "@" marker column when
 --- the item's commit is the current HEAD.
---- @param head_sha string Full/short SHA of the current HEAD commit.
+--- @param head_hash string Full SHA of the current HEAD commit.
 --- @param item snacks.picker.Item Git log picker item being formatted.
 --- @param picker snacks.Picker Picker instance the item belongs to.
 --- @return snacks.picker.Highlight[] Formatted item parts with head highlighting.
-local function git_log_formatter(head_sha, item, picker)
-    local formatted_item = Snacks.picker.format.git_log(item, picker)
+local function format_log(head_hash, item, picker)
+    local align = Snacks.picker.util.align
 
-    local is_head = item.commit and vim.startswith(head_sha, item.commit)
-    local symbol = is_head and "@" or ""
-    local hl = is_head and "SnacksPickerSpecial" or nil
+    local is_head = vim.startswith(head_hash, item.commit)
+    local symbol = (is_head and ":@" or "  ")
+    local shorthash = align(item.commit, 8, { truncate = true })
 
-    local snacks_align = Snacks.picker.util.align
-    table.insert(formatted_item, 3, { snacks_align(symbol, 4), hl })
+    local fmt = {} ---@type snacks.picker.Highlight[]
+    fmt[#fmt + 1] = { picker.opts.icons.git.commit, "SnacksPickerGitCommit" }
+    fmt[#fmt + 1] = { shorthash .. symbol, "SnacksPickerGitCommit" }
 
-    return formatted_item
+    fmt[#fmt + 1] = { align("", 4) }
+
+    Snacks.picker.highlight.extend(
+        fmt,
+        Snacks.picker.format.commit_message(item, picker)
+    )
+
+    return fmt
 end
 
 --- Confirm handler for the diff-base commit picker. Closes the picker and
@@ -81,52 +89,61 @@ local function on_ref_confirm(picker, item, callback)
     callback(hash)
 end
 
+--- Cached layout config for Snacks.picker.git_log using default options but
+--- with a wider preview and fullscreen window
+--- @type snacks.picker.layout.Config
+local log_layout = nil
+
+--- @return snacks.picker.layout.Config
+local function get_log_layout()
+    if log_layout then
+        return log_layout
+    end
+
+    log_layout = require("snacks.picker.config.layouts").default
+    log_layout.fullscreen = true
+
+    for _, prop in ipairs(log_layout.layout) do
+        if
+            prop
+            and type(prop) == "table"
+            and prop.win
+            and prop.win == "preview"
+        then
+            prop.width = 0.68
+        end
+    end
+
+    return log_layout
+end
+
 --- Opens a picker over the current file's git log so the user can choose a
 --- base commit to diff against. Notifies and aborts if there is no active
 --- buffer file or the file is untracked.
---- @param callback fun(hash: string) Invoked with the chosen commit hash.
+--- @param file_name? string optional file name to query log against
+--- @param callback? fun(hash: string) Invoked with the chosen commit hash, use
+--- nil to use Snacks.picker.git_log default on_confirm action
 --- @return nil
-function M.open_commit_picker(callback)
-    local file_name = require("config.utils").get_current_file()
-
-    if not file_name then
-        vim.notify(
-            "No active file in current buffer",
-            vim.log.levels.WARN,
-            { title = "Diff" }
-        )
-        return
-    end
-
+function M.git_log_picker(file_name, callback)
     local utils = require("config.utils")
-    utils.is_file_tracked(file_name, function(is_tracked)
-        if not is_tracked then
-            vim.notify(
-                "File is new/untracked",
-                vim.log.levels.WARN,
-                { title = "Diff" }
-            )
-            return
-        end
+    utils.git_run({ "git", "rev-parse", "HEAD" }, function(head_res)
+        local head_hash = vim.trim(head_res.stdout or "")
 
-        utils.git_run({ "git", "rev-parse", "HEAD" }, function(head_res)
-            local head_hash = vim.trim(head_res.stdout or "")
+        --- @type snacks.picker.git.log.Config
+        local git_log_opts = {
+            format = function(item, picker)
+                return format_log(head_hash, item, picker)
+            end,
+            cmd_args = { file_name },
+            title = "Pick diff base",
+            layout = get_log_layout(),
+            confirm = callback and function(picker, item)
+                on_ref_confirm(picker, item, callback)
+            end or nil,
+        }
 
-            --- @type snacks.picker.git.log.Config
-            local git_log_opts = {
-                format = function(item, picker)
-                    return git_log_formatter(head_hash, item, picker)
-                end,
-                current_file = true,
-                title = "Pick diff base",
-                confirm = function(picker, item)
-                    on_ref_confirm(picker, item, callback)
-                end,
-            }
-
-            Snacks.picker.git_log(git_log_opts)
-        end, { error_title = "Diff", notify_on_error = true })
-    end)
+        Snacks.picker.git_log(git_log_opts)
+    end, { error_title = "Diff", notify_on_error = true })
 end
 
 return M
