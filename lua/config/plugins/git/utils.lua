@@ -49,12 +49,22 @@ local function format_log(head_hash, item, picker)
     local align = Snacks.picker.util.align
 
     local is_head = vim.startswith(head_hash, item.commit)
-    local symbol = (is_head and ":@" or "  ")
-    local shorthash = align(item.commit, 8, { truncate = true })
+    local symbol
+    local hl
+
+    if is_head then
+        symbol = " "
+        hl = "SnacksPickerGitBranchCurrent"
+    else
+        symbol = picker.opts.icons.git.commit
+        hl = "SnacksPickerGitCommit"
+    end
+
+    local shorthash = align(item.commit, 7, { truncate = true })
 
     local fmt = {} ---@type snacks.picker.Highlight[]
-    fmt[#fmt + 1] = { picker.opts.icons.git.commit, "SnacksPickerGitCommit" }
-    fmt[#fmt + 1] = { shorthash .. symbol, "SnacksPickerGitCommit" }
+    fmt[#fmt + 1] = { symbol, hl }
+    fmt[#fmt + 1] = { shorthash, hl }
 
     fmt[#fmt + 1] = { align("", 4) }
 
@@ -100,17 +110,29 @@ local function get_log_layout()
         return log_layout
     end
 
-    log_layout = require("snacks.picker.config.layouts").default
+    log_layout = vim.deepcopy(require("snacks.picker.config.layouts").default)
+
     log_layout.fullscreen = true
+    log_layout.layout.border = true
 
     for _, prop in ipairs(log_layout.layout) do
-        if
-            prop
-            and type(prop) == "table"
-            and prop.win
-            and prop.win == "preview"
-        then
-            prop.width = 0.68
+        if prop and type(prop) == "table" then
+            if prop.box == "vertical" then
+                prop.border = false
+
+                for _, child in ipairs(prop) do
+                    if child and type(child) == "table" then
+                        if child.win == "input" then
+                            child.border = "bottom"
+                        elseif child.win == "list" then
+                            child.border = false
+                        end
+                    end
+                end
+            elseif prop.win == "preview" then
+                prop.width = 0.70
+                prop.border = "left"
+            end
         end
     end
 
