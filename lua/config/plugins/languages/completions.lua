@@ -28,6 +28,7 @@ return {
                 ["<C-k>"] = { "show_signature", "hide_signature" },
                 ["<C-s>"] = { "show_documentation", "hide_documentation" },
                 ["<C-space>"] = { "show", "hide" },
+                ["<C-@>"] = { "show", "hide" },
             },
             completion = {
                 documentation = { auto_show = true },
@@ -49,6 +50,7 @@ return {
         appearance = {
             nerd_font_variant = "mono",
         },
+        term = { enabled = false },
         completion = {
             documentation = {
                 auto_show = true,
@@ -61,7 +63,7 @@ return {
         sources = {
             default = { "lsp", "path", "snippets", "buffer" },
         },
-        fuzzy = { implementation = "rust" },
+        fuzzy = { implementation = "prefer_rust_with_warning" },
         signature = { enabled = true },
     },
 }
