@@ -48,16 +48,18 @@ local function chezmoi_apply_aucmd_cb(args)
 
     local progress = UT.progress("Checking file...", { title = "Chezmoi" })
 
-    shared.classify_async(buf_file, { src_dir = src_dir }, function(class)
+    UT.async_run(function()
+        local class =
+            UT.await(shared.classify_async, buf_file, { src_dir = src_dir })
+
         progress:finish()
 
         if not class.is_src or class.ignored then
             return
         end
 
-        -- vim.fn.confirm cannot run in a fast-event context.
-        vim.schedule(function() prompt_apply(buf_file) end)
-    end)
+        prompt_apply(buf_file)
+    end, { error_title = "Chezmoi" })
 end
 
 shared.get_src_dir_async(

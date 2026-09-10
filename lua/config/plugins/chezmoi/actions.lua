@@ -32,8 +32,25 @@ function M.apply(file, opts, on_done)
         on_wait = function() progress:step("Inhibiting exit...") end,
     })
 
-    --- @param res table?
-    local function on_exit(res)
+    UT.async_run(function()
+        local is_src = opts.is_src
+
+        if is_src == nil then
+            progress:step("Checking file...")
+            is_src = UT.await(shared.is_src_file_async, file)
+            progress:step("Applying...")
+        end
+
+        --- @type table?
+        local res = UT.await(function(cb)
+            job = apply_cmd.apply(file, is_src, cb)
+
+            -- Nothing will call cb if the job never started.
+            if not job then
+                cb(nil)
+            end
+        end)
+
         dispose()
         progress:finish()
 
@@ -44,32 +61,7 @@ function M.apply(file, opts, on_done)
         if on_done then
             on_done()
         end
-    end
-
-    --- @param is_src boolean
-    local function spawn(is_src)
-        job = apply_cmd.apply(file, is_src, on_exit)
-
-        -- Nothing will call on_exit if the job never started.
-        if not job then
-            on_exit(nil)
-        end
-    end
-
-    if opts.is_src ~= nil then
-        spawn(opts.is_src)
-        return
-    end
-
-    progress:step("Checking file...")
-    shared.is_src_file_async(file, function(is_src)
-        -- Callback lands in a fast-event context (uv.fs_stat), where job
-        -- spawning is not allowed.
-        vim.schedule(function()
-            progress:step("Applying...")
-            spawn(is_src)
-        end)
-    end)
+    end, { error_title = "Chezmoi" })
 end
 
 --- Opens the chezmoi source file for a target, with progress and notifications.

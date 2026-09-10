@@ -44,19 +44,19 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
             return
         end
 
-        vim.uv.fs_stat(buf_file, function(_, stat_res)
+        UT.async_run(function()
+            local _, stat_res = UT.await(vim.uv.fs_stat, buf_file)
             if not stat_res then
                 return
             end
-            shared.is_src_file_async(buf_file, function(is_src)
-                src_file_cache[buf_file] = is_src
-                if is_src then
-                    vim.schedule(function()
-                        initialize_statusline()
-                        vim.cmd("redrawstatus")
-                    end)
-                end
-            end)
-        end)
+
+            local is_src = UT.await(shared.is_src_file_async, buf_file)
+            src_file_cache[buf_file] = is_src
+
+            if is_src then
+                initialize_statusline()
+                vim.cmd("redrawstatus")
+            end
+        end, { error_title = "Chezmoi" })
     end,
 })

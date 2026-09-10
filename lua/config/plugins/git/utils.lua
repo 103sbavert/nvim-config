@@ -1,5 +1,7 @@
 local M = {}
 
+local UT = require("config.utils")
+
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
 M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
@@ -27,16 +29,21 @@ end
 --- @return nil
 function M.open_commit_tab()
     local git = require("neogit.lib.git")
-    if git.repo.state.hooks == nil then
-        git.repo:dispatch_refresh({
-            source = "commit-keymap",
-            callback = function()
-                require("neogit.lib.async").void(commit_popup_cb)()
-            end,
-        })
-    else
+
+    UT.async_run(function()
+        if git.repo.state.hooks == nil then
+            UT.await(
+                function(cb)
+                    git.repo:dispatch_refresh({
+                        source = "commit-keymap",
+                        callback = cb,
+                    })
+                end
+            )
+        end
+
         require("neogit.lib.async").void(commit_popup_cb)()
-    end
+    end, { error_title = "Git" })
 end
 
 --- Formats a git log picker item, prefixing it with a "@" marker column when
@@ -146,8 +153,7 @@ end
 --- nil to use Snacks.picker.git_log default on_confirm action
 --- @return nil
 function M.git_log_picker(file_name, callback)
-    local utils = require("config.utils")
-    utils.git_run({ "git", "rev-parse", "HEAD" }, function(head_res)
+    UT.git_run({ "git", "rev-parse", "HEAD" }, function(head_res)
         local head_hash = vim.trim(head_res.stdout or "")
 
         --- @type snacks.picker.git.log.Config
