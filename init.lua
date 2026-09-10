@@ -360,6 +360,12 @@ require("lazy").setup({
             dependencies = "j-hui/fidget.nvim",
         },
         {
+            name = "config.su",
+            main = "config.su",
+            dir = vim.fn.stdpath("config"),
+            config = true,
+        },
+        {
             name = "config.mason",
             dir = vim.fn.stdpath("config"),
             dependencies = {
