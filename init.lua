@@ -132,6 +132,19 @@ end
 
 -- Basic keymaps (built in vim actions, without any plugin dependency)
 do
+    -- Ghostty (and other kitty-keyboard-protocol terminals) can drop the
+    -- enhanced encoding mid-session, causing <C-Space> to arrive as a raw NUL
+    -- byte (<C-@>) instead. Alias <C-@> to <C-Space> recursively, in every
+    -- mode, so it always triggers whatever <C-Space> currently does (built-in,
+    -- buffer-local, or plugin-defined) instead of falling back to Vim's
+    -- default i_CTRL-@ (re-insert last insert) behavior.
+    vim.keymap.set(
+        { "n", "i", "v", "x", "s", "o", "c", "t", "l" },
+        "<C-@>",
+        "<C-Space>",
+        { remap = true }
+    )
+
     local unnamed_buf_wipe_grp =
         vim.api.nvim_create_augroup("wipe_unnamed_buf", { clear = true })
 
