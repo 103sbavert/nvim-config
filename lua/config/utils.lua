@@ -115,6 +115,58 @@ function M.lazy_require(modname)
     return function() return require(modname) end
 end
 
+--- @diagnostic disable-next-line: deprecated
+local unpack = table.unpack or unpack
+
+--- Runs a libuv async fs_* call and yields the current coroutine until it
+--- completes. The resume is always deferred via vim.schedule, so code
+--- after `await()` runs in a main-loop-safe (API-callable) context.
+--- Must be called from within a coroutine started by `M.async_run()`.
+--- @param fn function libuv function accepting a trailing callback
+--- @param ... any arguments to pass to `fn` before its callback
+--- @return any ... whatever the callback received (typically err, result)
+function M.await(fn, ...)
+    local co = coroutine.running()
+    assert(co, "await() must be called from within async_run()")
+
+    local nargs = select("#", ...)
+    local args = { ... }
+    args[nargs + 1] = function(...)
+        local cb_nargs = select("#", ...)
+        local cb_args = { ... }
+        vim.schedule(function()
+            local ok, err = coroutine.resume(co, unpack(cb_args, 1, cb_nargs))
+            if not ok then
+                vim.notify(
+                    "Internal error: " .. tostring(err),
+                    vim.log.levels.ERROR,
+                    { title = "Async" }
+                )
+            end
+        end)
+    end
+
+    fn(unpack(args, 1, nargs + 1))
+    return coroutine.yield()
+end
+
+--- Runs `fn` as a coroutine so it may call `M.await()`.
+--- @param fn function
+--- @param opts? { error_title?: string } Configuration.
+---   - error_title: Title for error notifications (default: "Async").
+function M.async_run(fn, opts)
+    local error_title = opts and opts.error_title or "Async"
+    local co = coroutine.create(fn)
+    local ok, err = coroutine.resume(co)
+    if not ok then
+        vim.notify(
+            "Internal error: " .. tostring(err),
+            vim.log.levels.ERROR,
+            { title = error_title }
+        )
+    end
+end
+
 --- @class ProgressHandle
 --- @field step fun(self: ProgressHandle, msg: string) Updates the displayed message.
 --- @field finish fun(self: ProgressHandle) Ends the progress report; idempotent.
