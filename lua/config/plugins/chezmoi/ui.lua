@@ -37,7 +37,7 @@ function M.notify_result(res, ok_msg)
 end
 
 --- Prompts to apply the chezmoi source file to its target.
---- @param callback fun(choice: ChezmoiChoice)
+--- @param callback fun(choice: ChezmoiChoice|integer)
 function M.ask_apply(callback)
     callback(
         vim.fn.confirm(
