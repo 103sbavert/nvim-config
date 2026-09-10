@@ -240,6 +240,15 @@ function M.setup()
     end
 
     --- @return boolean
+    local function is_runtime_path(real_path)
+        local resolved = vim.uv.fs_realpath(real_path) or real_path
+        local resolved_rtp = vim.uv.fs_realpath(vim.env.VIMRUNTIME)
+
+        return resolved_rtp ~= nil
+            and vim.startswith(resolved, resolved_rtp .. "/")
+    end
+
+    --- @return boolean
     local function is_path_writable(real_path)
         local stat_err, stat = await(vim.uv.fs_stat, real_path)
 
@@ -273,6 +282,10 @@ function M.setup()
 
             local real_path = utils.get_current_file(args)
             if not real_path then
+                return
+            end
+
+            if is_runtime_path(real_path) then
                 return
             end
 
