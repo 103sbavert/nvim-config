@@ -146,7 +146,7 @@ do
     )
 
     local unnamed_buf_wipe_grp =
-        vim.api.nvim_create_augroup("wipe_unnamed_buf", { clear = true })
+        vim.api.nvim_create_augroup("WipeUnnamedBuf", { clear = true })
 
     -- Remove unnamed buf (such as the empty buffer created when neovim is first opened) when they are hidden if:
     -- buffer is not modified
