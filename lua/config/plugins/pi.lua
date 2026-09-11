@@ -1,2 +1,21 @@
 --- @type LazySpec
-return { "carderne/pi-nvim", lazy = false, config = true }
+return {
+    "carderne/pi-nvim",
+    config = true,
+    cmd = { "Pi", "PiSend", "PiSendSelection", "PiSendBuffer" },
+    keys = {
+        { "<leader>pp", "<cmd>PiSend<cr>", mode = "n", desc = "Pi send" },
+        {
+            "<leader>pp",
+            "<cmd>PiSendSelection<cr>",
+            mode = { "v", "x" },
+            desc = "Pi send selection",
+        },
+        { "<leader>P", "<cmd>Pi<cr>", desc = "[P]i" },
+        { "<leader>pb", "<cmd>PiSendBuffer<cr>", desc = "Send [b]uffer" },
+    },
+    --- @type pi_nvim.Config
+    opts = {
+        set_default_keymaps = true,
+    },
+}
