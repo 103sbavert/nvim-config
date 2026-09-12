@@ -5,9 +5,9 @@ local M = {}
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function map_if_capable(key, lsp_config, client, bufnr)
-    local client_id = client.id
-
-    -- Skip if client does not support this capability
+    -- Gate initial mapping on the attaching client, but resolve live
+    -- clients at invoke time so re-attach (e.g. dynamic registration)
+    -- never leaves a keymap bound to a stale client object.
     if
         lsp_config.capability
         and not client:supports_method(lsp_config.capability, bufnr)
@@ -15,13 +15,21 @@ local function map_if_capable(key, lsp_config, client, bufnr)
         return
     end
 
+    local capability = lsp_config.capability
+
     vim.keymap.set(lsp_config.modes or "n", key, function()
-        if client:is_stopped() then
+        local live
+        if capability then
+            live = vim.lsp.get_clients({ bufnr = bufnr, method = capability })
+        else
+            live = vim.lsp.get_clients({ bufnr = bufnr })
+        end
+
+        if #live == 0 then
             vim.notify(
                 string.format(
-                    "%s: client %d is no longer attached",
-                    lsp_config.description,
-                    client_id
+                    "%s: no attached client supports this buffer",
+                    lsp_config.description
                 ),
                 vim.log.levels.WARN
             )

@@ -8,15 +8,39 @@ local function highlight_cursor_symbol(client, bufnr)
     local params =
         vim.lsp.util.make_position_params(win, client.offset_encoding)
 
+    if client:is_stopped() then
+        return
+    end
+
     client:request(
         "textDocument/documentHighlight",
         params,
         function(err, result, ctx, config)
-            if not result or vim.api.nvim_get_current_buf() ~= bufnr then
+            if err or not result then
                 return
             end
 
-            local current_pos = vim.api.nvim_win_get_cursor(win)
+            if not vim.api.nvim_buf_is_valid(bufnr) then
+                return
+            end
+
+            if not vim.api.nvim_win_is_valid(win) then
+                return
+            end
+
+            if vim.api.nvim_get_current_win() ~= win then
+                return
+            end
+
+            if vim.api.nvim_get_current_buf() ~= bufnr then
+                return
+            end
+
+            local ok, current_pos = pcall(vim.api.nvim_win_get_cursor, win)
+            if not ok then
+                return
+            end
+
             if
                 current_pos[1] == request_pos[1]
                 and current_pos[2] == request_pos[2]
@@ -44,7 +68,7 @@ local function on_client_attach(client, bufnr)
 
     if client:supports_method("textDocument/documentHighlight", bufnr) then
         local highlight_augroup = vim.api.nvim_create_augroup(
-            "kickstart-lsp-highlight-" .. bufnr,
+            "kickstart-lsp-highlight-" .. bufnr .. "-" .. client.id,
             { clear = true }
         )
 
@@ -62,29 +86,50 @@ local function on_client_attach(client, bufnr)
 
         vim.api.nvim_create_autocmd("LspDetach", {
             group = vim.api.nvim_create_augroup(
-                "kickstart-lsp-detach-" .. bufnr,
+                "kickstart-lsp-detach-" .. bufnr .. "-" .. client.id,
                 { clear = true }
             ),
             buffer = bufnr,
-            callback = function()
-                vim.lsp.buf.clear_references()
+            callback = function(event)
+                if
+                    event.data
+                    and event.data.client_id
+                    and event.data.client_id ~= client.id
+                then
+                    return
+                end
+
                 vim.api.nvim_clear_autocmds({
                     group = highlight_augroup,
                 })
+
+                if
+                    #vim.lsp.get_clients({
+                        bufnr = bufnr,
+                        method = "textDocument/documentHighlight",
+                    }) == 0
+                then
+                    vim.lsp.buf.clear_references()
+                end
             end,
         })
     end
 
     local toggle_hints = function()
-        vim.lsp.inlay_hint.enable(
-            not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
-        )
-        return nil, false
+        if not vim.api.nvim_buf_is_valid(bufnr) then
+            return "Buffer no longer valid", true
+        end
+
+        local enabled = not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
+        vim.lsp.inlay_hint.enable(enabled, { bufnr = bufnr })
+        return enabled and "Inlay hints enabled" or "Inlay hints disabled", true
     end
 
     if client:supports_method("textDocument/inlayHint", bufnr) then
-        if type(map_toggle_key) == "function" then
-            map_toggle_key("h", toggle_hints, "Inlay [h]ints")
+        if type(_G.map_toggle_key) == "function" then
+            _G.map_toggle_key("h", toggle_hints, "Inlay [h]ints", {
+                buffer = bufnr,
+            })
         end
     end
 
@@ -97,6 +142,14 @@ local function on_client_attach(client, bufnr)
             buffer = bufnr,
             group = roslyn_buf_augroup,
             callback = function()
+                if client:is_stopped() then
+                    return
+                end
+
+                if not vim.api.nvim_buf_is_valid(bufnr) then
+                    return
+                end
+
                 local params = {
                     textDocument = vim.lsp.util.make_text_document_params(
                         bufnr
@@ -137,7 +190,9 @@ vim.lsp.handlers["client/registerCapability"] = (function(overridden)
         end
 
         for bufnr, _ in pairs(client.attached_buffers) do
-            on_client_attach(client, bufnr)
+            if vim.api.nvim_buf_is_valid(bufnr) then
+                on_client_attach(client, bufnr)
+            end
         end
 
         return result

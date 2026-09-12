@@ -315,7 +315,8 @@ end
 --- @param keys string Key suffix
 --- @param func fun(): (string|nil, boolean|nil) Function returning message and notify flag
 --- @param desc string Keymap description
-function _G.map_toggle_key(keys, func, desc)
+--- @param opts? { buffer?: integer } Optional mapping options (buffer for a buffer-local toggle)
+function _G.map_toggle_key(keys, func, desc, opts)
     local function toggle_fn()
         local message, should_notify = func()
         if should_notify and message and message ~= "" then
@@ -323,8 +324,13 @@ function _G.map_toggle_key(keys, func, desc)
         end
     end
 
+    local map_opts = nil
+    if opts and opts.buffer then
+        map_opts = { buffer = opts.buffer }
+    end
+
     local toggle_key_group = create_keymap_group("<leader>t", { "n" })
-    toggle_key_group(keys, toggle_fn, desc)
+    toggle_key_group(keys, toggle_fn, desc, map_opts)
 end
 
 return M
