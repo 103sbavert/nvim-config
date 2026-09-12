@@ -392,6 +392,7 @@ require("lazy").setup({
         },
         {
             name = "config.utils",
+            main = "config.utils",
             dir = vim.fn.stdpath("config"),
             dependencies = "j-hui/fidget.nvim",
         },
@@ -403,6 +404,7 @@ require("lazy").setup({
         },
         {
             name = "config.mason",
+            main = "config.mason",
             dir = vim.fn.stdpath("config"),
             dependencies = {
                 "williamboman/mason.nvim",
