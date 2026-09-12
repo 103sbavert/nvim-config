@@ -1,5 +1,13 @@
 local M = {}
 
+--- @module "gitsigns?"
+local gitsigns = nil
+
+--- @module "gitsigns.cache?"
+local gitsigns_cache = nil
+
+local UT = require("config.utils")
+
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
 M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
@@ -180,6 +188,23 @@ local function open_log_picker(head_hash, file_name, callback)
     }
 
     Snacks.picker.git_log(git_log_opts)
+end
+
+function M.toggle_buf_staging(bufnr)
+    gitsigns = gitsigns or require("gitsigns")
+    gitsigns_cache = gitsigns_cache or require("gitsigns.cache")
+
+    UT.async_run(function()
+        UT.await(gitsigns.refresh)
+        local unstaged_count = #(gitsigns_cache.cache[bufnr].hunks or {})
+
+        --- @type Gitsigns.Hunk.Hunk[]
+        if unstaged_count > 0 then
+            gitsigns.stage_buffer()
+        else
+            gitsigns.reset_buffer_index()
+        end
+    end)
 end
 
 --- Resolves the Neogit repo instance for a file (or cwd).
