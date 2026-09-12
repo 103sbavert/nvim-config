@@ -17,12 +17,21 @@ return {
             return
         end
 
-        require("blink.cmp")
-            .build()
+        local cmp = require("blink.cmp")
+        local avail = cmp.library_available()
+        if avail then
+            vim.notify(
+                "blink.cmp native library already built",
+                vim.log.levels.INFO,
+                { title = "blink.cmp" }
+            )
+            return
+        end
+
+        cmp.build()
             :map(function()
                 vim.schedule(function()
-                    local ok, cmp = pcall(require, "blink.cmp")
-                    if ok and cmp.library_available() then
+                    if cmp.library_available() then
                         pcall(
                             require("blink.cmp.fuzzy").set_implementation,
                             "rust"
