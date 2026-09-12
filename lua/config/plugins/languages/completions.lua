@@ -25,8 +25,8 @@ return {
             enabled = true,
             keymap = {
                 preset = "default",
-                ["<C-k>"] = { "show_signature", "hide_signature" },
-                ["<C-s>"] = { "show_documentation", "hide_documentation" },
+                ["<C-s>"] = { "show_signature", "hide_signature" },
+                ["<C-k>"] = { "show_documentation", "hide_documentation" },
                 ["<C-space>"] = { "show", "hide" },
             },
             completion = {
@@ -42,10 +42,9 @@ return {
         },
         keymap = {
             preset = "default",
-            ["<C-k>"] = { "show_signature", "hide_signature" },
-            ["<C-s>"] = { "show_documentation", "hide_documentation" },
+            ["<C-s>"] = { "show_signature", "hide_signature" },
+            ["<C-k>"] = { "show_documentation", "hide_documentation" },
             ["<C-space>"] = { "show", "hide" },
-
         },
         appearance = {
             nerd_font_variant = "mono",
