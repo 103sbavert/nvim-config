@@ -15,6 +15,9 @@ return {
     end,
     --- @type snacks.Config
     opts = {
+        statuscolumn = {
+            enabled = true,
+        },
         bigfile = { enabled = true },
         explorer = {
             enabled = true,
