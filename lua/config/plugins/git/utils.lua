@@ -192,11 +192,6 @@ local function repo_for_file(file_name)
     local repo = require("neogit.lib.git.repository").instance(dir)
 
     if repo.worktree_root == "" then
-        vim.notify(
-            "Not a git repository",
-            vim.log.levels.WARN,
-            { title = "Diff" }
-        )
         return nil
     end
 
@@ -225,6 +220,11 @@ function M.git_log_picker(file_name, callback)
     require("neogit.lib.async").void(function()
         local repo = repo_for_file(file_name)
         if not repo then
+            vim.notify(
+                "Not a git repository",
+                vim.log.levels.WARN,
+                { title = "Diff" }
+            )
             return
         end
 
