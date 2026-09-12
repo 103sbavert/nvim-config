@@ -60,18 +60,13 @@ return {
                     { "n" }
                 )
 
+                --- @type table<integer, (Gitsigns.CacheEntry)?>
                 utils.git_key_mapper(
                     "s",
-                    gitsigns.stage_buffer,
-                    "[s]tage buffer",
-                    nil,
-                    { "n" }
-                )
-
-                utils.git_key_mapper(
-                    "u",
-                    gitsigns.reset_buffer_index,
-                    "[u]nstage buffer",
+                    function()
+                        utils.toggle_buf_staging(vim.api.nvim_get_current_buf())
+                    end,
+                    "Toggle file [s]taging",
                     nil,
                     { "n" }
                 )
