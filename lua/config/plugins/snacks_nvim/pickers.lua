@@ -51,7 +51,7 @@ return {
                 },
             })
         end,
-        desc = "[q]uick fix diagnostics",
+        desc = "[q]uick Fix Diagnostics",
     },
     -- LSP jump bindings
     {
@@ -89,12 +89,12 @@ return {
     {
         "<leader>lc",
         function() Snacks.picker.lsp_incoming_calls() end,
-        desc = "in[c]oming calls",
+        desc = "In[c]oming Calls",
     },
     {
         "<leader>lg",
         function() Snacks.picker.lsp_outgoing_calls() end,
-        desc = "out[g]oing calls",
+        desc = "Out[g]oing Calls",
     },
     -- <leader>s group pickers
     {
@@ -151,7 +151,7 @@ return {
     {
         "<leader>sp",
         function() Snacks.picker.pickers() end,
-        desc = "find [p]ickers",
+        desc = "Find [p]ickers",
     },
     {
         "<leader>s.",
