@@ -7,8 +7,8 @@ return {
         { "<leader>pp", "<cmd>PiSend<cr>", mode = "n", desc = "Pi send" },
         {
             "<leader>pp",
-            "<cmd>PiSendSelection<cr>",
-            mode = { "v", "x" },
+            ":PiSendSelection<CR>",
+            mode = "v",
             desc = "Pi send selection",
         },
         { "<leader>P", "<cmd>Pi<cr>", desc = "[P]i" },
@@ -16,6 +16,6 @@ return {
     },
     --- @type pi_nvim.Config
     opts = {
-        set_default_keymaps = true,
+        set_default_keymaps = false,
     },
 }
