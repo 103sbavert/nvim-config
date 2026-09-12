@@ -49,27 +49,32 @@ return {
                 -- hunk
                 utils.git_key_mapper(" ", function()
                     local range = { vim.fn.line("."), vim.fn.line("v") }
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    if not utils.ask_save_stage(locbufnr) then
+                        return
+                    end
+
                     gitsigns.stage_hunk(range, { greedy = false })
                 end, "[ ] stage/unstage hunk", nil, { "v" })
 
-                utils.git_key_mapper(
-                    " ",
-                    gitsigns.stage_hunk,
-                    "[ ] stage/unstage hunk",
-                    nil,
-                    { "n" }
-                )
+                utils.git_key_mapper(" ", function()
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    if not utils.ask_save_stage(locbufnr) then
+                        return
+                    end
+
+                    gitsigns.stage_hunk()
+                end, "[ ] stage/unstage hunk", nil, { "n" })
 
                 --- @type table<integer, (Gitsigns.CacheEntry)?>
-                utils.git_key_mapper(
-                    "s",
-                    function()
-                        utils.toggle_buf_staging(vim.api.nvim_get_current_buf())
-                    end,
-                    "Toggle file [s]taging",
-                    nil,
-                    { "n" }
-                )
+                utils.git_key_mapper("s", function()
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    if not utils.ask_save_stage(locbufnr) then
+                        return
+                    end
+
+                    utils.toggle_buf_staging(locbufnr)
+                end, "Toggle file [s]taging", nil, { "n" })
             end
 
             -- History
@@ -93,21 +98,29 @@ return {
 
             -- Resets
             do
-                utils.git_key_mapper(
-                    "r",
-                    gitsigns.reset_hunk,
-                    "[r]eset cursor hunk",
-                    nil,
-                    { "n" }
-                )
-                utils.git_key_mapper(
-                    "R",
-                    gitsigns.reset_buffer,
-                    "[R]eset buffer"
-                )
+                utils.git_key_mapper("r", function()
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    utils.ask_reset_save(
+                        locbufnr,
+                        function(done) gitsigns.reset_hunk(nil, nil, done) end
+                    )
+                end, "[r]eset cursor hunk", nil, { "n" })
+                utils.git_key_mapper("R", function()
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    utils.ask_reset_save(locbufnr, function(done)
+                        gitsigns.reset_buffer()
+                        done()
+                    end)
+                end, "[R]eset buffer")
                 utils.git_key_mapper("r", function()
                     local range = { vim.fn.line("."), vim.fn.line("v") }
-                    gitsigns.reset_hunk(range, { greedy = false })
+                    local locbufnr = vim.api.nvim_get_current_buf()
+                    utils.ask_reset_save(
+                        locbufnr,
+                        function(done)
+                            gitsigns.reset_hunk(range, { greedy = false }, done)
+                        end
+                    )
                 end, "[r]eset selection", nil, { "v" })
             end
 
@@ -116,7 +129,7 @@ return {
                 vim.keymap.set(
                     { "o", "x" },
                     "ih",
-                    ":<C-U>Gitsigns select_hunk<CR>",
+                    gitsigns.select_hunk,
                     { buffer = bufnr, desc = "Select hunk" }
                 )
             end

@@ -16,6 +16,88 @@ M.navigate_bw_mapper = create_keymap_group("[", { "n", "v" })
 --- Keymap group for forward hunk/change navigation, mapped under "]".
 M.navigate_fw_mapper = create_keymap_group("]", { "n", "v" })
 
+--- Prompts to save buffer if modified. Returns false on cancel.
+--- @param bufnr integer
+--- @return boolean proceed
+function M.ask_save_stage(bufnr)
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+        return false
+    end
+    if not vim.bo[bufnr].modified then
+        return true
+    end
+
+    local choice = vim.fn.confirm(
+        "Some changes are unsaved. Save changes to disk before staging?\n",
+        "&Yes\n&No\n&Cancel",
+        1,
+        "Warning"
+    )
+
+    -- write on yes
+    if choice == 1 then
+        local ok, err = pcall(
+            vim.api.nvim_buf_call,
+            bufnr,
+            function() vim.cmd.update() end
+        )
+        if not ok then
+            vim.notify(
+                "Save failed: " .. tostring(err),
+                vim.log.levels.ERROR,
+                { title = "Git" }
+            )
+            return false
+        end
+        return true
+    end
+
+    return choice == 2 -- proceed without saving only on No; Cancel/Esc aborts
+end
+
+--- Runs a reset action, offering to save the result afterwards.
+--- Skips prompt when buffer unmodified. Cancel runs nothing, writes nothing.
+--- @param bufnr integer
+--- @param action fun(done: fun()) Reset action, must invoke `done` on completion.
+--- @return nil
+function M.ask_reset_save(bufnr, action)
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
+    end
+    if not vim.bo[bufnr].modified then
+        action(function() end)
+        return
+    end
+
+    local choice = vim.fn.confirm(
+        "Some changes are unsaved. Save to disk after reset?\n",
+        "&Yes\n&No\n&Cancel",
+        3,
+        "Warning"
+    )
+
+    if choice == 0 or choice == 3 then
+        return
+    end
+
+    action(function()
+        if choice == 1 then
+            local ok, err = pcall(
+                vim.api.nvim_buf_call,
+                bufnr,
+                function() vim.cmd.update() end
+            )
+            if not ok then
+                vim.notify(
+                    "Save failed: " .. tostring(err),
+                    vim.log.levels.ERROR,
+                    { title = "Git" }
+                )
+            end
+        end
+    end)
+end
+
 --- Runs the Neogit commit command in an interactive editor via `client.wrap`.
 --- Must be called from within a `neogit.lib.async` context.
 --- @return nil
@@ -196,10 +278,13 @@ function M.toggle_buf_staging(bufnr)
 
     UT.async_run(function()
         UT.await(gitsigns.refresh)
-        local unstaged_count = #(gitsigns_cache.cache[bufnr].hunks or {})
+        local entry = gitsigns_cache.cache[bufnr]
+        if not entry then
+            return
+        end
 
         --- @type Gitsigns.Hunk.Hunk[]
-        if unstaged_count > 0 then
+        if #(entry.hunks or {}) > 0 then
             gitsigns.stage_buffer()
         else
             gitsigns.reset_buffer_index()
