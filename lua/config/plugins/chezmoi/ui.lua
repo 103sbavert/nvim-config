@@ -32,7 +32,7 @@ function M.notify_result(res, ok_msg)
     if not res or res.success then
         M.notify_ok(ok_msg)
     else
-        M.notify_err(table.concat(res.data or {}))
+        M.notify_err(table.concat(res.data or {}, "\n"))
     end
 end
 

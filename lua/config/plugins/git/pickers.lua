@@ -18,7 +18,7 @@ return {
                         "CodeDiff",
                         hash,
                         file,
-                    })
+                    }, " ") -- split by space
 
                     vim.cmd(cmd_parts)
                 end
