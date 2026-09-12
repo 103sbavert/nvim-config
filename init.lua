@@ -209,20 +209,20 @@ do
     -- Key binds to navigate between tabs
     -- Use ALT+<h,l> to navigate between adjacent tabs
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<A-h>",
         vim.cmd.tabprevious,
         { silent = true, desc = "Previous tab" }
     )
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<A-l>",
         vim.cmd.tabnext,
         { silent = true, desc = "Next tab" }
     )
 
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "", "t" },
         "<A-t>",
         function() vim.cmd.wincmd("T") end,
         { silent = true, desc = "Move window to new tab" }
@@ -233,22 +233,22 @@ do
     --
     --  See `:help wincmd` for a list of all window commands
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<C-h>",
         function() vim.cmd.wincmd("h") end
     )
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<C-j>",
         function() vim.cmd.wincmd("j") end
     )
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<C-k>",
         function() vim.cmd.wincmd("k") end
     )
     vim.keymap.set(
-        { "n", "i", "t" },
+        { "n", "i", "x", "t" },
         "<C-l>",
         function() vim.cmd.wincmd("l") end
     )
