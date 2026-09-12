@@ -17,7 +17,35 @@ return {
             return
         end
 
-        require("blink.cmp").build():pwait()
+        require("blink.cmp")
+            .build()
+            :map(function()
+                vim.schedule(function()
+                    local ok, cmp = pcall(require, "blink.cmp")
+                    if ok and cmp.library_available() then
+                        pcall(
+                            require("blink.cmp.fuzzy").set_implementation,
+                            "rust"
+                        )
+                    end
+                    vim.notify(
+                        "blink.cmp built, Rust matcher active",
+                        vim.log.levels.INFO,
+                        { title = "blink.cmp" }
+                    )
+                end)
+            end)
+            :catch(function(err)
+                vim.schedule(
+                    function()
+                        vim.notify(
+                            "blink.cmp build failed: " .. tostring(err),
+                            vim.log.levels.ERROR,
+                            { title = "blink.cmp" }
+                        )
+                    end
+                )
+            end)
     end,
     --- @type blink.cmp.Config
     opts = {
@@ -62,7 +90,7 @@ return {
         sources = {
             default = { "lsp", "path", "snippets", "buffer" },
         },
-        fuzzy = { implementation = "prefer_rust_with_warning" },
+        fuzzy = { implementation = "prefer_rust" },
         signature = { enabled = true },
     },
 }
