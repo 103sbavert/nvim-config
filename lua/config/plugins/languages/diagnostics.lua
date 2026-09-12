@@ -14,13 +14,6 @@ return {
         },
     },
     init = function()
-        vim.keymap.set(
-            "n",
-            "<leader>q",
-            vim.diagnostic.setloclist,
-            { desc = "Open diagnostic [q]uickfix list" }
-        )
-
         vim.diagnostic.config({
             virtual_text = false,
             virtual_lines = false,
