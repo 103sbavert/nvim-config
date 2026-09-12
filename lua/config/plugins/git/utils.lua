@@ -1,7 +1,5 @@
 local M = {}
 
-local UT = require("config.utils")
-
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
 M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
@@ -10,41 +8,45 @@ M.navigate_bw_mapper = create_keymap_group("[", { "n", "v" })
 --- Keymap group for forward hunk/change navigation, mapped under "]".
 M.navigate_fw_mapper = create_keymap_group("]", { "n", "v" })
 
--- Cached Neogit commit popup instance, built lazily on first use.
-local commit_popup = nil
-
---- Builds (once) and shows the Neogit commit popup, then triggers its commit
---- action. Assumes `neogit.lib.git` hooks are already refreshed.
+--- Runs the Neogit commit command in an interactive editor via `client.wrap`.
+--- Must be called from within a `neogit.lib.async` context.
 --- @return nil
 local function commit_popup_cb()
-    commit_popup = commit_popup
-        or require("neogit.lib.popup")
-            .builder()
-            :name("NeogitCommitPopup")
-            :build()
-    require("neogit.popups.commit.actions").commit(commit_popup)
+    local commit = require("neogit.lib.git").cli.commit
+
+    require("neogit.client").wrap(commit, {
+        msg = {
+            success = "Committed",
+            fail = "Commit failed",
+            title = "Git",
+        },
+        interactive = true,
+        show_diff = true,
+    })
 end
 
---- Opens the Neogit commit popup, refreshing repo hooks first if needed.
+--- Opens the Neogit commit editor, refreshing repo state first.
 --- @return nil
 function M.open_commit_tab()
     local git = require("neogit.lib.git")
+    local a = require("neogit.lib.async")
 
-    UT.async_run(function()
-        if git.repo.state.hooks == nil then
-            UT.await(
-                function(cb)
-                    git.repo:dispatch_refresh({
-                        source = "commit-keymap",
-                        callback = cb,
-                    })
-                end
-            )
-        end
+    a.void(function()
+        a.wrap(
+            function(cb)
+                git.repo:dispatch_refresh({
+                    source = "commit-keymap",
+                    callback = cb,
+                })
+            end,
+            1
+        )()
 
-        require("neogit.lib.async").void(commit_popup_cb)()
-    end, { error_title = "Git" })
+        commit_popup_cb()
+    end)()
 end
+
+local snacks_fmt = nil
 
 --- Formats a git log picker item, prefixing it with a "@" marker column when
 --- the item's commit is the current HEAD.
@@ -52,8 +54,18 @@ end
 --- @param item snacks.picker.Item Git log picker item being formatted.
 --- @param picker snacks.Picker Picker instance the item belongs to.
 --- @return snacks.picker.Highlight[] Formatted item parts with head highlighting.
-local function format_log(head_hash, item, picker)
-    local align = Snacks.picker.util.align
+--- Cached Snacks formatter refs, resolved lazily on first picker render so
+--- this module never indexes the `Snacks` global at load time.
+local function format_log(head_hash, commit_icon, item, picker)
+    if not snacks_fmt then
+        snacks_fmt = {
+            align = Snacks.picker.util.align,
+            extend = Snacks.picker.highlight.extend,
+            commit_message = Snacks.picker.format.commit_message,
+        }
+    end
+
+    local align = snacks_fmt.align
 
     local is_head = vim.startswith(head_hash, item.commit)
     local symbol
@@ -63,7 +75,7 @@ local function format_log(head_hash, item, picker)
         symbol = " "
         hl = "SnacksPickerGitBranchCurrent"
     else
-        symbol = picker.opts.icons.git.commit
+        symbol = commit_icon
         hl = "SnacksPickerGitCommit"
     end
 
@@ -75,10 +87,7 @@ local function format_log(head_hash, item, picker)
 
     fmt[#fmt + 1] = { align("", 4) }
 
-    Snacks.picker.highlight.extend(
-        fmt,
-        Snacks.picker.format.commit_message(item, picker)
-    )
+    snacks_fmt.extend(fmt, snacks_fmt.commit_message(item, picker))
 
     return fmt
 end
@@ -145,32 +154,83 @@ local function get_log_layout()
     return log_layout
 end
 
---- Opens a picker over the current file's git log so the user can choose a
---- base commit to diff against. Notifies and aborts if there is no active
---- buffer file or the file is untracked.
+--- Opens the git log picker with a pre-resolved HEAD hash.
+--- @param head_hash string Full HEAD oid used for the current-commit marker.
+--- @param file_name? string optional file name to query log against
+--- @param callback? fun(hash: string) Invoked with the chosen commit hash, use
+--- nil to use Snacks.picker.git_log default on_confirm action
+--- @return nil
+local function open_log_picker(head_hash, file_name, callback)
+    --- @type snacks.picker.git.log.Config
+    local git_log_opts = {
+        -- Resolves the commit icon once per picker instead of per item.
+        format = (function()
+            local commit_icon = nil
+            return function(item, picker)
+                commit_icon = commit_icon or picker.opts.icons.git.commit
+                return format_log(head_hash, commit_icon, item, picker)
+            end
+        end)(),
+        cmd_args = { file_name },
+        title = "Pick diff base",
+        layout = get_log_layout(),
+        confirm = callback and function(picker, item)
+            on_ref_confirm(picker, item, callback)
+        end or nil,
+    }
+
+    Snacks.picker.git_log(git_log_opts)
+end
+
+--- Resolves the Neogit repo instance for a file (or cwd).
+--- Notifies and returns nil outside a git worktree.
+--- @param file_name? string
+--- @return NeogitRepo|nil
+local function repo_for_file(file_name)
+    local dir = file_name and vim.fs.dirname(vim.fs.abspath(file_name))
+        or vim.uv.cwd()
+    local repo = require("neogit.lib.git.repository").instance(dir)
+
+    if repo.worktree_root == "" then
+        vim.notify(
+            "Not a git repository",
+            vim.log.levels.WARN,
+            { title = "Diff" }
+        )
+        return nil
+    end
+
+    return repo
+end
+
+--- Awaits a full repo refresh. Must run inside a neogit async context.
+--- @param repo NeogitRepo
+--- @param source string Refresh source label for Neogit logs.
+local function await_refresh(repo, source)
+    require("neogit.lib.async").wrap(
+        function(cb) repo:dispatch_refresh({ source = source, callback = cb }) end,
+        1
+    )()
+end
+
+--- Opens a picker over the file's git log so the user can choose a base
+--- commit to diff against. Resolves the file's repo, refreshes it, then
+--- marks HEAD from Neogit repo state. Notifies and aborts outside a
+--- git worktree.
 --- @param file_name? string optional file name to query log against
 --- @param callback? fun(hash: string) Invoked with the chosen commit hash, use
 --- nil to use Snacks.picker.git_log default on_confirm action
 --- @return nil
 function M.git_log_picker(file_name, callback)
-    UT.git_run({ "git", "rev-parse", "HEAD" }, function(head_res)
-        local head_hash = vim.trim(head_res.stdout or "")
+    require("neogit.lib.async").void(function()
+        local repo = repo_for_file(file_name)
+        if not repo then
+            return
+        end
 
-        --- @type snacks.picker.git.log.Config
-        local git_log_opts = {
-            format = function(item, picker)
-                return format_log(head_hash, item, picker)
-            end,
-            cmd_args = { file_name },
-            title = "Pick diff base",
-            layout = get_log_layout(),
-            confirm = callback and function(picker, item)
-                on_ref_confirm(picker, item, callback)
-            end or nil,
-        }
-
-        Snacks.picker.git_log(git_log_opts)
-    end, { error_title = "Diff", notify_on_error = true })
+        await_refresh(repo, "diff-base-picker")
+        open_log_picker(repo.state.head.oid or "", file_name, callback)
+    end)()
 end
 
 return M

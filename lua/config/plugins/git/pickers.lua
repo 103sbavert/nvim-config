@@ -2,8 +2,9 @@
 return {
     "esmuellert/codediff.nvim",
     dependencies = {
-        "config.utils",
+        "NeogitOrg/neogit",
         "folke/snacks.nvim",
+        "config.utils",
     },
     lazy = true,
     keys = {
