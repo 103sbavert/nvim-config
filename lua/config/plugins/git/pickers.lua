@@ -56,5 +56,10 @@ return {
             width = 40,
             auto_refresh = true,
         },
+        keymaps = {
+            view = {
+                toggle_stage = false,
+            },
+        },
     },
 }
