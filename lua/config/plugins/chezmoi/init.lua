@@ -1,6 +1,7 @@
 --- @type LazySpec
 return {
     "103sbavert/nvim-chezmoi",
+    branch = "feat/modern-lua-rewrite",
     dependencies = {
         "config.utils",
         "nvim-mini/mini.nvim",
