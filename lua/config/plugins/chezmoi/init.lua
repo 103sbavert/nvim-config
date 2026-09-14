@@ -14,7 +14,7 @@ return {
     lazy = false,
     opts = {
         debug = false,
-        source_path = os.getenv("CHEZMOI_SOURCE_DIR"),
+        source_path = vim.env.CHEZMOI_SOURCE_DIR,
         edit = {
             apply_on_save = "never",
         },
