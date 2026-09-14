@@ -15,7 +15,7 @@ Originally based on
 ## Requirements
 
 - Neovim 0.12 or higher
-- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`, `jb`
+- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`
 
 ## Installation
 
