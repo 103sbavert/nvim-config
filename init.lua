@@ -186,6 +186,14 @@ do
         end,
     })
 
+    -- Register custom file types handled by some plugins
+    vim.filetype.add({
+        pattern = {
+            [".*%.gitlab%-ci.*%.ya?ml"] = "yaml.gitlab",
+            [".*%.tmpl"] = "gotmpl",
+        },
+    })
+
     -- [[ Basic Keymaps ]]
     --  See `:help vim.keymap.set()`
 
