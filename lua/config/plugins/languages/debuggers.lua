@@ -136,13 +136,14 @@ return {
             mode = { "n", "i", "x", "v" },
         },
     },
-    config = function()
+    init = function()
         local mason_daps = {
             "delve",
         }
 
         require("config.mason").InstallTools(mason_daps)
-
+    end,
+    config = function()
         -- Auto-open/close UI
         get_dap().listeners.before.attach["dapui_config"] = function()
             get_dapui().open()
