@@ -14,6 +14,7 @@ return {
         -- Ensure basic parsers are installed
         local parsers = {
             "bash",
+            "regex",
             "c",
             "zsh",
             "go",
@@ -30,6 +31,8 @@ return {
             "vim",
             "vimdoc",
         }
+
+        -- new change in this file
 
         treesitter.install(parsers)
 
@@ -78,3 +81,5 @@ return {
         })
     end,
 }
+
+-- new change in this file
