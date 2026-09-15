@@ -95,9 +95,24 @@ return {
     },
     {
         "seblyng/roslyn.nvim",
-        ft = { "cs", "razor" },
+        ft = { "cs", "razor", "msbuild_proj", "solution" },
+        init = function()
+            vim.filetype.add({
+                extension = {
+                    csproj = "msbuild_proj",
+                    fsproj = "msbuild_proj",
+                    vbproj = "msbuild_proj",
+                    props = "msbuild_proj",
+                    targets = "msbuild_proj",
+                    slnx = "solution",
+                    nuspec = "xml",
+                },
+            })
+        end,
         ---@module "roslyn.config"
         ---@type RoslynNvimConfig
-        opts = {},
+        opts = {
+            lock_target = true,
+        },
     },
 }
