@@ -47,7 +47,7 @@ return {
             update_interval = 60 * 60 * 24 * 2, ---@type integer 2 days
         },
         editor = {
-            reset_previous_code = true, ---@type boolean
+            reset_previous_code = false, ---@type boolean
             fold_imports = true, ---@type boolean
         },
 
@@ -71,7 +71,6 @@ return {
         keys = {
             toggle = { "q" }, ---@type string|string[]
             confirm = { "<CR>" }, ---@type string|string[]
-
             reset_testcases = "r", ---@type string
             use_testcase = "U", ---@type string
             focus_testcases = "H", ---@type string
