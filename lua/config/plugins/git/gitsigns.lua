@@ -23,58 +23,101 @@ return {
 
             -- Navigation
             do
-                utils.navigate_fw_mapper("c", function()
-                    if vim.wo.diff then
-                        return "]c"
-                    end
-                    vim.schedule(
-                        function() gitsigns.nav_hunk("next", navopts) end
-                    )
-                    return "<Ignore>"
-                end, "Jump to next git [c]hange")
+                utils.navigate_fw_mapper(
+                    "c",
+                    function()
+                        if vim.wo.diff then
+                            return "]c"
+                        end
+                        vim.schedule(
+                            function() gitsigns.nav_hunk("next", navopts) end
+                        )
+                        return "<Ignore>"
+                    end,
+                    "Jump to next git [c]hange",
+                    {
+                        buffer = bufnr,
+                        expr = true,
+                    }
+                )
 
-                utils.navigate_bw_mapper("c", function()
-                    if vim.wo.diff then
-                        return "[c"
-                    end
-                    vim.schedule(
-                        function() gitsigns.nav_hunk("prev", navopts) end
-                    )
-                    return "<Ignore>"
-                end, "Jump to previous git [c]hange")
+                utils.navigate_bw_mapper(
+                    "c",
+                    function()
+                        if vim.wo.diff then
+                            return "[c"
+                        end
+                        vim.schedule(
+                            function() gitsigns.nav_hunk("prev", navopts) end
+                        )
+                        return "<Ignore>"
+                    end,
+                    "Jump to previous git [c]hange",
+                    {
+                        buffer = bufnr,
+                        expr = true,
+                    }
+                )
             end
 
             -- Staging
             do
-                -- hunk
-                utils.git_key_mapper(" ", function()
-                    local range = { vim.fn.line("."), vim.fn.line("v") }
+                local function visual_hunk_stage()
+                    local s, e = vim.fn.line("."), vim.fn.line("v")
+                    if s > e then
+                        s, e = e, s
+                    end
+                    local range = { s, e }
                     local locbufnr = vim.api.nvim_get_current_buf()
                     if not utils.ask_save_stage(locbufnr) then
                         return
                     end
 
                     gitsigns.stage_hunk(range, { greedy = false })
-                end, "[ ] stage/unstage hunk", nil, { "v" })
+                end
 
-                utils.git_key_mapper(" ", function()
+                -- hunk
+                utils.git_key_mapper(
+                    " ",
+                    visual_hunk_stage,
+                    "[ ] stage/unstage hunk",
+                    { buffer = bufnr },
+                    { "v" }
+                )
+
+                local function normal_hunk_stage()
                     local locbufnr = vim.api.nvim_get_current_buf()
                     if not utils.ask_save_stage(locbufnr) then
                         return
                     end
 
                     gitsigns.stage_hunk()
-                end, "[ ] stage/unstage hunk", nil, { "n" })
+                end
 
-                --- @type table<integer, (Gitsigns.CacheEntry)?>
-                utils.git_key_mapper("s", function()
-                    local locbufnr = vim.api.nvim_get_current_buf()
-                    if not utils.ask_save_stage(locbufnr) then
-                        return
-                    end
+                utils.git_key_mapper(
+                    " ",
+                    normal_hunk_stage,
+                    "[ ] stage/unstage hunk",
+                    { buffer = bufnr },
+                    { "n" }
+                )
 
-                    utils.toggle_buf_staging(locbufnr)
-                end, "Toggle file [s]taging", nil, { "n" })
+                utils.git_key_mapper(
+                    "s",
+                    function()
+                        local locbufnr = vim.api.nvim_get_current_buf()
+                        if not utils.ask_save_stage(locbufnr) then
+                            return
+                        end
+
+                        utils.toggle_buf_staging(locbufnr)
+                    end,
+                    "Toggle file [s]taging",
+                    { buffer = bufnr },
+                    {
+                        "n",
+                    }
+                )
             end
 
             -- History
@@ -82,46 +125,86 @@ return {
                 utils.git_key_mapper(
                     "b",
                     function() gitsigns.blame({ ignore_whitespace = false }) end,
-                    "[b]lame buffer"
+                    "[b]lame buffer",
+                    { buffer = bufnr },
+                    { "n" }
                 )
                 utils.git_key_mapper(
                     "i",
                     function() gitsigns.blame_line({ full = true }) end,
-                    "blame [i]nline"
+                    "blame [i]nline",
+                    { buffer = bufnr },
+                    { "n" }
                 )
                 utils.git_key_mapper(
                     "p",
                     gitsigns.preview_hunk,
-                    "[p]review hunk"
+                    "[p]review hunk",
+                    { buffer = bufnr },
+                    { "n" }
                 )
             end
 
             -- Resets
             do
-                utils.git_key_mapper("r", function()
-                    local locbufnr = vim.api.nvim_get_current_buf()
-                    utils.ask_reset_save(
-                        locbufnr,
-                        function(done) gitsigns.reset_hunk(nil, nil, done) end
-                    )
-                end, "[r]eset cursor hunk", nil, { "n" })
-                utils.git_key_mapper("R", function()
-                    local locbufnr = vim.api.nvim_get_current_buf()
-                    utils.ask_reset_save(locbufnr, function(done)
-                        gitsigns.reset_buffer()
-                        done()
-                    end)
-                end, "[R]eset buffer")
-                utils.git_key_mapper("r", function()
-                    local range = { vim.fn.line("."), vim.fn.line("v") }
-                    local locbufnr = vim.api.nvim_get_current_buf()
-                    utils.ask_reset_save(
-                        locbufnr,
-                        function(done)
-                            gitsigns.reset_hunk(range, { greedy = false }, done)
+                utils.git_key_mapper(
+                    "r",
+                    function()
+                        local locbufnr = vim.api.nvim_get_current_buf()
+                        utils.ask_reset_save(
+                            locbufnr,
+                            function(done) gitsigns.reset_hunk(nil, nil, done) end
+                        )
+                    end,
+                    "[r]eset cursor hunk",
+                    { buffer = bufnr },
+                    {
+                        "n",
+                    }
+                )
+
+                utils.git_key_mapper(
+                    "R",
+                    function()
+                        local locbufnr = vim.api.nvim_get_current_buf()
+                        utils.ask_reset_save(locbufnr, function(done)
+                            gitsigns.reset_buffer()
+                            done()
+                        end)
+                    end,
+                    "[R]eset buffer",
+                    { buffer = bufnr },
+                    {
+                        "n",
+                    }
+                )
+
+                utils.git_key_mapper(
+                    "r",
+                    function()
+                        local s, e = vim.fn.line("."), vim.fn.line("v")
+                        if s > e then
+                            s, e = e, s
                         end
-                    )
-                end, "[r]eset selection", nil, { "v" })
+                        local range = { s, e }
+                        local locbufnr = vim.api.nvim_get_current_buf()
+                        utils.ask_reset_save(
+                            locbufnr,
+                            function(done)
+                                gitsigns.reset_hunk(
+                                    range,
+                                    { greedy = false },
+                                    done
+                                )
+                            end
+                        )
+                    end,
+                    "[r]eset selection",
+                    { buffer = bufnr },
+                    {
+                        "v",
+                    }
+                )
             end
 
             -- Text object
@@ -139,7 +222,8 @@ return {
                 map_toggle_key(
                     "b",
                     gitsigns.toggle_current_line_blame,
-                    "Current line [b]lame"
+                    "Current line [b]lame",
+                    { buffer = bufnr }
                 )
             end
         end,
