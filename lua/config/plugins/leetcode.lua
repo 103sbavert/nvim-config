@@ -36,7 +36,7 @@ return {
         logging = true,
         injector = {}, ---@type table<lc.lang, lc.inject>
         cache = {
-            update_interval = 60 * 60 * 24 * 7, ---@type integer 7 days
+            update_interval = 60 * 60 * 24 * 2, ---@type integer 2 days
         },
         editor = {
             reset_previous_code = true, ---@type boolean
