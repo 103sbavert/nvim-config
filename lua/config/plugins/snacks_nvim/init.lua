@@ -7,9 +7,9 @@ return {
         local pickers = require("config.plugins.snacks_nvim.pickers")
         return vim.list_extend(pickers, {
             {
-                "<leader>tt",
+                "<C-/>",
                 function() Snacks.terminal.toggle() end,
-                desc = "[t]erminal",
+                desc = "Toggle Terminal",
             },
         })
     end,
