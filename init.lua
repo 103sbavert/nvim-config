@@ -100,6 +100,16 @@ do
     -- 4 lines of context around cursor when scrolling
     vim.o.scrolloff = 4
 
+    -- Don't wrap the text
+    vim.o.wrap = false
+
+    vim.keymap.set(
+        "n",
+        "<leader>tw",
+        function() vim.wo[0].wrap = not vim.wo[0].wrap end,
+        { desc = "[w]rap" }
+    )
+
     -- move to the last character of the last line
     vim.keymap.set({ "n", "o", "x" }, "G", function()
         local last_line = vim.api.nvim_buf_line_count(0)
