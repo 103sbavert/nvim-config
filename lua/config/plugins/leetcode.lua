@@ -82,6 +82,6 @@ return {
         theme = {},
 
         ---@type boolean
-        image_support = false,
+        image_support = true,
     },
 }
