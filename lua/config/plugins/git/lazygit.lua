@@ -1,7 +1,6 @@
 --- @type LazySpec
 return {
     "103sbavert/lazygit.nvim",
-    branch = "fix/commit-editor-integration",
     lazy = true,
     cmd = {
         "LazyGit",
