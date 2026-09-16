@@ -34,7 +34,15 @@ return {
 
         ---@type boolean
         logging = true,
-        injector = {}, ---@type table<lc.lang, lc.inject>
+
+        ---@type table<lc.lang, lc.inject>
+        injector = {
+            ["golang"] = {
+                before = {
+                    "package solutions",
+                },
+            },
+        },
         cache = {
             update_interval = 60 * 60 * 24 * 2, ---@type integer 2 days
         },
