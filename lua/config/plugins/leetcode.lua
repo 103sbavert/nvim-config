@@ -6,6 +6,7 @@ return {
         "MunifTanjim/nui.nvim",
         "folke/snacks.nvim",
         "nvim-treesitter/nvim-treesitter",
+        "3rd/image.nvim",
     },
     cmd = {
         "Leet",
