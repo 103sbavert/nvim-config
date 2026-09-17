@@ -46,6 +46,7 @@ return {
             -- LS formatters
             lua = { lsp_format = "prefer" }, -- uses stylua as an LS, not lua_ls
             go = { lsp_format = "prefer" },
+            typst = { lsp_format = "prefer" },
             -- Custom/CLI formatters
             javascript = { "prettierd" },
             typescript = { "prettierd" },

@@ -17,6 +17,7 @@ return {
             -- Enable the following language servers
             --- @type table<string, vim.lsp.Config>
             local server_config_map = {
+                tinymist = {},
                 vtsls = {},
                 eslint = {},
                 bashls = {},
