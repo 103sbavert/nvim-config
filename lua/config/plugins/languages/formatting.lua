@@ -1,6 +1,33 @@
 local getutils = function()
     return require("config.plugins.languages.internal.utils")
 end
+
+-- prettierd config cache path
+-- NOTE: prettierd does not accept config as cmdline args, using this is the
+-- best option we have
+local prettierd_config_cache = {}
+
+--- @param indent integer
+--- @return string path Absolute path to a prettierd config file requesting `indent` as tabWidth.
+local function get_prettierd_config_path(indent)
+    local cached = prettierd_config_cache[indent]
+    if cached then
+        return cached
+    end
+
+    local path = vim.fs.joinpath(
+        vim.fn.stdpath("cache"),
+        string.format("prettierd-tabwidth-%d.json", indent)
+    )
+
+    if not vim.uv.fs_stat(path) then
+        vim.fn.writefile({ vim.fn.json_encode({ tabWidth = indent }) }, path)
+    end
+
+    prettierd_config_cache[indent] = path
+    return path
+end
+
 --- @type LazySpec
 return {
     "stevearc/conform.nvim",
@@ -49,9 +76,9 @@ return {
             prettierd = {
                 env = function(_, ctx)
                     return {
-                        PRETTIERD_DEFAULT_CONFIG = vim.fn.json_encode({
-                            tabWidth = getutils().get_indent(ctx.buf),
-                        }),
+                        PRETTIERD_DEFAULT_CONFIG = get_prettierd_config_path(
+                            getutils().get_indent(ctx.buf)
+                        ),
                     }
                 end,
             },
