@@ -39,8 +39,15 @@ return {
                 },
             },
             sources = {
+                buffers = {
+                    hidden = true,
+                },
                 explorer = {
                     hidden = true,
+                },
+                files = {
+                    hidden = true,
+                    ignored = true,
                 },
                 lsp_symbols = {
                     filter = {
