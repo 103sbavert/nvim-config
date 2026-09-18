@@ -89,10 +89,10 @@ return {
     },
     keys = {
         {
-            "<leader>b<CR>",
+            "<leader>b<space>",
             function() get_dap().toggle_breakpoint() end,
             mode = { "n" },
-            desc = "[t]oggle",
+            desc = "[ ] toggle",
         },
         {
             "<leader>bc",
