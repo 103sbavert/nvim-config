@@ -9,7 +9,9 @@ local debounce_hrs = 6
 
 --- @param tool_list string[]
 M.InstallTools = function(tool_list)
-    vim.list_extend(cumulative_tool_tbl, tool_list)
+    for _, tool in ipairs(tool_list) do
+        cumulative_tool_tbl[tool] = true
+    end
 end
 
 local group =
@@ -19,7 +21,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
     group = group,
     callback = function()
         installer.setup({
-            ensure_installed = cumulative_tool_tbl,
+            ensure_installed = vim.tbl_keys(cumulative_tool_tbl),
             debounce_hours = debounce_hrs,
             integrations = {
                 ["mason-lspconfig"] = true,
