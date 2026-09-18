@@ -154,6 +154,12 @@ do
         { desc = "Start of previous line" }
     )
 
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "g_",
+        "$",
+        { desc = "Last character" }
+    )
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = "nvr --remote-silent -o"
 
