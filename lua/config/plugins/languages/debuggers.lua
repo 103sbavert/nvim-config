@@ -14,6 +14,10 @@ local get_dapui = function()
     return lazy_dap_ui
 end
 
+local getutils = function()
+    return require("config.plugins.languages.internal.utils")
+end
+
 --- @return LazyPluginSpec
 local function dap_ui_spec()
     return {
@@ -142,6 +146,7 @@ return {
         }
 
         require("config.mason").InstallTools(mason_daps)
+        getutils().setup_dap_signs()
     end,
     config = function()
         -- Auto-open/close UI

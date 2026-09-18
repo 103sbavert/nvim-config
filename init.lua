@@ -340,6 +340,14 @@ do
     local hl_read = util.blend(bg1, c.green, 0.1)
     local hl_text = util.blend(bg1, c.green, 0.1)
 
+    -- Dap sign highlights
+    local hl_dap_breakpoint_text = util.darken(c.coral, 0.35)
+    local hl_dap_stopped_text = util.darken(c.orange, 0.35)
+    local hl_dap_breakpoint_rejected = util.darken(c.yellow, 0.35)
+
+    -- Line HL
+    local hl_dap_stopped_line = util.darken(c.orange, 0.85, bg1)
+
     require("bamboo").setup({
         style = "vulgaris",
         transparent = false,
@@ -369,6 +377,11 @@ do
             -- Noice Popup highlights
             NoiceConfirm = { link = "NormalFloat" },
             NoiceConfirmBorder = { link = "FloatBorder" },
+            -- Dap sign highlights
+            DapBreakpoint = { fg = hl_dap_breakpoint_text },
+            DapBreakpointRejected = { fg = hl_dap_breakpoint_rejected },
+            DapStopped = { fg = hl_dap_stopped_text },
+            DapStoppedLine = { bg = hl_dap_stopped_line },
         },
     })
     require("bamboo").load()
