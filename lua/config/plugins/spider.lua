@@ -4,11 +4,11 @@ local CAMEL_PATTERNS = {
     "^%u+%w*%l%w*", -- PascalCase with acronyms (PascalCase, HTTPClient)
 }
 
-MODES = { "n", "o", "x" }
-DEFAULT_QUERY_STR =
+local MODES = { "n", "o", "x" }
+local DEFAULT_QUERY_STR =
     "[(identifier) (property_name) (variable_name) (type_identifier) (name)] @id"
 
-QUERY_CACHE = {}
+local QUERY_CACHE = {}
 
 --- Retrieves or parses the Tree-sitter query for a given language.
 ---@param lang string The language identifier (e.g., "lua", "python").
