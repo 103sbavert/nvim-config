@@ -62,15 +62,17 @@ local function chezmoi_apply_aucmd_cb(args)
     end, { error_title = "Chezmoi" })
 end
 
-shared.get_src_dir_async(
-    function(src_dir)
-        vim.api.nvim_create_autocmd("BufWritePost", {
-            group = chezmoi_apply_grp,
-            pattern = vim.fs.joinpath(src_dir, "*"),
-            callback = chezmoi_apply_aucmd_cb,
-        })
+shared.get_src_dir_async(function(src_dir)
+    if not src_dir or src_dir == "" then
+        return
     end
-)
+
+    vim.api.nvim_create_autocmd("BufWritePost", {
+        group = chezmoi_apply_grp,
+        pattern = vim.fs.joinpath(src_dir, "*"),
+        callback = chezmoi_apply_aucmd_cb,
+    })
+end)
 
 -- local chezmoi_edit_grp = vim.api.nvim_create_augroup("open_czm_src", {
 --     clear = true,
