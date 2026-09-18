@@ -15,13 +15,15 @@ return {
                 local utils = require("config.plugins.git.utils")
 
                 local callback = function(hash, file)
-                    local cmd_parts = table.concat({
-                        "CodeDiff",
-                        hash,
-                        file,
-                    }, " ") -- split by space
+                    local args = { hash }
+                    if file and file ~= "" then
+                        table.insert(args, file)
+                    end
 
-                    vim.cmd(cmd_parts)
+                    vim.cmd({
+                        cmd = "CodeDiff",
+                        args = args,
+                    })
                 end
                 local file_name = require("config.utils").get_current_file()
                 utils.git_log_picker(file_name, callback)
