@@ -78,7 +78,7 @@ return {
 
                 -- hunk
                 utils.git_key_mapper(
-                    " ",
+                    "<space>",
                     visual_hunk_stage,
                     "[ ] stage/unstage hunk",
                     { buffer = bufnr },
@@ -95,7 +95,7 @@ return {
                 end
 
                 utils.git_key_mapper(
-                    " ",
+                    "<space>",
                     normal_hunk_stage,
                     "[ ] stage/unstage hunk",
                     { buffer = bufnr },
