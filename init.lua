@@ -425,7 +425,12 @@ require("lazy").setup({
             lazy = true,
             config = true,
         },
-            dependencies = "j-hui/fidget.nvim",
+        {
+            "chomosuke/typst-preview.nvim",
+            ft = "typst",
+            jj2version = "1.*",
+            lazy = true,
+            config = true,
         },
         {
             name = "config.su",
