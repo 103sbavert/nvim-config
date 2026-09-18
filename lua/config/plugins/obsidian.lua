@@ -1,7 +1,7 @@
 local utils = require("config.utils")
 
 local workspaces = {
-    { name = "personal", path = "~/vaults/personal" },
+    { name = "personal", path = "~/Projects/markup-projects/obsidian-vault/" },
     { name = "work", path = "~/vaults/work" },
 }
 
