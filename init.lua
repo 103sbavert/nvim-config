@@ -128,10 +128,31 @@ do
     -- use _ for previous line first non-white character (previously '-)'
     -- use -,= for first, last non-white characters (previously '_', '$')
     -- map $ for auto-indentation (previously '=')
-    vim.keymap.set({ "n", "o", "x", "v" }, "$", "=")
-    vim.keymap.set({ "n", "o", "x", "v" }, "=", "g_")
-    vim.keymap.set({ "n", "o", "x", "v" }, "-", "_")
-    vim.keymap.set({ "n", "o", "x", "v" }, "_", "-")
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "0",
+        "0",
+        { desc = "First character" }
+    )
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "=",
+        "g_",
+        { desc = "Last non-ws character" }
+    )
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "-",
+        "_",
+        { desc = "First non-ws character" }
+    )
+    vim.keymap.set({ "n", "o", "x", "v" }, "$", "=", { desc = "Indent (op)" })
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "_",
+        "-",
+        { desc = "Start of previous line" }
+    )
 
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = "nvr --remote-silent -o"
