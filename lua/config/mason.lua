@@ -5,11 +5,17 @@ require("mason").setup({})
 local installer = require("mason-tool-installer")
 
 local cumulative_tool_tbl = {}
+local cumulative_tool_seen = {}
 local debounce_hrs = 6
 
 --- @param tool_list string[]
 M.InstallTools = function(tool_list)
-    vim.list_extend(cumulative_tool_tbl, tool_list)
+    for _, tool in ipairs(tool_list) do
+        if not cumulative_tool_seen[tool] then
+            table.insert(cumulative_tool_tbl, tool)
+            cumulative_tool_seen[tool] = true
+        end
+    end
 end
 
 local group =
