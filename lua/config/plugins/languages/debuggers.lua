@@ -46,6 +46,7 @@ local function dap_ui_spec()
                 mode = { "n", "i", "x", "v" },
             },
         },
+        --- @type dapui.Config
         opts = {
             icons = {
                 expanded = "▾",
