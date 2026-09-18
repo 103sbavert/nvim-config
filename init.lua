@@ -391,7 +391,6 @@ require("lazy").setup({
     --- @type LazySpec[]
     spec = {
         { import = "config.plugins" },
-        { "j-hui/fidget.nvim", config = true },
         { "windwp/nvim-autopairs", config = true },
         {
             "lukas-reineke/indent-blankline.nvim",
@@ -422,9 +421,10 @@ require("lazy").setup({
             config = true,
         },
         {
-            name = "config.utils",
-            main = "config.utils",
-            dir = vim.fn.stdpath("config"),
+            "j-hui/fidget.nvim",
+            lazy = true,
+            config = true,
+        },
             dependencies = "j-hui/fidget.nvim",
         },
         {
@@ -434,8 +434,16 @@ require("lazy").setup({
             config = true,
         },
         {
+            name = "config.utils",
+            main = "config.utils",
+            dir = vim.fn.stdpath("config"),
+            lazy = true,
+            dependencies = "j-hui/fidget.nvim",
+        },
+        {
             name = "config.mason",
             main = "config.mason",
+            lazy = true,
             dir = vim.fn.stdpath("config"),
             dependencies = {
                 "williamboman/mason.nvim",
