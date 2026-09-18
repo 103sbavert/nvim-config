@@ -59,3 +59,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
         end, { error_title = "Chezmoi" })
     end,
 })
+
+vim.api.nvim_create_autocmd("BufWipeout", {
+    callback = function(args) src_buf_cache[args.buf] = nil end,
+})
