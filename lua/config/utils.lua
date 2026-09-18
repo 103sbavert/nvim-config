@@ -1,5 +1,11 @@
 local M = {}
 
+M.default_ignored_dirs = {
+    ["vendor"] = true,
+    [".git"] = true,
+    ["node_modules"] = true,
+}
+
 --- @type table<boolean, table<string,string>>
 M.git_diff_glyphs = {
     [true] = {
@@ -331,6 +337,36 @@ function _G.map_toggle_key(keys, func, desc, opts)
 
     local toggle_key_group = create_keymap_group("<leader>t", { "n" })
     toggle_key_group(keys, toggle_fn, desc, map_opts)
+end
+
+--- Recursively scans a directory for a specific file name, skipping ignored directories.
+--- @param root_dir string The starting directory path.
+--- @param target_name string The exact name of the file to find (e.g., "main.go").
+--- @param max_depth number Maximum recursion depth.
+--- @param ignored_dirs table? (Optional) Set of directory names to skip as keys (e.g., { build = true }).
+--- @return table List of absolute file paths matching the target name.
+function M.find_files_by_name(root_dir, target_name, max_depth, ignored_dirs)
+    ignored_dirs = ignored_dirs or M.default_ignored_dirs
+    local results = {}
+
+    local function scan(dir, depth)
+        if depth == 0 then
+            return
+        end
+
+        for name, type in vim.fs.dir(dir) do
+            if type == "directory" then
+                if not ignored_dirs[name] then
+                    scan(vim.fs.joinpath(dir, name), depth - 1)
+                end
+            elseif type == "file" and name == target_name then
+                table.insert(results, vim.fs.joinpath(dir, name))
+            end
+        end
+    end
+
+    scan(root_dir, max_depth)
+    return results
 end
 
 return M
