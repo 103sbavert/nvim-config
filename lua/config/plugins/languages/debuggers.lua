@@ -83,6 +83,7 @@ return {
                 type = "go",
                 name = "Debug Main (Auto)",
                 request = "launch",
+                outputMode = "remote",
                 program = function()
                     local cwd = vim.fn.getcwd(0, 0)
                     local main_files =
