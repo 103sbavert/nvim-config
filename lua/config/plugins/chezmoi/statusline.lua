@@ -2,7 +2,7 @@ local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
 
 local highlight_initialized = false
 local orig_section_fileinfo
-local src_file_cache = {}
+local src_buf_cache = {}
 
 local function initialize_statusline()
     if highlight_initialized then
@@ -22,11 +22,10 @@ local function initialize_statusline()
 
     --- @diagnostic disable-next-line: duplicate-set-field
     statusline.section_fileinfo = function(args)
-        local UT = require("config.utils")
         local fileinfo = orig_section_fileinfo(args)
-        local src_file = UT.get_current_file()
+        local current_buf = args.buf or vim.api.nvim_get_current_buf()
 
-        if src_file and src_file ~= "" and src_file_cache[src_file] then
+        if src_buf_cache[current_buf] then
             return CZM_STATUSLINE_HI .. " " .. fileinfo
         end
 
@@ -51,7 +50,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
             end
 
             local is_src = UT.await(shared.is_src_file_async, buf_file)
-            src_file_cache[buf_file] = is_src
+            src_buf_cache[args.buf] = is_src
 
             if is_src then
                 initialize_statusline()
@@ -59,4 +58,8 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
             end
         end, { error_title = "Chezmoi" })
     end,
+})
+
+vim.api.nvim_create_autocmd("BufWipeout", {
+    callback = function(args) src_buf_cache[args.buf] = nil end,
 })
