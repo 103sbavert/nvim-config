@@ -138,7 +138,7 @@ function M.setup_dap_signs()
             numhl = "",
         },
         ["DapBreakpointCondition"] = {
-            text = b and "" or "❖",
+            text = b and "" or "◆",
             texthl = "DapBreakpoint",
             linehl = "",
             numhl = "",
