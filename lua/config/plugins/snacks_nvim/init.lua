@@ -80,5 +80,47 @@ return {
             },
         },
     },
-    config = true,
+    config = function(_, opts)
+        require("snacks").setup(opts)
+
+        local spinner = {
+            "⠋",
+            "⠙",
+            "⠹",
+            "⠸",
+            "⠼",
+            "⠴",
+            "⠦",
+            "⠧",
+            "⠇",
+            "⠏",
+        }
+
+        local lsp_source = require("snacks.picker.source.lsp")
+        local og_request = lsp_source.request
+
+        ---@diagnostic disable-next-line: duplicate-set-field
+        lsp_source.request = function(buf, method, params, cb)
+            local spinner_id = "defer_lsp_picker"
+            vim.schedule(function()
+                Snacks.notifier.notify("Waiting for LSP", "info", {
+                    id = spinner_id,
+                    title = "Snacks picker",
+                    timeout = false,
+                    opts = function(notif)
+                        notif.icon = spinner[math.floor(
+                            vim.uv.hrtime() / (1e6 * 80)
+                        ) % #spinner + 1]
+                    end,
+                })
+            end)
+
+            local og_cb = function(...)
+                vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
+                cb(...)
+            end
+
+            og_request(buf, method, params, og_cb)
+        end
+    end,
 }
