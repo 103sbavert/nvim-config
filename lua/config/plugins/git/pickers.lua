@@ -7,45 +7,50 @@ return {
         "config.utils",
     },
     lazy = true,
-    keys = {
-        --- Git picker integration
-        {
-            "<leader>gd",
-            function()
-                local utils = require("config.plugins.git.utils")
+    keys = function()
+        local utils = require("config.plugins.git.utils")
+        return {
+            --- Git picker integration
+            {
+                "<leader>gd",
+                function()
+                    local callback = function(hash, file)
+                        local args = { hash }
+                        if file and file ~= "" then
+                            table.insert(args, file)
+                        end
 
-                local callback = function(hash, file)
-                    local args = { hash }
-                    if file and file ~= "" then
-                        table.insert(args, file)
+                        vim.cmd({
+                            cmd = "CodeDiff",
+                            args = args,
+                        })
                     end
-
-                    vim.cmd({
-                        cmd = "CodeDiff",
-                        args = args,
+                    local file_name = require("config.utils").get_current_file()
+                    utils.git_log_picker(file_name, callback)
+                end,
+                desc = "[d]iff against...",
+            },
+            {
+                "<leader>go",
+                function() require("config.plugins.git.utils").git_log_picker() end,
+                desc = "l[o]g",
+            },
+            {
+                "<leader>gt",
+                function()
+                    Snacks.picker.git_status({
+                        layout = utils.get_layout(),
                     })
-                end
-                local file_name = require("config.utils").get_current_file()
-                utils.git_log_picker(file_name, callback)
-            end,
-            desc = "[d]iff against...",
-        },
-        {
-            "<leader>go",
-            function() require("config.plugins.git.utils").git_log_picker() end,
-            desc = "l[o]g",
-        },
-        {
-            "<leader>gt",
-            function() Snacks.picker.git_status() end,
-            desc = "s[t]atus",
-        },
-        {
-            "<leader>gD",
-            function() vim.cmd("CodeDiff --cached HEAD") end,
-            desc = "[D]iff staged",
-        },
-    },
+                end,
+                desc = "s[t]atus",
+            },
+            {
+                "<leader>gD",
+                function() vim.cmd("CodeDiff --cached HEAD") end,
+                desc = "[D]iff staged",
+            },
+        }
+    end,
     opts = {
         diff = {
             layout = "side-by-side",

@@ -8,6 +8,47 @@ local gitsigns_cache = nil
 
 local UT = require("config.utils")
 
+--- Cached layout config for Snacks.picker.git* using default options but with
+--- a wider preview and fullscreen window. Used for git pickers for a better
+--- look at the diff
+--- @type snacks.picker.layout.Config
+local git_layout = nil
+
+--- @return snacks.picker.layout.Config
+function M.get_layout()
+    if git_layout then
+        return git_layout
+    end
+
+    git_layout = vim.deepcopy(require("snacks.picker.config.layouts").default)
+
+    git_layout.fullscreen = true
+    git_layout.layout.border = true
+
+    for _, prop in ipairs(git_layout.layout) do
+        if prop and type(prop) == "table" then
+            if prop.box == "vertical" then
+                prop.border = false
+
+                for _, child in ipairs(prop) do
+                    if child and type(child) == "table" then
+                        if child.win == "input" then
+                            child.border = "bottom"
+                        elseif child.win == "list" then
+                            child.border = false
+                        end
+                    end
+                end
+            elseif prop.win == "preview" then
+                prop.width = 0.70
+                prop.border = "left"
+            end
+        end
+    end
+
+    return git_layout
+end
+
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
 M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
@@ -204,46 +245,6 @@ local function on_ref_confirm(picker, item, callback)
     callback(item.commit)
 end
 
---- Cached layout config for Snacks.picker.git_log using default options but
---- with a wider preview and fullscreen window
---- @type snacks.picker.layout.Config
-local log_layout = nil
-
---- @return snacks.picker.layout.Config
-local function get_log_layout()
-    if log_layout then
-        return log_layout
-    end
-
-    log_layout = vim.deepcopy(require("snacks.picker.config.layouts").default)
-
-    log_layout.fullscreen = true
-    log_layout.layout.border = true
-
-    for _, prop in ipairs(log_layout.layout) do
-        if prop and type(prop) == "table" then
-            if prop.box == "vertical" then
-                prop.border = false
-
-                for _, child in ipairs(prop) do
-                    if child and type(child) == "table" then
-                        if child.win == "input" then
-                            child.border = "bottom"
-                        elseif child.win == "list" then
-                            child.border = false
-                        end
-                    end
-                end
-            elseif prop.win == "preview" then
-                prop.width = 0.70
-                prop.border = "left"
-            end
-        end
-    end
-
-    return log_layout
-end
-
 --- Opens the git log picker with a pre-resolved HEAD hash.
 --- @param head_hash string Full HEAD oid used for the current-commit marker.
 --- @param file_name? string optional file name to query log against
@@ -263,7 +264,7 @@ local function open_log_picker(head_hash, file_name, callback)
         end)(),
         cmd_args = { file_name },
         title = "Pick diff base",
-        layout = get_log_layout(),
+        layout = M.get_layout(),
         confirm = callback and function(picker, item)
             on_ref_confirm(picker, item, callback)
         end or nil,
