@@ -1,5 +1,5 @@
 --- @return snacks.picker.diagnostics.Config
-local get_ivy_split = function()
+local get_ivy_split_conf = function()
     return {
         layout = "ivy_split",
         jump = { close = false },
@@ -74,18 +74,7 @@ return {
     },
     {
         "<leader>q",
-        function()
-            Snacks.picker.diagnostics_buffer({
-                layout = "ivy_split",
-                jump = { close = false },
-                auto_close = false,
-                focus = "list",
-                win = {
-                    input = { minimal = true },
-                    list = { minimal = true },
-                },
-            })
-        end,
+        function() Snacks.picker.diagnostics_buffer(get_ivy_split_conf()) end,
         desc = "[q]uick Fix Diagnostics",
     },
     -- LSP jump bindings
