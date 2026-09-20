@@ -84,4 +84,10 @@ return {
         ---@type boolean
         image_support = true,
     },
+    config = function(_, opts)
+        require("leetcode").setup(opts)
+        require("image").setup({
+            backend = "kitty",
+        })
+    end,
 }
