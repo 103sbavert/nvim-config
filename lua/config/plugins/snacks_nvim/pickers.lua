@@ -1,3 +1,38 @@
+--- @return snacks.picker.diagnostics.Config
+local get_ivy_split = function()
+    return {
+        layout = "ivy_split",
+        jump = { close = false },
+        auto_close = false,
+        focus = "list",
+        win = {
+            input = { minimal = true },
+            list = { minimal = true },
+        },
+    }
+end
+
+--- @return snacks.picker.diagnostics.Config
+local function get_dropdown_conf()
+    local dropdown =
+        vim.deepcopy(require("snacks.picker.config.layouts").dropdown)
+
+    dropdown.layout[1].height = 0.65
+    dropdown.layout.width = 0.8
+
+    return {
+        layout = dropdown,
+        focus = "list",
+        show_delay = math.huge,
+        win = {
+            input = { minimal = true },
+            list = { minimal = true },
+        },
+    }
+end
+
+local function open_split(source) Snacks.picker[source](get_dropdown_conf()) end
+
 --- @type LazyKeysSpec[]
 return {
     -- File explorer
@@ -29,7 +64,7 @@ return {
     },
     {
         "<leader>?",
-        function() Snacks.picker.grep() end,
+        function() open_split("grep") end,
         desc = "[?] Grep Workspace",
     },
     {
@@ -56,44 +91,44 @@ return {
     -- LSP jump bindings
     {
         "gs",
-        function() Snacks.picker.lsp_symbols() end,
+        function() open_split("lsp_symbols") end,
         desc = "[g]oto [s]ymbols",
     },
     {
         "gd",
-        function() Snacks.picker.lsp_definitions() end,
+        function() open_split("lsp_definitions") end,
         desc = "[g]oto [d]efinition",
     },
     {
         "gD",
-        function() Snacks.picker.lsp_declarations() end,
+        function() open_split("lsp_declarations") end,
         desc = "[g]oto [D]eclaration",
     },
     {
         "gr",
-        function() Snacks.picker.lsp_references() end,
+        function() open_split("lsp_references") end,
         nowait = true,
         desc = "[g]oto [r]eferences",
     },
     {
         "gI",
-        function() Snacks.picker.lsp_implementations() end,
+        function() open_split("lsp_implementations") end,
         desc = "[g]oto [I]mplementation",
     },
     {
         "gy",
-        function() Snacks.picker.lsp_type_definitions() end,
+        function() open_split("lsp_type_definitions") end,
         desc = "[g]oto t[y]pe Definition",
     },
     -- <leader>l LSP group
     {
         "<leader>lc",
-        function() Snacks.picker.lsp_incoming_calls() end,
+        function() open_split("lsp_incoming_calls") end,
         desc = "In[c]oming Calls",
     },
     {
         "<leader>lg",
-        function() Snacks.picker.lsp_outgoing_calls() end,
+        function() open_split("lsp_outgoing_calls") end,
         desc = "Out[g]oing Calls",
     },
     -- <leader>s group pickers
@@ -104,13 +139,13 @@ return {
     },
     {
         "<leader>sw",
-        function() Snacks.picker.grep_word() end,
+        function() open_split("grep_word") end,
         desc = "Search Current [w]ord",
         mode = { "n", "v" },
     },
     {
         "<leader>so",
-        function() Snacks.picker.grep_buffers() end,
+        function() open_split("grep_buffers") end,
         desc = "Grep [o]pen files",
     },
     {
@@ -140,12 +175,12 @@ return {
     },
     {
         "<leader>sd",
-        function() Snacks.picker.diagnostics() end,
+        function() open_split("diagnostics") end,
         desc = "[d]iagnostics",
     },
     {
         "<leader>sS",
-        function() Snacks.picker.lsp_workspace_symbols() end,
+        function() open_split("lsp_workspace_symbols") end,
         desc = "LSP [S]ymbols Workspace",
     },
     {
