@@ -31,33 +31,9 @@ return {
                 mode = { "n" },
             },
             {
-                "<F5>",
+                "<leader>d",
                 function() require("dap").continue() end,
-                desc = "Start Debugger",
-                mode = { "n", "i", "x", "v" },
-            },
-            {
-                "<S-F5>",
-                function() require("dap").terminate() end,
-                desc = "Terminate Debugger",
-                mode = { "n", "i", "x", "v" },
-            },
-            {
-                "<F10>",
-                function() require("dap").step_over() end,
-                desc = "Step Over",
-                mode = { "n", "i", "x", "v" },
-            },
-            {
-                "<F11>",
-                function() require("dap").step_into() end,
-                desc = "Step Into",
-                mode = { "n", "i", "x", "v" },
-            },
-            {
-                "<S-F11>",
-                function() require("dap").step_out() end,
-                desc = "Step Out",
+                desc = "start [d]ebugging",
                 mode = { "n", "i", "x", "v" },
             },
         },
@@ -152,6 +128,7 @@ return {
             }
 
             local dap = require("dap")
+            dap.configurations.go = dap.configurations.go or {}
             table.insert(dap.configurations.go, 1, auto_main_config)
         end,
     },
@@ -167,15 +144,9 @@ return {
         },
         keys = {
             {
-                "<F6>",
-                function() require("dapui").open() end,
-                desc = "Open DAP UI",
-                mode = { "n", "i", "x", "v" },
-            },
-            {
-                "<S-F6>",
-                function() require("dapui").close() end,
-                desc = "Close DAP UI",
+                "<leader>td",
+                function() require("dapui").toggle() end,
+                desc = "Toggle [d]ap UI",
                 mode = { "n", "i", "x", "v" },
             },
         },
