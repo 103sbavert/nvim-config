@@ -34,7 +34,7 @@ return {
                 "<leader>d",
                 function() require("dap").continue() end,
                 desc = "start [d]ebugging",
-                mode = { "n", "i", "x", "v" },
+                mode = { "n" },
             },
         },
         init = function() require("config.mason").InstallTools(dap_list) end,
@@ -147,7 +147,7 @@ return {
                 "<leader>td",
                 function() require("dapui").toggle() end,
                 desc = "Toggle [d]ap UI",
-                mode = { "n", "i", "x", "v" },
+                mode = { "n" },
             },
         },
         opts = {
