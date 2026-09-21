@@ -34,8 +34,6 @@ local function get_dropdown_conf(focus)
     }
 end
 
-local function open_split(source) Snacks.picker[source](get_dropdown_conf()) end
-
 --- @type LazyKeysSpec[]
 return {
     -- File explorer
@@ -67,7 +65,7 @@ return {
     },
     {
         "<leader>?",
-        function() open_split("grep") end,
+        function() Snacks.picker.grep(get_dropdown_conf("input")) end,
         desc = "[?] Grep Workspace",
     },
     {
@@ -83,44 +81,44 @@ return {
     -- LSP jump bindings
     {
         "gs",
-        function() open_split("lsp_symbols") end,
+        function() Snacks.picker.lsp_symbols(get_dropdown_conf()) end,
         desc = "[g]oto [s]ymbols",
     },
     {
         "gd",
-        function() open_split("lsp_definitions") end,
+        function() Snacks.picker.lsp_definitions(get_dropdown_conf()) end,
         desc = "[g]oto [d]efinition",
     },
     {
         "gD",
-        function() open_split("lsp_declarations") end,
+        function() Snacks.picker.lsp_declarations(get_dropdown_conf()) end,
         desc = "[g]oto [D]eclaration",
     },
     {
         "gr",
-        function() open_split("lsp_references") end,
+        function() Snacks.picker.lsp_references(get_dropdown_conf()) end,
         nowait = true,
         desc = "[g]oto [r]eferences",
     },
     {
         "gI",
-        function() open_split("lsp_implementations") end,
+        function() Snacks.picker.lsp_implementations(get_dropdown_conf()) end,
         desc = "[g]oto [I]mplementation",
     },
     {
         "gy",
-        function() open_split("lsp_type_definitions") end,
+        function() Snacks.picker.lsp_type_definitions(get_dropdown_conf()) end,
         desc = "[g]oto t[y]pe Definition",
     },
     -- <leader>l LSP group
     {
         "<leader>lc",
-        function() open_split("lsp_incoming_calls") end,
+        function() Snacks.picker.lsp_incoming_calls(get_dropdown_conf()) end,
         desc = "In[c]oming Calls",
     },
     {
         "<leader>lg",
-        function() open_split("lsp_outgoing_calls") end,
+        function() Snacks.picker.lsp_outgoing_calls(get_dropdown_conf()) end,
         desc = "Out[g]oing Calls",
     },
     -- <leader>s group pickers
@@ -131,13 +129,13 @@ return {
     },
     {
         "<leader>sw",
-        function() open_split("grep_word") end,
+        function() Snacks.picker.grep_word(get_dropdown_conf()) end,
         desc = "Search Current [w]ord",
         mode = { "n", "v" },
     },
     {
         "<leader>so",
-        function() open_split("grep_buffers") end,
+        function() Snacks.picker.grep_buffers(get_dropdown_conf("input")) end,
         desc = "Grep [o]pen files",
     },
     {
@@ -167,12 +165,12 @@ return {
     },
     {
         "<leader>sd",
-        function() open_split("diagnostics") end,
+        function() Snacks.picker.diagnostics(get_dropdown_conf()) end,
         desc = "[d]iagnostics",
     },
     {
         "<leader>sS",
-        function() open_split("lsp_workspace_symbols") end,
+        function() Snacks.picker.lsp_workspace_symbols(get_dropdown_conf()) end,
         desc = "LSP [S]ymbols Workspace",
     },
     {
