@@ -17,8 +17,10 @@ local function get_dropdown_conf()
     local dropdown =
         vim.deepcopy(require("snacks.picker.config.layouts").dropdown)
 
-    dropdown.layout[1].height = 0.65
+    dropdown.layout[1].height = 0.7
+    dropdown.layout[2].height = 0.5
     dropdown.layout.width = 0.8
+    dropdown.layout.height = 0.8
 
     return {
         layout = dropdown,
