@@ -63,11 +63,22 @@ return {
         },
         init = function() require("config.mason").InstallTools(dap_list) end,
         config = function()
-            require("config.plugins.languages.internal.utils").setup_dap_signs()
+            local utils = require("config.plugins.languages.internal.utils")
             local dap = require("dap")
 
-            dap.listeners.before.event_initialized["dapui_config"] = function()
+            utils.setup_dap_signs()
+
+            dap.listeners.after.event_initialized["open_dap_ui"] = function()
                 require("dapui").open()
+            end
+            dap.listeners.after.event_initialized["dap_keymaps"] = function()
+                utils.setup_dap_overrides()
+            end
+            dap.listeners.before.event_terminated["dap_keymaps"] = function()
+                utils.unset_dap_overrides()
+            end
+            dap.listeners.before.event_exited["dap_keymaps"] = function()
+                utils.unset_dap_overrides()
             end
         end,
     },

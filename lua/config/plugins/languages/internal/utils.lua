@@ -169,4 +169,54 @@ function M.setup_dap_signs()
     end
 end
 
+local saved_keymaps = {}
+
+local get_debug_overrides = function()
+    local ok, dap = pcall(require, "dap")
+    assert(ok, 'Lua module "dap" could not be found')
+
+    return {
+        n = {
+            ["<CR>"] = { rhs = dap.continue, desc = "Debug: Continue" },
+            ["n"] = { rhs = dap.step_over, desc = "Debug: Step Over" },
+            ["gi"] = { rhs = dap.step_into, desc = "Debug: Step Into" },
+            ["go"] = { rhs = dap.step_out, desc = "Debug: Step Out" },
+            ["q"] = { rhs = dap.close, desc = "Debug: Stop debugging" },
+        },
+    }
+end
+
+function M.setup_dap_overrides()
+    saved_keymaps = {}
+
+    for mode, mappings in pairs(get_debug_overrides()) do
+        for lhs, map in pairs(mappings) do
+            local prev = vim.fn.maparg(lhs, mode, false, true)
+            table.insert(saved_keymaps, { mode = mode, lhs = lhs, prev = prev })
+            vim.keymap.set(mode, lhs, map.rhs, { desc = map.desc })
+        end
+    end
+end
+
+function M.unset_dap_overrides()
+    for _, map in ipairs(saved_keymaps) do
+        pcall(vim.keymap.del, map.mode, map.lhs)
+
+        if map.prev and next(map.prev) ~= nil then
+            local rhs = map.prev.callback or map.prev.rhs
+            if rhs and rhs ~= "" then
+                vim.keymap.set(map.mode, map.lhs, rhs, {
+                    expr = map.prev.expr == 1,
+                    silent = map.prev.silent == 1,
+                    noremap = map.prev.noremap == 1,
+                    nowait = map.prev.nowait == 1,
+                    desc = map.prev.desc,
+                })
+            end
+        end
+    end
+
+    saved_keymaps = {}
+end
+
 return M
