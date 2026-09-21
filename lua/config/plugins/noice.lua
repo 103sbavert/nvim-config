@@ -14,6 +14,21 @@ return {
         presets = {
             long_message_to_split = true,
         },
+        commands = {
+            all = {
+                view = "split",
+                opts = { enter = true, format = "details" },
+                filter = {
+                    ["not"] = {
+                        event = {
+                            "msg_showcmd",
+                            "msg_show.search_cmd",
+                            "msg_ruler",
+                        },
+                    },
+                },
+            },
+        },
         routes = {
             {
                 view = "shell_display",
