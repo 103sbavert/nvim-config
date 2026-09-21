@@ -12,8 +12,9 @@ local get_ivy_split_conf = function()
     }
 end
 
+--- @param focus? "input" | "list"
 --- @return snacks.picker.diagnostics.Config
-local function get_dropdown_conf()
+local function get_dropdown_conf(focus)
     local dropdown =
         vim.deepcopy(require("snacks.picker.config.layouts").dropdown)
 
@@ -24,7 +25,7 @@ local function get_dropdown_conf()
 
     return {
         layout = dropdown,
-        focus = "list",
+        focus = focus or "list",
         show_delay = math.huge,
         win = {
             input = { minimal = true },
