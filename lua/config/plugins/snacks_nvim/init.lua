@@ -101,7 +101,8 @@ return {
 
         ---@diagnostic disable-next-line: duplicate-set-field
         lsp_source.request = function(buf, method, params, cb)
-            local spinner_id = "defer_lsp_picker"
+            local spinner_id = "await_lsp_" .. tostring(buf) .. method
+
             vim.schedule(function()
                 Snacks.notifier.notify("Waiting for LSP", "info", {
                     id = spinner_id,
