@@ -1,4 +1,5 @@
-local required_binaries = { "git", "make", "unzip", "rg", "nvr", "lazygit" }
+local required_binaries =
+    { "git", "make", "unzip", "rg", "nvr", "lazygit", "typst" }
 
 local check_version = function()
     local verstr = tostring(vim.version())
