@@ -62,11 +62,8 @@ return {
         "leoluz/nvim-dap-go",
         ft = { "go" },
         dependencies = { "mfussenegger/nvim-dap" },
-        config = function(_, opts)
-            local dap_go = require("dap-go")
-            dap_go.setup(opts)
-
-            local auto_main_config = {
+        opts = {
+            dap_configurations = {
                 type = "go",
                 name = "Debug Main (Auto)",
                 request = "launch",
@@ -125,11 +122,19 @@ return {
                         end
                     end)
                 end,
-            }
+            },
+        },
+        config = function(_, opts)
+            local dap_go = require("dap-go")
+            dap_go.setup(opts)
 
-            local dap = require("dap")
-            dap.configurations.go = dap.configurations.go or {}
-            table.insert(dap.configurations.go, 1, auto_main_config)
+            for _, conf in ipairs(require("dap").configurations["go"]) do
+                if conf.processId and vim.is_callable(conf.processId) then
+                    conf.processId = function()
+                        require("dap.utils").pick_process(opts)
+                    end
+                end
+            end
         end,
     },
     {
