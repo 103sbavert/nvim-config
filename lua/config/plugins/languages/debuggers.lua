@@ -130,8 +130,8 @@ return {
 
             for _, conf in ipairs(require("dap").configurations["go"]) do
                 if conf.processId and vim.is_callable(conf.processId) then
-                    conf.processId = function()
-                        require("dap.utils").pick_process(opts)
+                    conf.processId = function(inner_opts)
+                        return require("dap.utils").pick_process(inner_opts)
                     end
                 end
             end
