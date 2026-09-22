@@ -115,12 +115,17 @@ return {
                 })
             end)
 
-            local og_cb = function(...)
-                vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
-                cb(...)
-            end
+            -- NOTE: The request appears to be synchronous, so the right place
+            -- to clear the notif would be after the request is invoked
 
-            og_request(buf, method, params, og_cb)
+            -- local og_cb = function(...)
+            --     vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
+            --     cb(...)
+            -- end
+
+            og_request(buf, method, params, cb)
+
+            vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
         end
     end,
 }
