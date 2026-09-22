@@ -219,4 +219,55 @@ function M.unset_dap_overrides()
     saved_keymaps = {}
 end
 
+M.go_conf = {
+    type = "go",
+    name = "Debug Main (Auto)",
+    request = "launch",
+    outputMode = "remote",
+    program = function()
+        local cwd = vim.fn.getcwd(0, 0)
+        local main_files =
+            require("config.utils").find_files_by_name(cwd, "main.go", 6)
+
+        if #main_files == 1 then
+            return vim.fs.dirname(main_files[1])
+        end
+
+        -- NOTE: DAP has custom logic for handling so we can't use
+        -- the global wrappers for coroutine here
+        return coroutine.create(function(dap_co)
+            if #main_files == 0 then
+                vim.ui.input({
+                    prompt = "No main.go found. Specify path: ",
+                    default = cwd .. "/",
+                    completion = "file",
+                }, function(input)
+                    if input and input ~= "" then
+                        if vim.fn.isdirectory(input) == 1 then
+                            coroutine.resume(dap_co, input)
+                        else
+                            coroutine.resume(dap_co, vim.fs.dirname(input))
+                        end
+                    else
+                        coroutine.resume(dap_co, nil)
+                    end
+                end)
+            else
+                vim.ui.select(main_files, {
+                    prompt = "Select main.go:",
+                    format_item = function(item)
+                        return vim.fs.normalize(item):sub(#cwd + 2)
+                    end,
+                }, function(choice)
+                    if choice then
+                        coroutine.resume(dap_co, vim.fs.dirname(choice))
+                    else
+                        coroutine.resume(dap_co, nil)
+                    end
+                end)
+            end
+        end)
+    end,
+}
+
 return M
