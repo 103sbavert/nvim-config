@@ -219,7 +219,7 @@ function M.unset_dap_overrides()
     saved_keymaps = {}
 end
 
-M.go_conf = {
+M.go_debug_auto = {
     type = "go",
     name = "Debug Main (Auto)",
     request = "launch",

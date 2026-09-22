@@ -79,7 +79,7 @@ return {
             table.insert(
                 dap.configurations.go,
                 1,
-                require("config.plugins.languages.internal.utils").go_conf
+                require("config.plugins.languages.internal.utils").go_debug_auto
             )
         end,
     },
