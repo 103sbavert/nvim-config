@@ -117,4 +117,25 @@ return {
             lock_target = true,
         },
     },
+    {
+        "chomosuke/typst-preview.nvim",
+        ft = "typst",
+        jj2version = "1.*",
+        lazy = true,
+        config = function()
+            assert(vim.fn.executable("typst"), "Typst CLI not found")
+
+            local compile_typst = function(...)
+                require("config.plugins.languages.internal.utils").compile_typst(
+                    ...
+                )
+            end
+
+            vim.api.nvim_create_user_command("TypstCompile", compile_typst, {
+                nargs = "*",
+                complete = "file",
+                desc = "Compile provided file (default to current buffer)",
+            })
+        end,
+    },
 }

@@ -453,13 +453,6 @@ require("lazy").setup({
             config = true,
         },
         {
-            "chomosuke/typst-preview.nvim",
-            ft = "typst",
-            jj2version = "1.*",
-            lazy = true,
-            config = true,
-        },
-        {
             name = "config.su",
             main = "config.su",
             dir = vim.fn.stdpath("config"),
