@@ -15,7 +15,11 @@ Originally based on
 ## Requirements
 
 - Neovim 0.12 or higher
-- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`, `typst`
+- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`,
+- Optional requirements:
+  - `typst`: (only if using `TypstCompile` or `PandocCompile` with with the
+    default pdf engine)
+  - `pandoc` (only if using `PandocCompile`)
 
 ## Installation
 
