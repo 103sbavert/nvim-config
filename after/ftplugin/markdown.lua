@@ -22,7 +22,7 @@ map(
 )
 map(
     "n",
-    "gr",
+    "<leader>mr",
     "<cmd>Mdn wikilink find_references<CR>",
     "Show references of WikiLink or current buffer"
 )
