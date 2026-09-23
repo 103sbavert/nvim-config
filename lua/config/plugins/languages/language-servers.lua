@@ -99,78 +99,11 @@ return {
     {
         "ymic9963/mdnotes.nvim",
         ft = { "markdown" },
-        config = function(_, opts)
-            require("mdnotes").setup(opts)
-
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "markdown",
-                callback = function(ev)
-                    local map = function(mode, lhs, rhs, desc)
-                        vim.keymap.set(
-                            mode,
-                            lhs,
-                            rhs,
-                            { buffer = ev.buf, desc = desc }
-                        )
-                    end
-
-                    map(
-                        "n",
-                        "gx",
-                        "<cmd>Mdn inline_link open<CR>",
-                        "Open inline link URI under cursor"
-                    )
-                    map(
-                        "n",
-                        "gf",
-                        "<cmd>Mdn wikilink follow<CR>",
-                        "Open markdown file from WikiLink"
-                    )
-                    map(
-                        "n",
-                        "gF",
-                        "<cmd>Mdn wikilink follow_hor<CR>",
-                        "Open markdown file from WikiLink in a horizontal split"
-                    )
-                    map(
-                        "n",
-                        "gr",
-                        "<cmd>Mdn wikilink find_references<CR>",
-                        "Show references of WikiLink or current buffer"
-                    )
-                    map(
-                        "n",
-                        "<leader>ln",
-                        "<cmd>Mdn wikilink rename_references<CR>",
-                        "Rename references of WikiLink or current buffer"
-                    )
-                    map(
-                        { "n", "v" },
-                        "lk",
-                        "<cmd>Mdn inline_link toggle<CR>",
-                        "Toggle inline link"
-                    )
-                    map(
-                        "n",
-                        "<C-o>",
-                        "<cmd>Mdn history go_back<CR>",
-                        "Go back to previously visited Markdown buffer"
-                    )
-                    map(
-                        "n",
-                        "<C-S-o>",
-                        "<cmd>Mdn history go_forward<CR>",
-                        "Go to next visited Markdown buffer"
-                    )
-                    map(
-                        { "n", "v" },
-                        "<leader>tf",
-                        "<cmd>Mdn formatting strong_toggle<CR>",
-                        "Toggle strong formatting"
-                    )
-                end,
-            })
-        end,
+        cmd = {
+            "Mdn",
+        },
+        lazy = true,
+        config = true,
     },
     {
         "brianhuster/live-preview.nvim",
@@ -178,9 +111,12 @@ return {
         dependencies = {
             "folke/snacks.nvim",
         },
+        lazy = true,
+        config = true,
     },
     {
         "seblyng/roslyn.nvim",
+        lazy = true,
         ft = { "cs", "razor", "msbuild_proj", "solution" },
         init = function()
             vim.filetype.add({
@@ -200,26 +136,13 @@ return {
         opts = {
             lock_target = true,
         },
+        config = true,
     },
     {
         "chomosuke/typst-preview.nvim",
         ft = "typst",
         jj2version = "1.*",
         lazy = true,
-        config = function()
-            assert(vim.fn.executable("typst"), "Typst CLI not found")
-
-            local compile_typst = function(...)
-                require("config.plugins.languages.internal.utils").compile_typst(
-                    ...
-                )
-            end
-
-            vim.api.nvim_create_user_command("TypstCompile", compile_typst, {
-                nargs = "*",
-                complete = "file",
-                desc = "Compile provided file (default to current buffer)",
-            })
-        end,
+        config = true,
     },
 }
