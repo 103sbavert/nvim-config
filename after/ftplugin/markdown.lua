@@ -120,11 +120,13 @@ local function notify_compile_result(out, outpath)
 end
 
 local function execute_pandoc_compile(filename, outpath)
+    local md_flavor = vim.g.pandoc_md_flavor or "gfm"
+    local pdf_engine = vim.g.pandoc_pdf_engine or "typst"
+
     local compile_cmd = {
         "pandoc",
-        "-f",
-        "gfm",
-        "--pdf-engine=typst",
+        "--from=" .. md_flavor,
+        "--pdf-engine=" .. pdf_engine,
         filename,
         "-o",
         outpath,
