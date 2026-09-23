@@ -3,7 +3,6 @@ local function highlight_cursor_symbol(client, bufnr)
     if vim.api.nvim_win_get_buf(win) ~= bufnr then
         return
     end
-
     local request_pos = vim.api.nvim_win_get_cursor(win)
     local params =
         vim.lsp.util.make_position_params(win, client.offset_encoding)

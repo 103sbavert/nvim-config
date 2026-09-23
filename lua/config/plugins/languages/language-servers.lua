@@ -22,6 +22,7 @@ return {
                 vtsls = {},
                 eslint = {},
                 bashls = {},
+                markdown_oxide = {},
                 gopls = {
                     settings = {
                         gopls = {
@@ -94,6 +95,89 @@ return {
                 vim.lsp.enable(name)
             end
         end,
+    },
+    {
+        "ymic9963/mdnotes.nvim",
+        ft = { "markdown" },
+        config = function(_, opts)
+            require("mdnotes").setup(opts)
+
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = "markdown",
+                callback = function(ev)
+                    local map = function(mode, lhs, rhs, desc)
+                        vim.keymap.set(
+                            mode,
+                            lhs,
+                            rhs,
+                            { buffer = ev.buf, desc = desc }
+                        )
+                    end
+
+                    map(
+                        "n",
+                        "gx",
+                        "<cmd>Mdn inline_link open<CR>",
+                        "Open inline link URI under cursor"
+                    )
+                    map(
+                        "n",
+                        "gf",
+                        "<cmd>Mdn wikilink follow<CR>",
+                        "Open markdown file from WikiLink"
+                    )
+                    map(
+                        "n",
+                        "gF",
+                        "<cmd>Mdn wikilink follow_hor<CR>",
+                        "Open markdown file from WikiLink in a horizontal split"
+                    )
+                    map(
+                        "n",
+                        "gr",
+                        "<cmd>Mdn wikilink find_references<CR>",
+                        "Show references of WikiLink or current buffer"
+                    )
+                    map(
+                        "n",
+                        "<leader>ln",
+                        "<cmd>Mdn wikilink rename_references<CR>",
+                        "Rename references of WikiLink or current buffer"
+                    )
+                    map(
+                        { "n", "v" },
+                        "lk",
+                        "<cmd>Mdn inline_link toggle<CR>",
+                        "Toggle inline link"
+                    )
+                    map(
+                        "n",
+                        "<C-o>",
+                        "<cmd>Mdn history go_back<CR>",
+                        "Go back to previously visited Markdown buffer"
+                    )
+                    map(
+                        "n",
+                        "<C-S-o>",
+                        "<cmd>Mdn history go_forward<CR>",
+                        "Go to next visited Markdown buffer"
+                    )
+                    map(
+                        { "n", "v" },
+                        "<leader>tf",
+                        "<cmd>Mdn formatting strong_toggle<CR>",
+                        "Toggle strong formatting"
+                    )
+                end,
+            })
+        end,
+    },
+    {
+        "brianhuster/live-preview.nvim",
+        ft = { "markdown" },
+        dependencies = {
+            "folke/snacks.nvim",
+        },
     },
     {
         "seblyng/roslyn.nvim",
