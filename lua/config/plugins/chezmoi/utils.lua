@@ -37,10 +37,11 @@ end
 --- @return string?
 function M.get_cached_src_dir() return cached_src_dir end
 
---- Awaitable: resolves and caches the canonical tracked baseline directory for
---- the chezmoi state store. Must run inside a coroutine started by `UT.async_run()`.
+--- Resolves and caches the canonical tracked baseline directory for
+--- the chezmoi state store.
+--- @async Must run inside a coroutine started by `UT.async_run()`.
 --- @return string?
-local function get_src_dir()
+local function get_src_dir_async()
     if cached_src_dir then
         return cached_src_dir
     end
@@ -64,113 +65,109 @@ end
 --- Inspects and extracts the canonical tracked baseline directory for the chezmoi state store.
 --- Result is cached after the first successful resolution.
 --- @param callback fun(src_dir: string?) Callback executed with the absolute source directory path, or nil.
-function M.get_src_dir_async(callback)
+function M.get_src_dir(callback)
     UT.async_run(
-        function() callback(get_src_dir()) end,
+        function() callback(get_src_dir_async()) end,
         { error_title = "Chezmoi" }
     )
 end
 
---- Awaitable: checks if path is inside dir. Must run inside a coroutine
---- started by `UT.async_run()`.
---- @param path string?
---- @param dir string?
+--- checks if path is inside dir.
+--- @param path string? absolute path that is to be checked
+--- @param dir string? absoltue path to the base directory within which {path} must be present
 --- @return boolean
 local function is_path_inside_dir(path, dir)
-    local path_abs = get_clean_absolute_path(path)
-    local dir_abs = get_clean_absolute_path(dir)
-
-    if not path_abs or not dir_abs then
+    if not path or not dir then
         return false
     end
 
-    if not vim.endswith(dir_abs, "/") then
-        dir_abs = dir_abs .. "/"
-    end
-
-    local err, stat = UT.await(uv.fs_stat, path_abs)
-    if err or not stat then
-        return false
-    end
-
-    return path_abs:find(dir_abs, 1, true) == 1
+    return not (not vim.fs.relpath(dir, path))
 end
 
---- Awaitable: resolves the source directory, preferring an already known
---- value. Must run inside a coroutine started by `UT.async_run()`.
+--- Resolves the source directory, preferring an already known
+--- value.
+--- @async Must run inside a coroutine started by `UT.async_run()`.
 --- @param src_dir string? Pre-resolved source directory, if any.
 --- @return string?
-local function resolve_src_dir(src_dir)
+local function resolve_src_dir_async(src_dir)
     if src_dir and src_dir ~= "" then
         return src_dir
     end
 
-    return get_src_dir()
+    return get_src_dir_async()
 end
 
---- Awaitable: checks if file is a chezmoi source file. Must run inside a
---- coroutine started by `UT.async_run()`.
+--- checks if file is a chezmoi source file.
+--- @async Must run inside a coroutine started by `UT.async_run()`.
 --- @param file string?
 --- @param src_dir string? Pre-resolved source directory, skips resolution when given.
 --- @return boolean
-local function is_src_file(file, src_dir)
-    local dir = resolve_src_dir(src_dir)
+function M.is_src_file_async(file, src_dir)
+    local dir = resolve_src_dir_async(src_dir)
     if not dir then
         return false
     end
 
-    return is_path_inside_dir(file, dir)
-end
+    local file_abs = get_clean_absolute_path(file)
+    local dir_abs = get_clean_absolute_path(dir)
+    assert(file_abs, "File path is null")
+    assert(dir_abs, "File path is null")
 
---- Async check if file is a chezmoi source file.
---- @param file string?
---- @param callback fun(is_src: boolean)
---- @param src_dir string? Pre-resolved source directory, skips resolution when given.
-function M.is_src_file_async(file, callback, src_dir)
-    UT.async_run(
-        function() callback(is_src_file(file, src_dir)) end,
-        { error_title = "Chezmoi" }
-    )
-end
-
---- Async resolve target file to its chezmoi source counterpart(s).
---- @param file string?
---- @param callback fun(src_files: string[]?)
-function M.get_src_file_async(file, callback)
-    if not file or file == "" then
-        callback(nil)
-        return
+    local err, stat = UT.await(function(cb) uv.fs_stat(file_abs, cb) end)
+    if err or not stat then
+        return false
     end
 
-    get_cmd_src_path():async({ file }, function(result)
-        if not result.success or not result.data or #result.data == 0 then
-            callback(nil)
-            return
-        end
-
-        local abs_paths = {}
-        for _, src in ipairs(result.data) do
-            local abs = get_clean_absolute_path(src)
-            if abs then
-                table.insert(abs_paths, abs)
-            end
-        end
-
-        callback(#abs_paths > 0 and abs_paths or nil)
-    end)
+    return is_path_inside_dir(file_abs, dir_abs)
 end
 
---- Awaitable: checks if source file should be ignored. Must run inside a
---- coroutine started by `UT.async_run()`.
+--- Resolve target file to its chezmoi source counterpart(s).
+--- @async
+--- @param files string[]?
+--- @return string[]?
+function M.get_src_file_async(files)
+    if type(files) == "string" then
+        if not files or files == "" then
+            return nil
+        end
+
+        files = { files }
+    end
+
+    if #files == 0 then
+        return nil
+    end
+
+    local result = UT.await(
+        function(cb) get_cmd_src_path():async(files, cb) end
+    )
+
+    if not result.success or not result.data or #result.data == 0 then
+        return nil
+    end
+
+    local abs_paths = {}
+    for _, src in ipairs(result.data) do
+        local abs = get_clean_absolute_path(src)
+        if abs then
+            table.insert(abs_paths, abs)
+        end
+    end
+
+    return #abs_paths > 0 and abs_paths or nil
+end
+
+--- Checks if source file should be ignored.
+--- @async Must run inside a coroutine started by `UT.async_run()`.
 --- @param file string?
 --- @param src_dir string? Pre-resolved source directory, skips resolution when given.
 --- @return boolean
-local function should_ignore_src_file(file, src_dir)
+local function should_ignore_src_async(file, src_dir)
     if not file or file == "" then
         return false
     end
 
-    local dir = resolve_src_dir(src_dir)
+    local dir = resolve_src_dir_async(src_dir)
     if not dir then
         return false
     end
@@ -203,28 +200,23 @@ end
 --- @field ignored boolean Source file matched an ignore rule.
 
 --- Classifies a file in one call, short-circuiting once the answer is known.
+--- @async Must run inside a coroutine started by `UT.async_run()`.
 --- @param file string?
 --- @param opts? { src_dir?: string } Pre-resolved source directory.
---- @param callback fun(result: ChezmoiClassification)
-function M.classify_async(file, opts, callback)
-    UT.async_run(function()
-        local dir = resolve_src_dir(opts and opts.src_dir)
+--- @return ChezmoiClassification
+function M.classify_async(file, opts)
+    local dir = resolve_src_dir_async(opts and opts.src_dir)
 
-        if not dir or not file or file == "" then
-            callback({ is_src = false, ignored = false })
-            return
-        end
+    if not dir or not file or file == "" then
+        return { is_src = false, ignored = false }
+    end
 
-        if not is_src_file(file, dir) then
-            callback({ is_src = false, ignored = false })
-            return
-        end
+    local ret = {
+        is_src = M.is_src_file_async(file, dir),
+        ignored = should_ignore_src_async(file, dir),
+    }
 
-        callback({
-            is_src = true,
-            ignored = should_ignore_src_file(file, dir),
-        })
-    end, { error_title = "Chezmoi" })
+    return ret
 end
 
 --- @param src string Source file path.
