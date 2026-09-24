@@ -1,8 +1,4 @@
-local UT = require("config.utils")
-local UI = require("config.plugins.chezmoi.ui")
 local shared = require("config.plugins.chezmoi.utils")
-local state = require("config.plugins.chezmoi.state")
-local actions = require("config.plugins.chezmoi.actions")
 
 local chezmoi_apply_grp = vim.api.nvim_create_augroup("apply_czm_src", {
     clear = true,
@@ -11,11 +7,15 @@ local chezmoi_apply_grp = vim.api.nvim_create_augroup("apply_czm_src", {
 --- Decides what to do with a saved source file.
 --- @param file string
 local function prompt_apply(file)
+    local actions = require("config.plugins.chezmoi.actions")
+    local state = require("config.plugins.chezmoi.state")
+
     if state.is_watched(file) then
         actions.apply(file, { quiet = true, is_src = true })
         return
     end
 
+    local UI = require("config.plugins.chezmoi.ui")
     UI.ask_apply(function(choice)
         if choice == UI.CHOICE.yes or choice == UI.CHOICE.watch then
             actions.apply(file, { is_src = true })
@@ -31,14 +31,15 @@ local function prompt_apply(file)
 end
 
 local function chezmoi_apply_aucmd_cb(args)
+    local state = require("config.plugins.chezmoi.state")
+    local UT = require("config.utils")
+
     local buf_file = UT.get_current_file(args)
 
     if not buf_file or state.is_muted(buf_file) then
         return
     end
 
-    -- Warm by construction: this autocmd is only registered from inside
-    -- get_src_dir_async's callback below.
     local src_dir = shared.get_cached_src_dir()
     if not src_dir then
         return
@@ -60,7 +61,7 @@ local function chezmoi_apply_aucmd_cb(args)
     end, { error_title = "Chezmoi" })
 end
 
-shared.get_src_dir_async(function(src_dir)
+shared.get_src_dir(function(src_dir)
     if not src_dir or src_dir == "" then
         return
     end

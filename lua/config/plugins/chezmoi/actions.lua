@@ -1,7 +1,5 @@
 local M = {}
 
-local UT = require("config.utils")
-local UI = require("config.plugins.chezmoi.ui")
 local shared = require("config.plugins.chezmoi.utils")
 local apply_cmd = require("config.plugins.chezmoi.apply_utils")
 local edit_cmd = require("config.plugins.chezmoi.edit_utils")
@@ -15,6 +13,7 @@ function M.apply(file, opts, on_done)
     opts = opts or {}
     file = file or vim.api.nvim_buf_get_name(0)
 
+    local UI = require("config.plugins.chezmoi.ui")
     if type(file) ~= "string" or file == "" then
         UI.notify_err("Filenames must be string")
         if on_done then
@@ -23,6 +22,7 @@ function M.apply(file, opts, on_done)
         return
     end
 
+    local UT = require("config.utils")
     local progress = UT.progress("Applying...", { title = "Chezmoi" })
 
     UT.async_run(function()
@@ -54,6 +54,7 @@ end
 function M.edit(file, on_done)
     file = file or vim.api.nvim_buf_get_name(0)
 
+    local UI = require("config.plugins.chezmoi.ui")
     if type(file) ~= "string" or file == "" then
         UI.notify_err("Filenames must be string")
         if on_done then
@@ -62,6 +63,7 @@ function M.edit(file, on_done)
         return
     end
 
+    local UT = require("config.utils")
     local progress = UT.progress("Looking for source...", { title = "Chezmoi" })
 
     edit_cmd.edit(file, function(res)
