@@ -160,11 +160,7 @@ function M.async_run(fn, opts)
     local co = coroutine.create(fn)
     local ok, err = coroutine.resume(co)
     if not ok then
-        vim.notify(
-            "Internal error: " .. tostring(err),
-            vim.log.levels.ERROR,
-            { title = error_title }
-        )
+        error(error_title .. " error:\n" .. tostring(err))
     end
 end
 
