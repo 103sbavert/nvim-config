@@ -81,23 +81,18 @@ M.lsp_diagnostic_glyphs = {
 --- @param args table? Optional autocmd event payload parameters containing buffer context.
 --- @return string? Absolute file path string if valid, otherwise nil.
 function M.get_current_file(args)
-    local buf_id = 0
-
-    if args and args.buf then
-        buf_id = args.buf
+    if not args or not args.buf or args.buf == 0 then
+        return vim.fn.fnamemodify("%", ":p")
     end
 
-    if not vim.api.nvim_buf_is_valid(buf_id) then
+    local bufnr = args.buf
+    local bufname = vim.fn.bufname(bufnr)
+
+    if not bufname or bufname == "" then
         return nil
     end
 
-    local buf_name = vim.api.nvim_buf_get_name(buf_id)
-
-    if not buf_name or buf_name == "" then
-        return nil
-    end
-
-    return buf_name
+    return bufname
 end
 
 --- Checks whether any path segment is hidden (dotfile/dotdir), ignoring
