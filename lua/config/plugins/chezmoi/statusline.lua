@@ -1,13 +1,13 @@
 local CZM_STATUSLINE_HI = "%#MiniStatuslineChezmoi# [chezmoi] %*"
 
 local highlight_initialized = false
-local orig_section_fileinfo
 local src_buf_cache = {}
 
 local function initialize_statusline()
     if highlight_initialized then
         return
     end
+
     highlight_initialized = true
 
     local vulgaris = require("bamboo.palette").vulgaris
@@ -18,48 +18,61 @@ local function initialize_statusline()
     )
 
     local statusline = require("mini.statusline")
-    orig_section_fileinfo = statusline.section_fileinfo
+    local og_fileinfo_cb = statusline.section_fileinfo
 
     --- @diagnostic disable-next-line: duplicate-set-field
     statusline.section_fileinfo = function(args)
-        local fileinfo = orig_section_fileinfo(args)
-        local current_buf = args.buf or vim.api.nvim_get_current_buf()
-
-        if src_buf_cache[current_buf] then
-            return CZM_STATUSLINE_HI .. " " .. fileinfo
+        local bufnr = (args and args.buf) or vim.api.nvim_get_current_buf()
+        if bufnr == 0 then
+            bufnr = vim.api.nvim_get_current_buf()
         end
 
-        return fileinfo
+        local og_fileinfo = og_fileinfo_cb(args)
+
+        if src_buf_cache[bufnr] then
+            return CZM_STATUSLINE_HI .. " " .. og_fileinfo
+        end
+        return og_fileinfo
     end
 end
 
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-    callback = function(args)
-        local UT = require("config.utils")
+local function detect_czm_src(args)
+    local bufnr = args and args.buf
+    if not bufnr or bufnr == 0 then
+        bufnr = vim.api.nvim_get_current_buf()
+    end
+
+    if src_buf_cache[bufnr] ~= nil then
+        return
+    end
+
+    local UT = require("config.utils")
+    local bufname = UT.get_current_file({ buf = bufnr })
+    if not bufname then
+        src_buf_cache[bufnr] = false
+        return
+    end
+
+    UT.async_run(function()
         local shared = require("config.plugins.chezmoi.utils")
+        local is_src = shared.is_src_file_async(bufname)
+        src_buf_cache[bufnr] = is_src and true or false
 
-        local buf_file = UT.get_current_file(args)
-        if not buf_file then
-            return
-        end
+        initialize_statusline()
+    end, { error_title = "Chezmoi statusline async detection" })
+end
 
-        UT.async_run(function()
-            local _, stat_res = UT.await(vim.uv.fs_stat, buf_file)
-            if not stat_res then
-                return
-            end
+local chezmoi_src_cache_grp =
+    vim.api.nvim_create_augroup("ChezmoiStatuslineGroup", { clear = true })
 
-            local is_src = UT.await(shared.is_src_file_async, buf_file)
-            src_buf_cache[args.buf] = is_src
-
-            if is_src then
-                initialize_statusline()
-                vim.cmd("redrawstatus")
-            end
-        end, { error_title = "Chezmoi" })
-    end,
+vim.api.nvim_create_autocmd({ "BufReadPost" }, {
+    group = chezmoi_src_cache_grp,
+    callback = function(args) detect_czm_src(args) end,
 })
 
 vim.api.nvim_create_autocmd("BufWipeout", {
+    group = chezmoi_src_cache_grp,
     callback = function(args) src_buf_cache[args.buf] = nil end,
 })
+
+detect_czm_src({ buf = vim.api.nvim_get_current_buf() })
