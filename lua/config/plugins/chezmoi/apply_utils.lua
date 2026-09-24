@@ -9,7 +9,7 @@ local get_cmd_apply = UT.lazy_require("nvim-chezmoi.chezmoi.commands.apply")
 --- @param file string Absolute path to a target or source file.
 --- @param is_src boolean True when `file` is a chezmoi source path.
 --- @param on_exit fun(res: table?) Command result; may run in job context.
---- @return Job? job nil when the command failed to spawn.
+--- @return vim.SystemObj Process handle.
 function M.apply(file, is_src, on_exit)
     local args
     if is_src then

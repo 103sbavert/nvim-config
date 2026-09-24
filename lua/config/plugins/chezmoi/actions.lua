@@ -25,13 +25,6 @@ function M.apply(file, opts, on_done)
 
     local progress = UT.progress("Applying...", { title = "Chezmoi" })
 
-    --- @type Job?
-    local job
-
-    local dispose = UT.inhibit_exit(function() return job end, {
-        on_wait = function() progress:step("Inhibiting exit...") end,
-    })
-
     UT.async_run(function()
         local is_src = opts.is_src
 
@@ -42,16 +35,7 @@ function M.apply(file, opts, on_done)
         end
 
         --- @type table?
-        local res = UT.await(function(cb)
-            job = apply_cmd.apply(file, is_src, cb)
-
-            -- Nothing will call cb if the job never started.
-            if not job then
-                cb(nil)
-            end
-        end)
-
-        dispose()
+        local res = UT.await(function(cb) apply_cmd.apply(file, is_src, cb) end)
         progress:finish()
 
         if not opts.quiet then
@@ -80,7 +64,7 @@ function M.edit(file, on_done)
 
     local progress = UT.progress("Looking for source...", { title = "Chezmoi" })
 
-    local job = edit_cmd.edit(file, function(res)
+    edit_cmd.edit(file, function(res)
         progress:finish()
         UI.notify_result(res, "Opened source file")
 
@@ -88,15 +72,6 @@ function M.edit(file, on_done)
             on_done()
         end
     end)
-
-    if not job then
-        progress:finish()
-        UI.notify_err("Failed to start chezmoi edit")
-
-        if on_done then
-            on_done()
-        end
-    end
 end
 
 return M
