@@ -9,8 +9,7 @@ return {
         "j-hui/fidget.nvim",
     },
     main = "nvim-chezmoi",
-    event = "VeryLazy",
-    lazy = false,
+    event = "BufReadPre " .. vim.fs.joinpath(vim.env.CHEZMOI_SOURCE_DIR, "*"),
     opts = {
         debug = false,
         source_path = vim.env.CHEZMOI_SOURCE_DIR,
