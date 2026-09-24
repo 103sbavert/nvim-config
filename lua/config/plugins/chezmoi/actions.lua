@@ -30,7 +30,7 @@ function M.apply(file, opts, on_done)
 
         if is_src == nil then
             progress:step("Checking file...")
-            is_src = UT.await(shared.is_src_file_async, file)
+            is_src = shared.is_src_file_async(file)
             progress:step("Applying...")
         end
 

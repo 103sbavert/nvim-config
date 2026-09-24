@@ -49,9 +49,7 @@ local function chezmoi_apply_aucmd_cb(args)
     local progress = UT.progress("Checking file...", { title = "Chezmoi" })
 
     UT.async_run(function()
-        local class =
-            UT.await(shared.classify_async, buf_file, { src_dir = src_dir })
-
+        local class = shared.classify_async(buf_file, { src_dir = src_dir })
         progress:finish()
 
         if not class.is_src or class.ignored then
