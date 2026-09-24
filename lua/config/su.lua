@@ -41,8 +41,6 @@ function M.setup()
 
                 return fileinfo
             end
-
-            vim.schedule(function() vim.cmd("redrawstatus") end)
         end
     end
 
