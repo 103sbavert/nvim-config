@@ -14,6 +14,7 @@ return {
         },
         attach_to_untracked = true,
         on_attach = function(bufnr)
+            require("config.plugins.git.autocmds")
             local gitsigns = require("gitsigns")
             local utils = require("config.plugins.git.utils")
 
@@ -78,9 +79,9 @@ return {
 
                 -- hunk
                 utils.git_key_mapper(
-                    "<space>",
+                    "s",
                     visual_hunk_stage,
-                    "[ ] stage/unstage hunk",
+                    "[s]tage selection (toggle)",
                     { buffer = bufnr },
                     { "v" }
                 )
@@ -95,15 +96,15 @@ return {
                 end
 
                 utils.git_key_mapper(
-                    "<space>",
+                    "s",
                     normal_hunk_stage,
-                    "[ ] stage/unstage hunk",
+                    "[s]tage hunk (toggle)",
                     { buffer = bufnr },
                     { "n" }
                 )
 
                 utils.git_key_mapper(
-                    "s",
+                    "S",
                     function()
                         local locbufnr = vim.api.nvim_get_current_buf()
                         if not utils.ask_save_stage(locbufnr) then
@@ -112,7 +113,7 @@ return {
 
                         utils.toggle_buf_staging(locbufnr)
                     end,
-                    "Toggle file [s]taging",
+                    "[S]tage file (toggle)",
                     { buffer = bufnr },
                     {
                         "n",
