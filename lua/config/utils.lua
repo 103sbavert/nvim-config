@@ -82,11 +82,11 @@ M.lsp_diagnostic_glyphs = {
 --- @return string? Absolute file path string if valid, otherwise nil.
 function M.get_current_file(args)
     if not args or not args.buf or args.buf == 0 then
-        return vim.fn.fnamemodify("%", ":p")
+        return vim.fn.expand("%:p")
     end
 
     local bufnr = args.buf
-    local bufname = vim.fn.bufname(bufnr)
+    local bufname = vim.fn.fnamemodify(vim.fn.bufname(bufnr), ":p")
 
     if not bufname or bufname == "" then
         return nil
