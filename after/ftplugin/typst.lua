@@ -75,5 +75,6 @@ end
 vim.api.nvim_buf_create_user_command(0, "TypstCompile", compile_typst, {
     nargs = "*",
     complete = "file",
+    bang = true,
     desc = "Compile provided file (default to current buffer)",
 })
