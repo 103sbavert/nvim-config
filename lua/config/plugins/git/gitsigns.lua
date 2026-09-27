@@ -14,7 +14,6 @@ return {
         },
         attach_to_untracked = true,
         on_attach = function(bufnr)
-            require("config.plugins.git.autocmds")
             local gitsigns = require("gitsigns")
             local utils = require("config.plugins.git.utils")
 
