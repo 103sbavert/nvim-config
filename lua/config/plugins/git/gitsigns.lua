@@ -5,12 +5,19 @@ return {
     --- @type Gitsigns.Config
     opts = {
         signs = {
-            add = { text = "+" },
-            change = { text = "~" },
+            add = { text = "│" },
+            change = { text = "│" },
             delete = { text = "⎼" },
-            topdelete = { text = "⎺" },
+            topdelet = { text = "⎻" },
             changedelete = { text = "~" },
-            untracked = { text = "⋮" },
+            untracked = { text = "╎" },
+        },
+        signs_staged = {
+            add = { text = "┃" },
+            change = { text = "┃" },
+            delete = { text = "━" },
+            topdelete = { text = "▔" },
+            changedelete = { text = "┃" },
         },
         attach_to_untracked = true,
         on_attach = function(bufnr)
