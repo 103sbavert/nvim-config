@@ -8,8 +8,9 @@ function _G.gh(repo) return "https://github.com/" .. repo end
 -- [[ Basic Tweaks ]]
 -- Quality of life tweaks that change default Vim behavior to be inline with
 -- how humans use their PCs while staying out of the way
--- These modify default Vim behavior by setting or changing built-in Vim options
--- Or update environment or global lua variables used by other modules or commands
+--  These modify default Vim behavior by setting or changing built-in Vim
+--  options or update environment or global lua variables used by other modules
+--  or commands
 --
 -- See `:help options`
 -- See `:help internal-variables`
@@ -273,7 +274,7 @@ do
     )
 
     -- Terminals with the kitty-keyboard-protocol randomly start sending the
-    -- null byte (<C-@>) when C-Space is pressed. This mapping ensures C-@ is
+    -- null byte (<C-@>) when C-Space is pressed. This mapping ensures <C-@> is
     -- interpreted as C-Space so keymaps keep working
     vim.keymap.set(
         { "n", "i", "v", "x", "s", "o", "c", "t", "l" },
@@ -331,7 +332,7 @@ do
     -- Keybinds to make split navigation easier.
     --  Use CTRL+<hjkl> to switch between windows
     --
-    --  See `:help wincmd` for a list of all window commands
+    -- See `:help wincmd` for a list of all window commands
     vim.keymap.set(
         { "n", "i", "x", "t" },
         "<C-h>",
