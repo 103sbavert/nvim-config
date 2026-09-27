@@ -5,12 +5,21 @@
 --- @return string
 function _G.gh(repo) return "https://github.com/" .. repo end
 
--- Initial recommended configurations
+-- [[ Basic Tweaks ]]
+-- Quality of life tweaks that change default Vim behavior to be inline with
+-- how humans use their PCs while staying out of the way
+-- These modify default Vim behavior by setting or changing built-in Vim options
+-- Or update environment or global lua variables used by other modules or commands
+--
+-- See `:help options`
+-- See `:help internal-variables`
+-- See `:help vim.o`
 do
     -- Enable faster startup by caching compiled Lua modules
     vim.loader.enable()
 
     -- Set <space> as the leader key
+    --
     -- See `:help mapleader`
     --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
     vim.g.mapleader = " "
@@ -22,11 +31,6 @@ do
     -- Used by markdonw ftplugin for pandoc compilation
     vim.g.pandoc_pdf_engine = "typst"
     vim.g.pandoc_md_flavor = "gfm"
-
-    -- [[ Setting options ]]
-    --  See `:help vim.o`
-    -- NOTE: You can change these options as you wish!
-    --  For more options, you can see `:help option-list`
 
     -- Make line numbers default
     vim.o.number = true
@@ -47,13 +51,15 @@ do
     -- Sync clipboard between OS and Neovim.
     --  Schedule the setting after `UiEnter` because it can increase startup-time.
     --  Remove this option if you want your OS clipboard to remain independent.
+    --
     --  See `:help 'clipboard'`
     vim.schedule(function() vim.o.clipboard = "unnamedplus" end)
 
     -- Enable break indent
     vim.o.breakindent = true
 
-    -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+    -- Case-insensitive searching UNLESS \C or one or more capital letters in
+    -- the search term
     vim.o.ignorecase = true
     vim.o.smartcase = true
 
@@ -73,15 +79,17 @@ do
     -- Enable spell check for camelCase words
     vim.o.spelloptions = "camel"
 
-    -- Sets how neovim will display certain whitespace characters in the editor.
-    --  See `:help 'list'`
-    --  and `:help 'listchars'`
+    -- Sets how Neovim will display certain whitespace characters in the
+    -- editor.
     --
-    --  Notice listchars is set using `vim.opt` instead of `vim.o`.
-    --  It is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
-    --   See `:help lua-options`
-    --   and `:help lua-guide-options`
+    -- See `:help 'list'`
+    -- See `:help 'listchars'`
     vim.o.list = true
+
+    -- `vim.opt` provides an interface for conveniently interacting with
+    -- `vim.o` tables.
+    --
+    -- See `:help vim.opt`
     vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
     -- Preview substitutions live, as you type!
@@ -90,80 +98,30 @@ do
     -- Show which line your cursor is on
     vim.o.cursorline = true
 
-    -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
-    -- instead raise a dialog asking if you wish to save the current file(s)
+    -- if performing an operation that would fail due to unsaved changes in the
+    -- buffer (like `:q`), instead raise a dialog asking if you wish to save
+    -- the current file(s)
+    --
     -- See `:help 'confirm'`
     vim.o.confirm = true
 
     -- undo/redo history persists until session closes
     vim.o.undofile = false
 
-    -- 4 lines of context around cursor when scrolling
+    -- number of lines below and above the cursor to always keep in view when
+    -- scrolling
     vim.o.scrolloff = 4
 
     -- Don't wrap the text
     vim.o.wrap = false
 
-    vim.keymap.set(
-        "n",
-        "<leader>tw",
-        function() vim.wo[0].wrap = not vim.wo[0].wrap end,
-        { desc = "[w]rap" }
-    )
-
-    -- move to the last character of the last line
-    vim.keymap.set({ "n", "o", "x" }, "G", function()
-        local last_line = vim.api.nvim_buf_line_count(0)
-        local last_col = #vim.api.nvim_buf_get_lines(0, -2, -1, false)[1] - 1
-        vim.api.nvim_win_set_cursor(0, { last_line, math.max(0, last_col) })
-    end, { noremap = true })
-
-    -- move to the first character of the first line
-    vim.keymap.set(
-        { "n", "o", "x" },
-        "gg",
-        function() vim.api.nvim_win_set_cursor(0, { 1, 0 }) end,
-        { noremap = true }
-    )
-
-    -- use _ for previous line first non-white character (previously '-)'
-    -- use -,= for first, last non-white characters (previously '_', '$')
-    -- map $ for auto-indentation (previously '=')
-    vim.keymap.set(
-        { "n", "o", "x", "v" },
-        "0",
-        "0",
-        { desc = "First character" }
-    )
-    vim.keymap.set(
-        { "n", "o", "x", "v" },
-        "=",
-        "g_",
-        { desc = "Last non-ws character" }
-    )
-    vim.keymap.set(
-        { "n", "o", "x", "v" },
-        "-",
-        "_",
-        { desc = "First non-ws character" }
-    )
-    vim.keymap.set({ "n", "o", "x", "v" }, "$", "=", { desc = "Indent (op)" })
-    vim.keymap.set(
-        { "n", "o", "x", "v" },
-        "_",
-        "-",
-        { desc = "Start of previous line" }
-    )
-
-    vim.keymap.set(
-        { "n", "o", "x", "v" },
-        "g_",
-        "$",
-        { desc = "Last character" }
-    )
+    -- set $EDITOR and $GIT_EDITOR to allow external commands launched from
+    -- within Neovim to use the running Neovim instance instead of opening
+    -- nested instances
+    --
+    -- See `:help vim.env`
     if vim.fn.executable("nvr") == 1 then
         local editor_cmd = "nvr --remote-silent -o"
-
         local git_editor = "nvr --remote-tab-wait-silent +'set bufhidden=wipe'"
 
         vim.env.GIT_EDITOR = git_editor
@@ -171,27 +129,36 @@ do
     end
 end
 
--- Basic keymaps (built in vim actions, without any plugin dependency)
+-- [[ Auto-commands ]]
+-- Basic auto-cmds for QoL improvements
+--
+-- See `:help autocmd`
 do
-    -- Ghostty (and other kitty-keyboard-protocol terminals) can drop the
-    -- enhanced encoding mid-session, causing <C-Space> to arrive as a raw NUL
-    -- byte (<C-@>) instead. Alias <C-@> to <C-Space> recursively, in every
-    -- mode, so it always triggers whatever <C-Space> currently does (built-in,
-    -- buffer-local, or plugin-defined) instead of falling back to Vim's
-    -- default i_CTRL-@ (re-insert last insert) behavior.
-    vim.keymap.set(
-        { "n", "i", "v", "x", "s", "o", "c", "t", "l" },
-        "<C-@>",
-        "<C-Space>",
-        { remap = true }
-    )
+    local close_win_q_grp =
+        vim.api.nvim_create_augroup("CloseBufWithQ", { clear = true })
+
+    -- The keymap closes the buffer using the ":quit" command when for git
+    -- blame and git commit buffers
+    --
+    -- See `:help FileType`
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "gitsigns-blame", "gitcommit" },
+        group = close_win_q_grp,
+        callback = function(ev)
+            vim.keymap.set("n", "q", vim.cmd.quit, {
+                buf = ev.buf,
+                desc = "Close",
+            })
+        end,
+    })
 
     local close_hidden_buf_grp =
         vim.api.nvim_create_augroup("WipeUnnamedBuf", { clear = true })
 
-    -- Remove unnamed buf (such as the empty buffer created when neovim is first opened) when they are hidden if:
-    -- buffer is not modified
-    -- buffer id is still valid at the next tick
+    -- Remove unnamed buf (such as the empty buffer created when Neovim is
+    -- first opened) when they are hidden if:
+    --  1. the buffer is not modified buffer id
+    --  2. the buffer is still valid at the next tick
     vim.api.nvim_create_autocmd("BufHidden", {
         group = close_hidden_buf_grp,
         callback = function(ev)
@@ -224,19 +191,96 @@ do
         end,
     })
 
-    local close_win_q_grp =
-        vim.api.nvim_create_augroup("CloseBufWithQ", { clear = true })
-
-    vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "gitsigns-blame", "gitcommit" },
-        group = close_win_q_grp,
-        callback = function(ev)
-            vim.keymap.set("n", "q", vim.cmd.quit, {
-                buf = ev.buf,
-                desc = "Close",
-            })
-        end,
+    -- Highlight when yanking (copying) text
+    --  Try it with `yap` in normal mode
+    --
+    --  See `:help vim.hl.on_yank()`
+    vim.api.nvim_create_autocmd("TextYankPost", {
+        desc = "Highlight when yanking (copying) text",
+        group = vim.api.nvim_create_augroup(
+            "kickstart-highlight-yank",
+            { clear = true }
+        ),
+        callback = function() vim.hl.on_yank() end,
     })
+end
+
+-- [[ Basic Keymaps ]]
+-- Basic keymaps (built in vim actions, without any plugin dependency)
+do
+    -- Clear highlights on search when pressing <Esc> in normal mode
+    --
+    --  See `:help hlsearch`
+    vim.keymap.set(
+        "n",
+        "<leader>tw",
+        function() vim.wo[0].wrap = not vim.wo[0].wrap end,
+        { desc = "[w]rap" }
+    )
+
+    -- Sane gg and G behavior
+
+    -- move to the last character of the last line
+    vim.keymap.set({ "n", "o", "x" }, "G", function()
+        local last_line = vim.api.nvim_buf_line_count(0)
+        local last_col = #vim.api.nvim_buf_get_lines(0, -2, -1, false)[1] - 1
+        vim.api.nvim_win_set_cursor(0, { last_line, math.max(0, last_col) })
+    end, { noremap = true })
+
+    -- move to the first character of the first line
+    vim.keymap.set(
+        { "n", "o", "x" },
+        "gg",
+        function() vim.api.nvim_win_set_cursor(0, { 1, 0 }) end,
+        { noremap = true }
+    )
+
+    -- use _ for previous line first non-white character (previously '-)' use
+    -- -,= for first, last non-white characters (previously '_', '$') map $ for
+    -- auto-indentation (previously '=')
+    -- WARN: This breaks muslce memory with other editors that have a Vim mode
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "0",
+        "0",
+        { desc = "First character" }
+    )
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "=",
+        "g_",
+        { desc = "Last non-ws character" }
+    )
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "-",
+        "_",
+        { desc = "First non-ws character" }
+    )
+    vim.keymap.set({ "n", "o", "x", "v" }, "$", "=", { desc = "Indent (op)" })
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "_",
+        "-",
+        { desc = "Start of previous line" }
+    )
+
+    vim.keymap.set(
+        { "n", "o", "x", "v" },
+        "g_",
+        "$",
+        { desc = "Last character" }
+    )
+
+    -- Terminals with the kitty-keyboard-protocol randomly start sending the
+    -- null byte (<C-@>) when C-Space is pressed. This mapping ensures C-@ is
+    -- interpreted as C-Space so keymaps keep working
+    vim.keymap.set(
+        { "n", "i", "v", "x", "s", "o", "c", "t", "l" },
+        "<C-@>",
+        "<C-Space>",
+        { remap = true }
+    )
 
     -- Register custom file types handled by some plugins
     vim.filetype.add({
@@ -246,11 +290,6 @@ do
         },
     })
 
-    -- [[ Basic Keymaps ]]
-    --  See `:help vim.keymap.set()`
-
-    -- Clear highlights on search when pressing <Esc> in normal mode
-    --  See `:help hlsearch`
     vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
     vim.keymap.set(
@@ -260,7 +299,7 @@ do
         { desc = "Exit to Normal mode" }
     )
 
-    -- TIP: Disable arrow keys in normal mode
+    -- INFO: Disable arrow keys in normal mode
     -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
     -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
     -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
@@ -281,6 +320,7 @@ do
         { silent = true, desc = "Next tab" }
     )
 
+    -- Use Alt+t to move the current buffer to a new tab
     vim.keymap.set(
         { "n", "i", "", "t" },
         "<A-t>",
@@ -339,22 +379,7 @@ do
         { desc = "Move window to the upper" }
     )
 
-    -- [[ Basic Autocommands ]]
-    --  See `:help lua-guide-autocommands`
-
-    -- Highlight when yanking (copying) text
-    --  Try it with `yap` in normal mode
-    --  See `:help vim.hl.on_yank()`
-    vim.api.nvim_create_autocmd("TextYankPost", {
-        desc = "Highlight when yanking (copying) text",
-        group = vim.api.nvim_create_augroup(
-            "kickstart-highlight-yank",
-            { clear = true }
-        ),
-        callback = function() vim.hl.on_yank() end,
-    })
-
-    -- get rid of keyboard LSP shortcuts I don't like
+    -- Get rid of keyboard LSP shortcuts I don't like
     vim.keymap.del("n", "grn")
     vim.keymap.del("n", "grx")
     vim.keymap.del({ "n", "x" }, "gra")
