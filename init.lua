@@ -224,6 +224,20 @@ do
         end,
     })
 
+    local close_win_q_grp =
+        vim.api.nvim_create_augroup("CloseBufWithQ", { clear = true })
+
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "gitsigns-blame", "gitcommit" },
+        group = close_win_q_grp,
+        callback = function(ev)
+            vim.keymap.set("n", "q", vim.cmd.quit, {
+                buf = ev.buf,
+                desc = "Close",
+            })
+        end,
+    })
+
     -- Register custom file types handled by some plugins
     vim.filetype.add({
         pattern = {
