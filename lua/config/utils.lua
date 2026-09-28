@@ -34,6 +34,7 @@ M.git_diff_glyphs = {
     },
 }
 
+--- @module "dapui.config"
 --- @type table<boolean, dapui.Config.controls.icons>
 M.debug_button_glyphs = {
     [true] = {
