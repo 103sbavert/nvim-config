@@ -28,13 +28,28 @@ return {
         input = { enabled = true },
         picker = {
             enabled = true,
+            actions = {
+                start_insert = function() vim.cmd("startinsert!") end,
+            },
             win = {
                 input = {
                     keys = {
-                        -- always re-enter search insert mode when pressing "/"
-                        -- regardless of focused window
-                        ["/"] = function() vim.cmd("startinsert") end,
-                        mode = { "n" },
+                        ["/"] = {
+                            "start_insert",
+                            mode = { "n" },
+                            desc = "start insert",
+                        },
+                        ["<ESC>"] = { "close", mode = { "n", "i" } },
+                    },
+                },
+                list = {
+                    keys = {
+                        ["/"] = {
+                            "focus_input",
+                            mode = { "n" },
+                            desc = "focus input",
+                        },
+                        ["<ESC>"] = { "close", mode = { "n", "i" } },
                     },
                 },
             },
