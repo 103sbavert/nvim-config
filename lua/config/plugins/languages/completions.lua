@@ -28,6 +28,7 @@ return {
             return
         end
 
+        --- @module "blink.lib.task"
         cmp.build()
             :map(function()
                 vim.schedule(function()
