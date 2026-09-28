@@ -71,18 +71,27 @@ function M.get_indent(bufnr)
 end
 
 --- Checks if the given workspace root contains a dedicated Lua configuration file.
---- @param workspace_folders? table[] List of workspace folders provided by the LSP client.
+--- @param workspace_folders? table[]|string List of workspace folders provided by the LSP client.
 --- @return boolean has_config True if `.luarc.json` or `.luarc.jsonc` exists in the workspace root.
 function M.has_lua_config(workspace_folders)
-    if workspace_folders and #workspace_folders > 0 then
-        local dir_path = workspace_folders[1].name
-
-        return (
-            vim.uv.fs_stat(dir_path .. "/.luarc.json") ~= nil
-            or vim.uv.fs_stat(dir_path .. "/.luarc.jsonc") ~= nil
-        )
+    --- @type string
+    local dir_path
+    if type(workspace_folders) == "string" then
+        dir_path = workspace_folders
+    elseif
+        workspace_folders
+        and type(workspace_folders) == "table"
+        and #workspace_folders > 0
+    then
+        dir_path = workspace_folders[1].name
+    else
+        return false
     end
-    return false
+
+    return (
+        vim.uv.fs_stat(dir_path .. "/.luarc.json") ~= nil
+        or vim.uv.fs_stat(dir_path .. "/.luarc.jsonc") ~= nil
+    )
 end
 
 --- Determines whether the workspace root matches the active Neovim configuration directory.

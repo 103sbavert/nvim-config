@@ -55,23 +55,6 @@ return {
                         client.server_capabilities.documentRangeFormattingProvider =
                             false
                     end,
-                    on_init = function(client)
-                        if
-                            not lang_utils.is_nvim_config(
-                                client.workspace_folders
-                            )
-                            and lang_utils.has_lua_config(
-                                client.workspace_folders
-                            )
-                        then
-                            return
-                        end
-
-                        local base_ls_opts = client.config.settings.Lua
-                        --- @cast base_ls_opts table
-                        client.config.settings.Lua =
-                            lang_utils.get_nvim_lua_opts(base_ls_opts)
-                    end,
                     settings = {
                         Lua = {
                             format = { enable = false },
@@ -144,5 +127,32 @@ return {
         version = "1.*",
         lazy = true,
         config = true,
+    },
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                vim.env.VIMRUNTIME,
+                vim.fs.joinpath(
+                    vim.fn.stdpath("data"),
+                    "site/pack/core/opt/lazy.nvim"
+                ),
+                {
+                    vim.fs.joinpath(
+                        vim.fn.stdpath("data"),
+                        "site/pack/core/opt/bamboo.nvim"
+                    ),
+                    words = { "bamboo" },
+                },
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            },
+            enabled = function(root_dir)
+                local lang_utils =
+                    require("config.plugins.languages.internal.utils")
+
+                return not lang_utils.has_lua_config(root_dir)
+            end,
+        },
     },
 }
