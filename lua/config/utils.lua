@@ -315,4 +315,89 @@ function M.find_files_by_name(root_dir, target_name, max_depth, ignored_dirs)
     return results
 end
 
+--- Parses specified keys from an environment file.
+--- @param root_dir string The base directory path.
+--- @param filename string The env file name.
+--- @param keys string[] List of target keys to look up.
+--- @return table<string, string>|nil Map of key-value pairs, or nil if no keys were found.
+function M.parse_env(root_dir, filename, keys)
+    local target_file = vim.fs.joinpath(root_dir, filename)
+
+    local file = io.open(target_file, "r")
+    if not file then
+        return nil
+    end
+
+    -- Single I/O read call into C stdio buffer
+    local content = file:read("*a")
+    file:close()
+
+    if not content or content == "" then
+        return nil
+    end
+
+    local target_set = {}
+    for _, key in ipairs(keys) do
+        target_set[key] = true
+    end
+
+    local results = {}
+
+    -- Iterate through memory buffer
+    for line in content:gmatch("[^\r\n]+") do
+        local clean_line = line:gsub("^%s*export%s+", "")
+        local trimmed = clean_line:match("^%s*(.-)%s*$")
+
+        if trimmed ~= "" and not trimmed:match("^#") then
+            local raw_key, raw_val =
+                clean_line:match("^%s*([^=]+)%s*=%s*(.-)%s*$")
+            if raw_key and target_set[raw_key] then
+                local unquoted = raw_val:match('^"(.*)"$')
+                    or raw_val:match("^'(.*)'$")
+                    or raw_val
+                results[raw_key] = unquoted
+            end
+        end
+    end
+
+    return next(results) and results or nil
+end
+
+--- Parses a delimited environment key across multiple directories in priority order and returns unique entries.
+--- @param dirs (string|nil)[] List of directory paths to search in order.
+--- @param filename string The file name to parse
+--- @param key string The environment key to extract
+--- @param sep? string Optional delimiter (defaults to ":").
+--- @return string[]|nil List of unique parsed paths, or nil if none found.
+function M.get_env_paths(dirs, filename, key, sep)
+    sep = sep or ":"
+    local results = {}
+    local seen_items = {}
+    local seen_dirs = {}
+
+    for _, dir in ipairs(dirs) do
+        if dir and dir ~= "" and not seen_dirs[dir] then
+            seen_dirs[dir] = true
+
+            local env_vars = M.parse_env(dir, filename, { key })
+            if env_vars and env_vars[key] then
+                local items = vim.split(
+                    env_vars[key],
+                    sep,
+                    { plain = true, trimempty = true }
+                )
+
+                for _, item in ipairs(items) do
+                    if not seen_items[item] then
+                        seen_items[item] = true
+                        table.insert(results, item)
+                    end
+                end
+            end
+        end
+    end
+
+    return #results > 0 and results or nil
+end
+
 return M
