@@ -99,9 +99,6 @@ return {
         },
     },
     init = function()
-        vim.api.nvim_create_user_command("Notifications", "NoiceAll", {})
-        vim.api.nvim_create_user_command("Notifs", "NoiceAll", {})
-
         local shell_out_grp =
             vim.api.nvim_create_augroup("ShellOutputGrp", { clear = true })
 
