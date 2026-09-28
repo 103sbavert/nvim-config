@@ -8,9 +8,6 @@ return {
             "j-hui/fidget.nvim",
         },
         config = function()
-            local lang_utils =
-                require("config.plugins.languages.internal.utils")
-
             -- NOTE: roslyn.nvim enables "roslyn" server on its own (see:
             -- plugin/roslyn.lua), so the LSP can stay out of this map.
 
