@@ -1,6 +1,6 @@
 # Neovim Config
 
-Personal Neovim configuration focused on modularity, and maintainability.
+Personal Neovim configuration focused on modularity and maintainability.
 Originally based on
 [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim).
 
@@ -15,10 +15,10 @@ Originally based on
 ## Requirements
 
 - Neovim 0.12 or higher
-- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`,
+- Required binaries: `git`, `make`, `unzip`, `rg`, `nvr`, `lazygit`
 - Optional requirements:
-  - `typst`: (only if using `TypstCompile` or `PandocCompile` with with the
-    default pdf engine)
+  - `typst`: (only if using `TypstCompile` or `PandocCompile` with the default
+    pdf engine)
   - `pandoc` (only if using `PandocCompile`)
 
 ## Installation
