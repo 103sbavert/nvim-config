@@ -18,7 +18,25 @@ return {
             --- @type table<string, vim.lsp.Config>
             local server_config_map = {
                 phpactor = {},
-                tinymist = {},
+                tinymist = {
+                    settings = {
+                        formatterMode = "typstyle",
+                        semanticTokens = "enabled",
+                    },
+                    before_init = function(_, config)
+                        local font_paths =
+                            require("config.utils").get_env_paths(
+                                { config.root_dir, vim.fn.getcwd() },
+                                ".typstrc",
+                                "TYPST_FONT_PATHS"
+                            )
+
+                        if font_paths then
+                            config.settings = config.settings or {}
+                            config.settings.fontPaths = font_paths
+                        end
+                    end,
+                },
                 vtsls = {},
                 eslint = {},
                 bashls = {},
