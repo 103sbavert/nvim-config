@@ -71,6 +71,9 @@ return {
                 },
             },
         },
+        notify = {
+            enabled = true,
+        },
         notifier = {
             enabled = true,
             style = "compact",
