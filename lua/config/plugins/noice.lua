@@ -38,10 +38,6 @@ return {
                     kind = { "shell_out", "shell_err" },
                 },
             },
-            {
-                filter = { kind = "confirm", find = "chezmoi" },
-                view = "chezmoi_confirm",
-            },
         },
         views = {
             cmdline_popup = {
@@ -99,11 +95,6 @@ return {
                     bufhidden = "wipe",
                 },
                 format = { "{cmdline}\n", "{message}\n" },
-            },
-            chezmoi_confirm = {
-                view = "confirm",
-                focusable = false,
-                border = { text = { top = " Chezmoi " } },
             },
         },
     },
