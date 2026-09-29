@@ -1,6 +1,7 @@
 --- @type LazySpec
 return {
     "folke/which-key.nvim",
+    --- @module "which-key"
     --- @type wk.Opts
     opts = {
         delay = 300,
