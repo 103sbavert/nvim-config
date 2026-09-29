@@ -34,17 +34,17 @@ return {
             -- Navigation
             do
                 utils.navigate_fw_mapper(
-                    "h",
+                    "c",
                     function()
                         if vim.wo.diff then
-                            return "]h"
+                            return "]c"
                         end
                         vim.schedule(
                             function() gitsigns.nav_hunk("next", navopts) end
                         )
                         return "<Ignore>"
                     end,
-                    "Next [h]unk",
+                    "Next git [c]hange",
                     {
                         buffer = bufnr,
                         expr = true,
@@ -52,17 +52,17 @@ return {
                 )
 
                 utils.navigate_bw_mapper(
-                    "h",
+                    "c",
                     function()
                         if vim.wo.diff then
-                            return "[h"
+                            return "[c"
                         end
                         vim.schedule(
                             function() gitsigns.nav_hunk("prev", navopts) end
                         )
                         return "<Ignore>"
                     end,
-                    "Prev [h]unk",
+                    "Prev git [c]hange",
                     {
                         buffer = bufnr,
                         expr = true,
