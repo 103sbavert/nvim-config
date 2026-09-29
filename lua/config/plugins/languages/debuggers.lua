@@ -5,8 +5,11 @@ return {
     {
         "mfussenegger/nvim-dap",
         dependencies = {
-            "leoluz/nvim-dap-go",
             "config.mason",
+            {
+                "theHamsta/nvim-dap-virtual-text",
+                config = true,
+            },
         },
         keys = {
             {
@@ -40,12 +43,14 @@ return {
         init = function() require("config.mason").InstallTools(dap_list) end,
         config = function()
             local utils = require("config.plugins.languages.internal.utils")
+            local delve = require("config.plugins.languages.internal.delve")
             local dap = require("dap")
 
             utils.setup_dap_signs()
+            delve.setup()
 
             dap.listeners.after.event_initialized["open_dap_ui"] = function()
-                require("dapui").open()
+                require("dap-view").open()
             end
             dap.listeners.after.event_initialized["dap_keymaps"] = function()
                 utils.add_dap_keymaps()
@@ -59,73 +64,30 @@ return {
         end,
     },
     {
-        "leoluz/nvim-dap-go",
-        ft = { "go" },
-        dependencies = { "mfussenegger/nvim-dap" },
-        config = function(_, opts)
-            local dap = require("dap")
-            require("dap-go").setup(opts)
-
-            dap.configurations.go = dap.configurations.go or {}
-
-            for _, conf in ipairs(dap.configurations.go) do
-                if conf.processId and vim.is_callable(conf.processId) then
-                    conf.processId = function(inner_opts)
-                        return require("dap.utils").pick_process(inner_opts)
-                    end
-                end
-            end
-
-            table.insert(
-                dap.configurations.go,
-                1,
-                require("config.plugins.languages.internal.utils").go_debug_auto
-            )
-        end,
-    },
-    {
-        "rcarriga/nvim-dap-ui",
+        "igorlfs/nvim-dap-view",
         dependencies = {
+            "mfussenegger/nvim-dap",
             "config.utils",
-            "nvim-neotest/nvim-nio",
-            {
-                "theHamsta/nvim-dap-virtual-text",
-                opts = { clear_on_continue = true },
-            },
         },
         keys = {
             {
                 "<leader>td",
-                function() require("dapui").toggle() end,
+                function() require("dap-view").toggle() end,
                 desc = "Toggle [d]ap UI",
                 mode = { "n" },
             },
         },
         opts = {
-            icons = {
-                expanded = "▾",
-                collapsed = "▸",
-                current_frame = "*",
-            },
-            layouts = {
-                {
-                    elements = {
-                        { id = "scopes", size = 0.25 },
-                        { id = "breakpoints", size = 0.25 },
-                        { id = "stacks", size = 0.25 },
-                        { id = "watches", size = 0.25 },
-                    },
-                    size = 36,
-                    position = "right",
+            winbar = {
+                show = true,
+                sections = {
+                    "watches",
+                    "exceptions",
+                    "breakpoints",
+                    "repl",
+                    "console",
                 },
-                {
-                    elements = { "console", "repl" },
-                    size = 14,
-                    position = "bottom",
-                },
-            },
-            controls = {
-                icons = require("config.utils").debug_button_glyphs[vim.g.have_nerd_font],
+                show_keymap_hints = true,
             },
         },
     },

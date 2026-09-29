@@ -34,34 +34,6 @@ M.git_diff_glyphs = {
     },
 }
 
---- @module "dapui.config"
---- @type table<boolean, dapui.Config.controls.icons>
-M.debug_button_glyphs = {
-    [true] = {
-        pause = "",
-        play = "",
-        step_into = "",
-        step_over = "",
-        step_out = "",
-        step_back = "",
-        run_last = "",
-        terminate = "",
-        disconnect = "",
-    },
-    [false] = {
-
-        pause = "⏸",
-        play = "▶",
-        step_into = "⏎",
-        step_over = "⏭",
-        step_out = "⏮",
-        step_back = "b",
-        run_last = "▶▶",
-        terminate = "⏹",
-        disconnect = "⏏",
-    },
-}
-
 --- @type table<boolean, table<vim.diagnostic.Severity, string>>
 M.lsp_diagnostic_glyphs = {
     [true] = {
