@@ -31,9 +31,9 @@ return {
                 mode = { "n" },
             },
             {
-                "<leader>d",
+                "<leader>dd",
                 function() require("dap").continue() end,
-                desc = "start [d]ebugging",
+                desc = "[c]ontinue",
                 mode = { "n" },
             },
         },

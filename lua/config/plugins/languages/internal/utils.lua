@@ -185,11 +185,22 @@ local get_debug_overrides = function()
 
     return {
         n = {
-            ["<leader>c"] = { rhs = dap.continue, desc = "Debug: Continue" },
-            ["<leader>x"] = { rhs = dap.close, desc = "Debug: Stop debugging" },
-            ["<CR>"] = { rhs = dap.step_over, desc = "Debug: Step Over" },
-            ["gs"] = { rhs = dap.step_into, desc = "Debug: Step Into" },
-            ["gS"] = { rhs = dap.step_out, desc = "Debug: Step Out" },
+            ["<leader>dx"] = {
+                rhs = dap.close,
+                opts = { desc = "E[x]it" },
+            },
+            ["<leader>di"] = {
+                rhs = dap.step_into,
+                opts = { desc = "Step [i]nto" },
+            },
+            ["<leader>do"] = {
+                rhs = dap.step_out,
+                opts = { desc = "Step [o]ut" },
+            },
+            ["<CR>"] = {
+                rhs = dap.step_over,
+                opts = { desc = "Step over" },
+            },
         },
     }
 end
@@ -197,7 +208,7 @@ end
 function M.add_dap_keymaps()
     for mode, mappings in pairs(get_debug_overrides()) do
         for lhs, map in pairs(mappings) do
-            vim.keymap.set(mode, lhs, map.rhs, { desc = map.desc })
+            vim.keymap.set(mode, lhs, map.rhs, map.opts)
         end
     end
 end
