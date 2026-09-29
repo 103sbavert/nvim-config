@@ -76,6 +76,7 @@ end
 function M.has_lua_config(workspace_folders)
     --- @type string
     local dir_path
+
     if type(workspace_folders) == "string" then
         dir_path = workspace_folders
     elseif
@@ -186,11 +187,11 @@ local get_debug_overrides = function()
 
     return {
         n = {
-            ["<CR>"] = { rhs = dap.continue, desc = "Debug: Continue" },
-            ["n"] = { rhs = dap.step_over, desc = "Debug: Step Over" },
-            ["gi"] = { rhs = dap.step_into, desc = "Debug: Step Into" },
-            ["go"] = { rhs = dap.step_out, desc = "Debug: Step Out" },
-            ["q"] = { rhs = dap.close, desc = "Debug: Stop debugging" },
+            ["<leader>c"] = { rhs = dap.continue, desc = "Debug: Continue" },
+            ["<leader>x"] = { rhs = dap.close, desc = "Debug: Stop debugging" },
+            ["<CR>"] = { rhs = dap.step_over, desc = "Debug: Step Over" },
+            ["gs"] = { rhs = dap.step_into, desc = "Debug: Step Into" },
+            ["gS"] = { rhs = dap.step_out, desc = "Debug: Step Out" },
         },
     }
 end
