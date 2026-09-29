@@ -4,6 +4,9 @@ return {
     event = { "VeryLazy" },
     --- @type Gitsigns.Config
     opts = {
+        diff_opts = {
+            linematch = 60,
+        },
         signs = {
             add = { text = "│" },
             change = { text = "│" },
