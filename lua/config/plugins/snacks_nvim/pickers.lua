@@ -80,9 +80,9 @@ return {
     },
     -- LSP jump bindings
     {
-        "gs",
+        "gO",
         function() Snacks.picker.lsp_symbols(get_dropdown_conf()) end,
-        desc = "[g]oto [s]ymbols",
+        desc = "[g]oto symb[O]ls",
     },
     {
         "gd",
