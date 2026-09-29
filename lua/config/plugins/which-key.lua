@@ -40,6 +40,7 @@ return {
             { "gx", desc = "Open URI/path under cusor", mode = { "x", "n" } },
 
             -- `<leader>` prefix groups
+            { "<leader>d", group = "[d]ebug", mode = { "n" } },
             { "<leader>g", group = "[g]it", mode = { "x", "n" } },
             { "<leader>b", group = "[b]reakpoints", mode = "n" },
             { "<leader>t", group = "[t]oggle", mode = "n" },
