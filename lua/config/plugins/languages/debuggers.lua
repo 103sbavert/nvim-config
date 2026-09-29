@@ -10,7 +10,7 @@ return {
         },
         keys = {
             {
-                "<leader>b<space>",
+                "<leader>bb",
                 function() require("dap").toggle_breakpoint() end,
                 mode = { "n" },
                 desc = "[ ] toggle",
@@ -48,13 +48,13 @@ return {
                 require("dapui").open()
             end
             dap.listeners.after.event_initialized["dap_keymaps"] = function()
-                utils.setup_dap_overrides()
+                utils.add_dap_keymaps()
             end
             dap.listeners.before.event_terminated["dap_keymaps"] = function()
-                utils.unset_dap_overrides()
+                utils.del_dap_keymaps()
             end
             dap.listeners.before.event_exited["dap_keymaps"] = function()
-                utils.unset_dap_overrides()
+                utils.del_dap_keymaps()
             end
         end,
     },
