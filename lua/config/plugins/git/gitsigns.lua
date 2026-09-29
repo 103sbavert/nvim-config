@@ -222,8 +222,8 @@ return {
                 vim.keymap.set(
                     { "o", "x" },
                     "ih",
-                    gitsigns.select_hunk,
-                    { buffer = bufnr, desc = "Select hunk" }
+                    function() gitsigns.select_hunk({ greedy = false }) end,
+                    { buffer = bufnr, desc = "hunk" }
                 )
             end
 
