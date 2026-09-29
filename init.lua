@@ -379,15 +379,6 @@ do
         "<C-w>K",
         { desc = "Move window to the upper" }
     )
-
-    -- Get rid of keyboard LSP shortcuts I don't like
-    vim.keymap.del("n", "grn")
-    vim.keymap.del("n", "grx")
-    vim.keymap.del({ "n", "x" }, "gra")
-    vim.keymap.del("n", "grr")
-    vim.keymap.del("n", "gri")
-    vim.keymap.del("n", "gO") -- [gs] with Snacks.picker is used instead
-    vim.keymap.del("n", "grt")
 end
 
 -- lazy.nvim to load install all other plugins (except theme below)

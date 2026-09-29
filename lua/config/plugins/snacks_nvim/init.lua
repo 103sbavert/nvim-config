@@ -4,6 +4,14 @@ return {
     priority = 1000,
     lazy = false,
     keys = function()
+        -- Get rid of keyboard LSP shortcuts I don't like
+        vim.keymap.del("n", "grn")
+        vim.keymap.del("n", "grx")
+        vim.keymap.del({ "n", "x" }, "gra")
+        vim.keymap.del("n", "grr")
+        vim.keymap.del("n", "gri")
+        vim.keymap.del("n", "grt")
+
         local pickers = require("config.plugins.snacks_nvim.pickers")
         return vim.list_extend(pickers, {
             {
