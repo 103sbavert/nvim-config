@@ -70,6 +70,28 @@ return {
                         client.server_capabilities.documentRangeFormattingProvider =
                             false
                     end,
+                    on_init = function(client)
+                        local lang_utils =
+                            require("config.plugins.languages.internal.utils")
+
+                        if
+                            vim.g.lazy_lua_ls
+                            or not lang_utils.is_nvim_config(
+                                client.workspace_folders
+                            )
+                            or lang_utils.has_lua_config(
+                                client.workspace_folders
+                            )
+                        then
+                            return
+                        end
+
+                        local base_ls_opts = client.config.settings.Lua
+
+                        --- @cast base_ls_opts table
+                        client.config.settings.Lua =
+                            lang_utils.get_nvim_lua_opts(base_ls_opts)
+                    end,
                     settings = {
                         Lua = {
                             format = { enable = false },
@@ -163,6 +185,10 @@ return {
                 { path = "${3rd}/luv/library", words = { "vim%.uv" } },
             },
             enabled = function(root_dir)
+                if vim.g.lazy_lua_ls then
+                    return true
+                end
+
                 local lang_utils =
                     require("config.plugins.languages.internal.utils")
 

@@ -26,6 +26,8 @@ do
     vim.g.mapleader = " "
     vim.g.maplocalleader = " "
 
+    -- used by lazydev config in module "config.plugins.languages.language-servers"
+    vim.g.lazy_lua_ls = true
     -- Set to true if you have a Nerd Font installed and selected in the terminal
     vim.g.have_nerd_font = true
 
