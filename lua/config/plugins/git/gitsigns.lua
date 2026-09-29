@@ -221,16 +221,16 @@ return {
             do
                 vim.keymap.set(
                     { "o", "x" },
-                    "ah",
+                    "ac",
                     function() gitsigns.select_hunk({ greedy = true }) end,
-                    { buffer = bufnr, desc = "hunk" }
+                    { buffer = bufnr, desc = "git [c]hange" }
                 )
 
                 vim.keymap.set(
                     { "o", "x" },
-                    "ih",
+                    "ic",
                     function() gitsigns.select_hunk({ greedy = false }) end,
-                    { buffer = bufnr, desc = "hunk" }
+                    { buffer = bufnr, desc = "git [c]hange" }
                 )
             end
 
