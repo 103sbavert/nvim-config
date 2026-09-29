@@ -352,10 +352,7 @@ function M.parse_env(root_dir, filename, keys)
             local raw_key, raw_val =
                 clean_line:match("^%s*([^=]+)%s*=%s*(.-)%s*$")
             if raw_key and target_set[raw_key] then
-                local unquoted = raw_val:match('^"(.*)"$')
-                    or raw_val:match("^'(.*)'$")
-                    or raw_val
-                results[raw_key] = unquoted
+                results[raw_key] = M.shell_dequote(raw_val)
             end
         end
     end
@@ -398,6 +395,102 @@ function M.get_env_paths(dirs, filename, key, sep)
     end
 
     return #results > 0 and results or nil
+end
+
+--- Splits a prompt line shell-style: whitespace-separated tokens honoring
+--- single/double quotes (quotes stripped, backslash escapes the next char)
+--- @param str string? Raw input line, e.g. from a Snacks input prompt.
+--- @return string[] Tokens with quoting removed.
+function M.split_shell_words(str)
+    local out, cur, quote = {}, {}, nil
+    local i = 1
+    str = str or ""
+    while i <= #str do
+        local c = str:sub(i, i)
+        if quote then
+            if c == quote then
+                quote = nil
+            elseif c == "\\" and i < #str then
+                i = i + 1
+                cur[#cur + 1] = str:sub(i, i)
+            else
+                cur[#cur + 1] = c
+            end
+        elseif c == '"' or c == "'" then
+            quote = c
+        elseif c == "\\" and i < #str then
+            i = i + 1
+            cur[#cur + 1] = str:sub(i, i)
+        elseif c:match("%s") then
+            if #cur > 0 then
+                out[#out + 1] = table.concat(cur)
+                cur = {}
+            end
+        else
+            cur[#cur + 1] = c
+        end
+        i = i + 1
+    end
+    if #cur > 0 then
+        out[#out + 1] = table.concat(cur)
+    end
+    return out
+end
+
+--- Removes shell-style quoting from a single value without splitting it
+--- @param str string? Raw value, possibly containing quotes.
+--- @return string Value with grouping quotes removed.
+function M.shell_dequote(str)
+    local out, quote = {}, nil
+    local i = 1
+    str = str or ""
+    while i <= #str do
+        local c = str:sub(i, i)
+        if quote then
+            if c == quote then
+                quote = nil
+            elseif c == "\\" and i < #str then
+                i = i + 1
+                out[#out + 1] = str:sub(i, i)
+            else
+                out[#out + 1] = c
+            end
+        elseif c == '"' or c == "'" then
+            quote = c
+        elseif c == "\\" and i < #str then
+            i = i + 1
+            out[#out + 1] = str:sub(i, i)
+        else
+            out[#out + 1] = c
+        end
+        i = i + 1
+    end
+    return table.concat(out)
+end
+
+--- Parses `KEY=value` tokens from a prompt line into an env map.
+--- @param str string? Raw input line, e.g. from a Snacks input prompt.
+--- @return table<string, string> Map of variable names to values.
+function M.parse_env_assignments(str)
+    local env = {}
+    for _, item in ipairs(M.split_shell_words(str)) do
+        local key, val = item:match("^([^=]+)=(.*)$")
+        if key then
+            env[vim.trim(key)] = val
+        end
+    end
+    return env
+end
+
+--- Returns an unused TCP port on localhost
+--- @return integer port A currently free port number.
+function M.free_tcp_port()
+    local tcp = assert(vim.uv.new_tcp(), "Must be able to create tcp handle")
+    tcp:bind("127.0.0.1", 0)
+    local port = tcp:getsockname().port
+    tcp:shutdown()
+    tcp:close()
+    return port
 end
 
 return M
