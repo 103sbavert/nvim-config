@@ -37,31 +37,26 @@ end
 --- @type LazyKeysSpec[]
 return {
     -- File explorer
-    -- {
-    --     "<leader>\\",
-    --     function()
-    --         local explorer = Snacks.picker.get({ source = "explorer" })[1]
-    --
-    --         if not explorer then
-    --             Snacks.explorer()
-    --         elseif explorer:is_focused() then
-    --             vim.cmd.wincmd("p")
-    --         else
-    --             explorer:focus()
-    --         end
-    --     end,
-    --     desc = "[\\] Toggle Explorer Focus",
-    -- },
+    {
+        "<leader>\\",
+        function()
+            local explorer = Snacks.picker.get({ source = "explorer" })[1]
+
+            if not explorer then
+                Snacks.explorer()
+            elseif explorer:is_focused() then
+                vim.cmd.wincmd("p")
+            else
+                explorer:focus()
+            end
+        end,
+        desc = "[\\] Toggle Explorer Focus",
+    },
     -- File search (top-level shortcuts)
     {
         "<C-/>",
         function() Snacks.terminal.toggle() end,
         desc = "Toggle Terminal",
-    },
-    {
-        "<leader>\\",
-        function() Snacks.picker.files() end,
-        desc = "[\\] Workspace Files",
     },
     {
         "\\",

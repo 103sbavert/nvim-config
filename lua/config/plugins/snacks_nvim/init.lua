@@ -23,11 +23,11 @@ return {
             enabled = true,
         },
         bigfile = { enabled = true },
-        -- explorer = {
-        --     enabled = true,
-        --     replace_netrw = true,
-        --     trash = true,
-        -- },
+        explorer = {
+            enabled = true,
+            replace_netrw = true,
+            trash = true,
+        },
         indent = { enabled = true },
         input = { enabled = true },
         picker = {
