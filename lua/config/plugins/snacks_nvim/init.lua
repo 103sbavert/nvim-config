@@ -15,14 +15,7 @@ return {
         vim.keymap.del("n", "gri")
         vim.keymap.del("n", "grt")
 
-        local pickers = require("config.plugins.snacks_nvim.pickers")
-        return vim.list_extend(pickers, {
-            {
-                "<C-/>",
-                function() Snacks.terminal.toggle() end,
-                desc = "Toggle Terminal",
-            },
-        })
+        return require("config.plugins.snacks_nvim.keys")
     end,
     --- @type snacks.Config
     opts = {

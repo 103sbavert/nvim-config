@@ -54,6 +54,11 @@ return {
     -- },
     -- File search (top-level shortcuts)
     {
+        "<C-/>",
+        function() Snacks.terminal.toggle() end,
+        desc = "Toggle Terminal",
+    },
+    {
         "<leader>\\",
         function() Snacks.picker.files() end,
         desc = "[\\] Workspace Files",
