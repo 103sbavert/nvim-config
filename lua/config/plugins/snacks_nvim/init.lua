@@ -45,9 +45,13 @@ return {
                         ["/"] = {
                             "start_insert",
                             mode = { "n" },
-                            desc = "start insert",
+                            desc = "Start insert",
                         },
-                        ["<ESC>"] = { "close", mode = { "n" } },
+                        ["<ESC>"] = {
+                            "focus_list",
+                            mode = { "i", "n" },
+                            desc = "Focus list",
+                        },
                     },
                 },
                 list = {
@@ -55,9 +59,13 @@ return {
                         ["/"] = {
                             "focus_input",
                             mode = { "n" },
-                            desc = "focus input",
+                            desc = "Focus input",
                         },
-                        ["<ESC>"] = { "close", mode = { "n", "i" } },
+                        ["<ESC>"] = {
+                            "close",
+                            mode = { "n", "i" },
+                            desc = "Close picker",
+                        },
                     },
                 },
             },
