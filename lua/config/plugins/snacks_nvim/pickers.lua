@@ -190,4 +190,20 @@ return {
         function() Snacks.picker.resume() end,
         desc = "[.] Re-open Last Picker",
     },
+    --- Git pickers
+    {
+        "<leader>gt",
+        function() Snacks.picker.git_status() end,
+        desc = "s[t]atus",
+    },
+    {
+        "<leader>go",
+        function() Snacks.picker.git_log() end,
+        desc = "l[o]g",
+    },
+    {
+        "<leader>gd",
+        function() Snacks.picker.git_log_file() end,
+        desc = "[d]iff with..",
+    },
 }

@@ -1,6 +1,9 @@
 --- @type LazySpec
 return {
     "folke/snacks.nvim",
+    dependencies = {
+        "esmuellert/codediff.nvim",
+    },
     priority = 1000,
     lazy = false,
     keys = function()
@@ -80,9 +83,22 @@ return {
                     hidden = true,
                     ignored = true,
                 },
-                -- explorer = {
-                --     hidden = true,
-                -- },
+                git_status = {
+                    layout = {
+                        preset = "git_diff",
+                    },
+                },
+                git_log_file = {
+                    confirm = "git_show_diff",
+                    layout = {
+                        preset = "git_diff",
+                    },
+                },
+                git_log = {
+                    layout = {
+                        preset = "git_diff",
+                    },
+                },
                 files = {
                     hidden = true,
                     ignored = true,
@@ -123,6 +139,7 @@ return {
     },
     config = function(_, opts)
         require("snacks").setup(opts)
+        require("config.plugins.snacks_nvim.git")
 
         local spinner = {
             "⠋",
