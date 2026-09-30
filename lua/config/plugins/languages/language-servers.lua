@@ -171,6 +171,10 @@ return {
         opts = {
             library = {
                 vim.env.VIMRUNTIME,
+                vim.fs.joinpath(
+                    vim.fn.stdpath("data"),
+                    "site/pack/core/opt/lazy.nvim"
+                ),
                 {
                     path = vim.fs.joinpath(
                         vim.fn.stdpath("data"),
