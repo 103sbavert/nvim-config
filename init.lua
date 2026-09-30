@@ -140,12 +140,11 @@ do
     local close_win_q_grp =
         vim.api.nvim_create_augroup("CloseBufWithQ", { clear = true })
 
-    -- The keymap closes the buffer using the ":quit" command when for git
-    -- blame and git commit buffers
+    -- Closes certain buffers on 'q' press if file type matches
     --
     -- See `:help FileType`
     vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "gitsigns-blame", "gitcommit" },
+        pattern = { "gitsigns-blame", "gitcommit", "help" },
         group = close_win_q_grp,
         callback = function(ev)
             vim.keymap.set("n", "q", vim.cmd.quit, {
