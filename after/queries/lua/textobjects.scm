@@ -1,16 +1,7 @@
-[
-  (assignment_statement
-    (expression_list
-      value: (_) @assignment.inner) @assignment.inner)
-  (assignment_statement
-    (variable_list) @assignment.inner)
-]
+; extends
 
-((_)
-  (assignment_statement
-    (variable_list) @assignment.lhs
-    (expression_list) @assignment.rhs) @assignment.outer)
-
-(field
-  name: (_)
-  value: (_) @assignment.rhs) @assignment.outer
+(table_constructor
+  (field
+    name: (_)
+    value: (_) @assignment.rhs) @assignment.outer
+  ","? @assignment.outer)
