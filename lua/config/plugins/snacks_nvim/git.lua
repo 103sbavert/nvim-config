@@ -2,16 +2,6 @@
 ---@field commit string the base commit hash for diff
 ---@field target_ref? string optional target ref - "HEAD" if not specified
 
---- @param modname string name of the module to load
---- @return table
-local set_get_mod = function(modname)
-    local ok, mod = pcall(require, modname)
-
-    assert(ok, "Unable to load Codediff. Is the plugin installed and loaded?")
-
-    return mod
-end
-
 --- @return snacks.picker.layout.Config
 local function create_diff_layout()
     local layout = vim.deepcopy(require("snacks.picker.config.layouts").default)
@@ -60,11 +50,10 @@ local function show_diff(self, item)
         return
     end
 
-    set_get_mod("codediff.commands.handlers.git_diff").run(
-        item.commit,
-        item.target_ref,
-        {}
-    )
+    vim.cmd({
+        cmd = "CodeDiff",
+        args = { item.commit, item.target_ref },
+    })
 end
 
 require("snacks.picker.actions").git_show_diff = show_diff
