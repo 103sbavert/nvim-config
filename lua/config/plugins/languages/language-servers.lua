@@ -171,12 +171,8 @@ return {
         opts = {
             library = {
                 vim.env.VIMRUNTIME,
-                vim.fs.joinpath(
-                    vim.fn.stdpath("data"),
-                    "site/pack/core/opt/lazy.nvim"
-                ),
                 {
-                    vim.fs.joinpath(
+                    path = vim.fs.joinpath(
                         vim.fn.stdpath("data"),
                         "site/pack/core/opt/bamboo.nvim"
                     ),
