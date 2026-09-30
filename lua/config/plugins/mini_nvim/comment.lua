@@ -1,38 +1,8 @@
--- vim.keymap.del({ "n", "x", "o" }, "gc")
--- disable builtin `gcc` mapping
+-- Builtin gcc must go: the line toggle lives on gC instead.
 vim.keymap.del("n", "gcc")
 
-local comments = require("mini.comment")
-comments.setup({
-    -- Options which control module behavior
-    options = {
-        -- Function to compute custom 'commentstring' (optional)
-        custom_commentstring = nil,
-
-        -- Whether to ignore blank lines in actions and textobject
-        ignore_blank_line = false,
-
-        -- Whether to recognize as comment only lines without indent
-        start_of_line = false,
-
-        -- Whether to force single space inner padding for comment parts
-        pad_comment_parts = true,
-    },
-
-    -- Module mappings. Use `''` (empty string) to disable one.
+require("mini.comment").setup({
     mappings = {
-        -- Toggle comment (like `gcip` - comment inner paragraph) for both
-        -- Normal and Visual modes
-        comment = "gc",
-
-        -- Toggle comment on current line
         comment_line = "gC",
-
-        -- Toggle comment on visual selection
-        comment_visual = "gc",
-
-        -- Define 'comment' textobject (like `dgc` - delete whole comment block)
-        -- Works also in Visual mode if mapping differs from `comment_visual`
-        textobject = "gc",
     },
 })
