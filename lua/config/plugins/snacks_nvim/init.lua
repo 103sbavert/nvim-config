@@ -47,7 +47,7 @@ return {
                             mode = { "n" },
                             desc = "start insert",
                         },
-                        ["<ESC>"] = { "close", mode = { "n", "i" } },
+                        ["<ESC>"] = { "close", mode = { "n" } },
                     },
                 },
                 list = {
