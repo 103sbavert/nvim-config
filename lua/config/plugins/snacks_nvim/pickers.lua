@@ -86,7 +86,7 @@ return {
     -- LSP jump bindings
     {
         "gO",
-        function() Snacks.picker.lsp_symbols(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_symbols(get_dropdown_conf("input")) end,
         desc = "[g]oto symb[O]ls",
     },
     {
@@ -175,7 +175,9 @@ return {
     },
     {
         "<leader>sS",
-        function() Snacks.picker.lsp_workspace_symbols(get_dropdown_conf()) end,
+        function()
+            Snacks.picker.lsp_workspace_symbols(get_dropdown_conf("input"))
+        end,
         desc = "LSP [S]ymbols Workspace",
     },
     {
