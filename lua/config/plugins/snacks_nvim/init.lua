@@ -63,7 +63,14 @@ return {
             },
             sources = {
                 buffers = {
+                    matcher = {
+                        cwd_bonus = true,
+                        frecency = true,
+                        sort_empty = true,
+                    },
+                    transform = "unique_file",
                     hidden = true,
+                    ignored = true,
                 },
                 -- explorer = {
                 --     hidden = true,
