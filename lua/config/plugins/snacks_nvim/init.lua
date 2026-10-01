@@ -101,6 +101,9 @@ return {
                         ["lua"] = true,
                     },
                 },
+                explorer = {
+                    auto_close = true,
+                },
             },
         },
         notify = {
