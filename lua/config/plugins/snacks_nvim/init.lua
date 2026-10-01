@@ -33,7 +33,7 @@ return {
         picker = {
             enabled = true,
             actions = {
-                start_insert = function() vim.cmd("startinsert!") end,
+                ["start_insert"] = function() vim.cmd("startinsert!") end,
                 ["show_diff"] = require("config.plugins.snacks_nvim.git").git_show_diff,
             },
             win = {
