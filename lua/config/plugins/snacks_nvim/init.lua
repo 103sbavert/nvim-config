@@ -34,6 +34,7 @@ return {
             enabled = true,
             actions = {
                 start_insert = function() vim.cmd("startinsert!") end,
+                ["show_diff"] = require("config.plugins.snacks_nvim.git").git_show_diff,
             },
             win = {
                 input = {
@@ -65,6 +66,9 @@ return {
                     },
                 },
             },
+            layouts = {
+                ["git_log"] = require("config.plugins.snacks_nvim.git").git_log_layout,
+            },
             sources = {
                 buffers = {
                     matcher = {
@@ -78,18 +82,18 @@ return {
                 },
                 git_status = {
                     layout = {
-                        preset = "git_diff",
+                        preset = "git_log",
                     },
                 },
                 git_log_file = {
-                    confirm = "git_show_diff",
+                    confirm = "show_diff",
                     layout = {
-                        preset = "git_diff",
+                        preset = "git_log",
                     },
                 },
                 git_log = {
                     layout = {
-                        preset = "git_diff",
+                        preset = "git_log",
                     },
                 },
                 files = {
@@ -135,7 +139,6 @@ return {
     },
     config = function(_, opts)
         require("snacks").setup(opts)
-        require("config.plugins.snacks_nvim.git")
 
         local spinner = {
             "⠋",

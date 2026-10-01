@@ -2,41 +2,28 @@
 ---@field commit string the base commit hash for diff
 ---@field target_ref? string optional target ref - "HEAD" if not specified
 
---- @return snacks.picker.layout.Config
-local function create_diff_layout()
-    local layout = vim.deepcopy(require("snacks.picker.config.layouts").default)
-
-    layout.fullscreen = true
-    layout.layout.border = true
-
-    for _, prop in ipairs(layout.layout) do
-        if prop and type(prop) == "table" then
-            if prop.box == "vertical" then
-                prop.border = false
-
-                for _, child in ipairs(prop) do
-                    if child and type(child) == "table" then
-                        if child.win == "input" then
-                            child.border = "bottom"
-                        elseif child.win == "list" then
-                            child.border = false
-                        end
-                    end
-                end
-            elseif prop.win == "preview" then
-                prop.width = 0.70
-                prop.border = "left"
-            end
-        end
-    end
-
-    return layout
-end
-
-require("snacks.picker.config.layouts").git_diff = create_diff_layout()
+--- @type snacks.picker.layout.Config
+local log_layout = {
+    fullscreen = true,
+    layout = {
+        box = "horizontal",
+        width = 0.8,
+        min_width = 120,
+        height = 0.8,
+        border = true,
+        {
+            box = "vertical",
+            border = false,
+            title = "{title} {live} {flags}",
+            { win = "input", height = 1, border = "bottom" },
+            { win = "list", border = false },
+        },
+        { win = "preview", title = "{preview}", border = "left", width = 0.7 },
+    },
+}
 
 --- @type fun(self: snacks.Picker, item?: snacks.picker.git.Item)
-local function show_diff(self, item)
+local function show_diff_action(self, item)
     if not self.closed then
         self:close()
     end
@@ -56,4 +43,7 @@ local function show_diff(self, item)
     })
 end
 
-require("snacks.picker.actions").git_show_diff = show_diff
+return {
+    git_log_layout = log_layout,
+    git_show_diff = show_diff_action,
+}
