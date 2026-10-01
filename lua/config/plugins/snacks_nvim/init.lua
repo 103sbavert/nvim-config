@@ -153,6 +153,8 @@ return {
             "⠏",
         }
 
+        -- INFO: Patch `snacks.picker.source.lsp.request` to display a spinner
+        -- notification while awaiting the LSP response.
         local lsp_source = require("snacks.picker.source.lsp")
         local og_request = lsp_source.request
 
@@ -172,14 +174,6 @@ return {
                     end,
                 })
             end)
-
-            -- NOTE: The request appears to be synchronous, so the right place
-            -- to clear the notif would be after the request is invoked
-
-            -- local og_cb = function(...)
-            --     vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
-            --     cb(...)
-            -- end
 
             og_request(buf, method, params, cb)
 
