@@ -500,6 +500,7 @@ require("lazy").setup({
             name = "config.su",
             main = "config.su",
             dir = vim.fn.stdpath("config"),
+            dependencies = { "mini.nvim" },
             config = true,
         },
         {
