@@ -1,31 +1,13 @@
 -- [[ Auto-commands ]]
 -- Basic auto-cmds for QoL improvements
---
--- See `:help autocmd`
-local close_win_q_grp =
-    vim.api.nvim_create_augroup("CloseBufWithQ", { clear = true })
-
--- Closes certain buffers on 'q' press if file type matches
---
--- See `:help FileType`
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "gitsigns-blame", "gitcommit", "help" },
-    group = close_win_q_grp,
-    callback = function(ev)
-        vim.keymap.set("n", "q", vim.cmd.quit, {
-            buf = ev.buf,
-            desc = "Close",
-        })
-    end,
-})
 
 local close_hidden_buf_grp =
     vim.api.nvim_create_augroup("WipeUnnamedBuf", { clear = true })
 
 -- Remove unnamed buf (such as the empty buffer created when Neovim is
 -- first opened) when they are hidden if:
---  1. the buffer is not modified buffer id
---  2. the buffer is still valid at the next tick
+--  1. the buffer is not modified
+--  2. the buffer type is an empty string (is a file buffer)
 vim.api.nvim_create_autocmd("BufHidden", {
     group = close_hidden_buf_grp,
     callback = function(ev)
@@ -69,4 +51,80 @@ vim.api.nvim_create_autocmd("TextYankPost", {
         { clear = true }
     ),
     callback = function() vim.hl.on_yank() end,
+})
+
+-- Below aucmds are inspired from LazyNvim
+
+-- Closes certain buffers on 'q' press if file type matches
+--
+-- See `:help FileType`
+local close_with_q_group =
+    vim.api.nvim_create_augroup("close_with_q", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+    group = close_with_q_group,
+    pattern = {
+        "PlenaryTestPopup",
+        "checkhealth",
+        "dap-float",
+        "gitcommit",
+        "gitsigns-blame",
+        "help",
+        "lspinfo",
+        "notify",
+        "qf",
+        "startuptime",
+        "tsplayground",
+    },
+    callback = function(event)
+        vim.bo[event.buf].buflisted = false
+
+        vim.schedule(function()
+            vim.keymap.set("n", "q", function()
+                vim.cmd("close")
+                pcall(vim.api.nvim_buf_delete, event.buf, {})
+            end, {
+                buffer = event.buf,
+                silent = true,
+                desc = "Quit",
+            })
+        end)
+    end,
+})
+
+-- Sync disk modifications
+local checktime_group =
+    vim.api.nvim_create_augroup("ChecktimeGroup", { clear = true })
+
+local function checktime()
+    if vim.bo.buftype == "nofile" then
+        return
+    end
+    if vim.fn.getcmdwintype() ~= "" then
+        return
+    end
+
+    vim.cmd("checktime")
+end
+
+-- Refresh on focus shifts and terminal exits
+vim.api.nvim_create_autocmd(
+    { "FocusGained", "FocusLost", "TermClose", "TermLeave" },
+    {
+        group = checktime_group,
+        callback = checktime,
+    }
+)
+
+-- Refresh after closing git commit messages or git rebase todo buffers
+vim.api.nvim_create_autocmd("FileType", {
+    group = checktime_group,
+    pattern = { "gitcommit", "gitrebase" },
+    callback = function(event)
+        vim.api.nvim_create_autocmd("BufUnload", {
+            buffer = event.buf,
+            once = true,
+            callback = checktime,
+        })
+    end,
 })
