@@ -9,7 +9,6 @@ local linters_by_ft = {
 --- @type LazySpec
 return {
     "mfussenegger/nvim-lint",
-    dependencies = { "config.mason" },
     event = { "VeryLazy" },
     init = function()
         local linters = {}
@@ -17,7 +16,7 @@ return {
             vim.list_extend(linters, ft_linters)
         end
 
-        require("config.mason").InstallTools(linters)
+        MasonInstall(linters)
     end,
     config = function()
         local lint = require("lint")

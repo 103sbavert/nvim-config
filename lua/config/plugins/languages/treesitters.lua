@@ -2,14 +2,13 @@
 return {
     main = "nvim-treesitter",
     "nvim-treesitter/nvim-treesitter",
-    dependencies = { "config.mason" },
     build = ":TSUpdate",
     config = function(plugin, opts)
         --- @module "nvim-treesitter"
         local treesitter = require(plugin.main)
         treesitter.setup(opts)
 
-        require("config.mason").InstallTools({ "tree-sitter-cli" })
+        MasonInstall({ "tree-sitter-cli" })
 
         -- Ensure basic parsers are installed
         local parsers = {

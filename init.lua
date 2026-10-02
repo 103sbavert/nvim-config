@@ -509,18 +509,6 @@ require("lazy").setup({
             lazy = true,
             dependencies = "j-hui/fidget.nvim",
         },
-        {
-            name = "config.mason",
-            main = "config.mason",
-            lazy = true,
-            dir = vim.fn.stdpath("config"),
-            dependencies = {
-                "williamboman/mason.nvim",
-                "williamboman/mason-lspconfig.nvim",
-                "jay-babu/mason-nvim-dap.nvim",
-                "WhoIsSethDaniel/mason-tool-installer.nvim",
-            },
-        },
     },
     defaults = { lazy = false },
 })

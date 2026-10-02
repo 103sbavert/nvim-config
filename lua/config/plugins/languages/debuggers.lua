@@ -5,7 +5,6 @@ return {
     {
         "mfussenegger/nvim-dap",
         dependencies = {
-            "config.mason",
             {
                 "theHamsta/nvim-dap-virtual-text",
                 config = true,
@@ -40,7 +39,7 @@ return {
                 mode = { "n" },
             },
         },
-        init = function() require("config.mason").InstallTools(dap_list) end,
+        init = function() MasonInstall(dap_list) end,
         config = function()
             local utils = require("config.plugins.languages.internal.utils")
             local delve = require("config.plugins.languages.internal.delve")

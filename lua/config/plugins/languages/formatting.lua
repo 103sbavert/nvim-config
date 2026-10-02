@@ -109,7 +109,7 @@ return {
             "isort",
         }
 
-        require("config.mason").InstallTools(mason_formatters)
+        MasonInstall(mason_formatters)
 
         vim.api.nvim_create_user_command(
             "Format",

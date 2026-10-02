@@ -3,7 +3,6 @@ return {
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            "config.mason",
             "config.utils",
             "j-hui/fidget.nvim",
         },
@@ -107,7 +106,7 @@ return {
             local managed = { "roslyn_ls" }
             vim.list_extend(server_names, managed)
 
-            require("config.mason").InstallTools(server_names)
+            MasonInstall(server_names)
             require("config.plugins.languages.internal.autocmds")
 
             for name, server_conf in pairs(server_config_map) do
