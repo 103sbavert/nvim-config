@@ -1,7 +1,7 @@
 require("lazy").setup({
     --- @type LazySpec[]
     spec = {
-        { import = "config.plugins" },
+        { import = "plugins" },
         { "windwp/nvim-autopairs", config = true },
         {
             "lukas-reineke/indent-blankline.nvim",

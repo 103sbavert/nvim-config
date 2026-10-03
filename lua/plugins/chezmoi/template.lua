@@ -4,7 +4,7 @@ local UT = require("config.utils")
 local get_cmd_execute_template =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.execute_template")
 
-local utils = require("config.plugins.chezmoi.utils")
+local utils = require("plugins.chezmoi.utils")
 
 local is_preview_mode = false
 --- @type integer?

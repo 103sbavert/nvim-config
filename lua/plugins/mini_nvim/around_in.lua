@@ -1,5 +1,5 @@
 local ai = require("mini.ai")
-local ast_utils = require("config.plugins.mini_nvim.internals.ast-utils")
+local ast_utils = require("plugins.mini_nvim.internals.ast-utils")
 
 ai.setup({
     n_lines = 50,

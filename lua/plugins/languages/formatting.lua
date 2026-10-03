@@ -1,5 +1,5 @@
 local getutils = function()
-    return require("config.plugins.languages.internal.utils")
+    return require("plugins.languages.internal.utils")
 end
 
 -- prettierd config cache path

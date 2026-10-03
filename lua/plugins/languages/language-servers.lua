@@ -71,7 +71,7 @@ return {
                     end,
                     on_init = function(client)
                         local lang_utils =
-                            require("config.plugins.languages.internal.utils")
+                            require("plugins.languages.internal.utils")
 
                         if
                             vim.g.lazy_lua_ls
@@ -107,7 +107,7 @@ return {
             vim.list_extend(server_names, managed)
 
             MasonInstall(server_names)
-            require("config.plugins.languages.internal.autocmds")
+            require("plugins.languages.internal.autocmds")
 
             for name, server_conf in pairs(server_config_map) do
                 vim.lsp.config(name, server_conf)
@@ -189,7 +189,7 @@ return {
                 end
 
                 local lang_utils =
-                    require("config.plugins.languages.internal.utils")
+                    require("plugins.languages.internal.utils")
 
                 return not lang_utils.has_lua_config(root_dir)
             end,

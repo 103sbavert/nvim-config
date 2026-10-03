@@ -41,8 +41,8 @@ return {
         },
         init = function() MasonInstall(dap_list) end,
         config = function()
-            local utils = require("config.plugins.languages.internal.utils")
-            local delve = require("config.plugins.languages.internal.delve")
+            local utils = require("plugins.languages.internal.utils")
+            local delve = require("plugins.languages.internal.delve")
             local dap = require("dap")
 
             utils.setup_dap_signs()

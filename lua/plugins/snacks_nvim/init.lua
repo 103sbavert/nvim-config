@@ -15,7 +15,7 @@ return {
         vim.keymap.del("n", "gri")
         vim.keymap.del("n", "grt")
 
-        return require("config.plugins.snacks_nvim.keys")
+        return require("plugins.snacks_nvim.keys")
     end,
     --- @type snacks.Config
     opts = {
@@ -34,7 +34,7 @@ return {
             enabled = true,
             actions = {
                 ["start_insert"] = function() vim.cmd("startinsert!") end,
-                ["show_diff"] = require("config.plugins.snacks_nvim.git").git_show_diff,
+                ["show_diff"] = require("plugins.snacks_nvim.git").git_show_diff,
             },
             win = {
                 input = {
@@ -67,7 +67,7 @@ return {
                 },
             },
             layouts = {
-                ["git_log"] = require("config.plugins.snacks_nvim.git").git_log_layout,
+                ["git_log"] = require("plugins.snacks_nvim.git").git_log_layout,
             },
             sources = {
                 buffers = {

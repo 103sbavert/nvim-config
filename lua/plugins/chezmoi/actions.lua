@@ -1,8 +1,8 @@
 local M = {}
 
-local shared = require("config.plugins.chezmoi.utils")
-local apply_cmd = require("config.plugins.chezmoi.apply_utils")
-local edit_cmd = require("config.plugins.chezmoi.edit_utils")
+local shared = require("plugins.chezmoi.utils")
+local apply_cmd = require("plugins.chezmoi.apply_utils")
+local edit_cmd = require("plugins.chezmoi.edit_utils")
 
 --- Applies a file to its chezmoi target, with progress, exit inhibition and
 --- notifications. Resolves whether the path is a source file unless told.
@@ -13,7 +13,7 @@ function M.apply(file, opts, on_done)
     opts = opts or {}
     file = file or vim.api.nvim_buf_get_name(0)
 
-    local UI = require("config.plugins.chezmoi.ui")
+    local UI = require("plugins.chezmoi.ui")
     if type(file) ~= "string" or file == "" then
         UI.notify_err("Filenames must be string")
         if on_done then
@@ -54,7 +54,7 @@ end
 function M.edit(file, on_done)
     file = file or vim.api.nvim_buf_get_name(0)
 
-    local UI = require("config.plugins.chezmoi.ui")
+    local UI = require("plugins.chezmoi.ui")
     if type(file) ~= "string" or file == "" then
         UI.notify_err("Filenames must be string")
         if on_done then

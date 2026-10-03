@@ -21,7 +21,7 @@ return {
         },
     },
     keys = function()
-        local actions = require("config.plugins.chezmoi.actions")
+        local actions = require("plugins.chezmoi.actions")
 
         return {
             {
@@ -45,8 +45,8 @@ return {
     config = function(plugin, opts)
         --- @module "nvim-chezmoi"
         require(plugin.main).setup(opts)
-        require("config.plugins.chezmoi.statusline")
-        require("config.plugins.chezmoi.template")
-        require("config.plugins.chezmoi.aucmd")
+        require("plugins.chezmoi.statusline")
+        require("plugins.chezmoi.template")
+        require("plugins.chezmoi.aucmd")
     end,
 }

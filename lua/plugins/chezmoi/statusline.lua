@@ -54,7 +54,7 @@ local function detect_czm_src(args)
     end
 
     UT.async_run(function()
-        local shared = require("config.plugins.chezmoi.utils")
+        local shared = require("plugins.chezmoi.utils")
         local is_src = shared.is_src_file_async(bufname)
         src_buf_cache[bufnr] = is_src and true or false
 

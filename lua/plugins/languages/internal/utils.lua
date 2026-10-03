@@ -41,7 +41,7 @@ local function map_if_capable(key, lsp_config, client, bufnr)
 end
 
 local lsp_jump =
-    require("config.plugins.languages.internal.lsp-actions").lsp_jump
+    require("plugins.languages.internal.lsp-actions").lsp_jump
 
 --- @param client vim.lsp.Client
 --- @param bufnr integer

@@ -25,7 +25,7 @@ return {
         attach_to_untracked = true,
         on_attach = function(bufnr)
             local gitsigns = require("gitsigns")
-            local utils = require("config.plugins.git.utils")
+            local utils = require("plugins.git.utils")
 
             --- @type Gitsigns.NavOpts
             --- @diagnostic disable-next-line: missing-fields

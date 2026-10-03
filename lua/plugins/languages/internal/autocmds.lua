@@ -60,7 +60,7 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
-    require("config.plugins.languages.internal.utils").map_lsp_actions(
+    require("plugins.languages.internal.utils").map_lsp_actions(
         client,
         bufnr
     )
