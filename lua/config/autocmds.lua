@@ -55,19 +55,18 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- Below aucmds are inspired from LazyNvim
 
--- Closes certain buffers on 'q' press if file type matches
+-- Closes certain non-file buffers on 'q' press if file type matches.
 --
 -- See `:help FileType`
-local close_with_q_group =
-    vim.api.nvim_create_augroup("close_with_q", { clear = true })
+local close_with_q_group_special =
+    vim.api.nvim_create_augroup("close_with_q_nofile", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
-    group = close_with_q_group,
+    group = close_with_q_group_special,
     pattern = {
         "PlenaryTestPopup",
         "checkhealth",
         "dap-float",
-        "gitcommit",
         "gitsigns-blame",
         "help",
         "lspinfo",
@@ -78,11 +77,32 @@ vim.api.nvim_create_autocmd("FileType", {
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
-
         vim.schedule(function()
             vim.keymap.set("n", "q", function()
                 vim.cmd("close")
                 pcall(vim.api.nvim_buf_delete, event.buf, {})
+            end, {
+                buffer = event.buf,
+                silent = true,
+                desc = "Quit",
+            })
+        end)
+    end,
+})
+
+-- Closes listed buffers immediately, no questions asked. Helpful for git
+-- commit buffers where this is the intended behavior
+local close_with_q_group_file =
+    vim.api.nvim_create_augroup("close_with_q_always", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+    group = close_with_q_group_file,
+    pattern = { "gitcommit", "gitrebase" },
+    callback = function(event)
+        vim.schedule(function()
+            vim.keymap.set("n", "q", function()
+                vim.cmd("quit")
+                pcall(vim.api.nvim_buf_delete, event.buf, { force = true })
             end, {
                 buffer = event.buf,
                 silent = true,
