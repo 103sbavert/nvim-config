@@ -135,4 +135,4 @@ end
 require("config.autocmds")
 require("config.theme")
 require("config.keys")
-require("config.lazy_vim")
+require("config.lazy_nvim")
