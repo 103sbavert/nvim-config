@@ -1,3 +1,6 @@
+local show_hidden =
+    require("plugins.snacks_nvim.autocmds").hidden_for_cwd(vim.fn.getcwd())
+
 --- @type LazySpec
 return {
     "folke/snacks.nvim",
@@ -97,7 +100,7 @@ return {
                     },
                 },
                 files = {
-                    hidden = true,
+                    hidden = show_hidden,
                     ignored = true,
                 },
                 lsp_symbols = {
@@ -107,7 +110,7 @@ return {
                 },
                 explorer = {
                     auto_close = true,
-                    hidden = true,
+                    hidden = show_hidden,
                     sort = { fields = { "#text:inc" } },
                     focus = "input",
                     tree = false,
@@ -203,38 +206,6 @@ return {
             vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
         end
 
-        -- Sync disk modifications and refresh Snacks explorer
-        local refresh_files_grp = vim.api.nvim_create_augroup(
-            "SnacksRefreshFilesGroup",
-            { clear = true }
-        )
-
-        local function refresh_explorer()
-            if package.loaded["snacks"] then
-                for _, picker in
-                    ipairs(Snacks.picker.get({ source = "explorer" }))
-                do
-                    pcall(picker.find, picker)
-                end
-            end
-        end
-
-        vim.api.nvim_create_autocmd({ "TermClose", "TermLeave" }, {
-            group = refresh_files_grp,
-            callback = refresh_explorer,
-        })
-
-        vim.api.nvim_create_autocmd("FileType", {
-            group = refresh_files_grp,
-            pattern = { "gitcommit", "gitrebase" },
-            callback = function(event)
-                vim.api.nvim_create_autocmd("BufUnload", {
-                    group = refresh_files_grp,
-                    buffer = event.buf,
-                    once = true,
-                    callback = function() vim.schedule(refresh_explorer) end,
-                })
-            end,
-        })
+        require("plugins.snacks_nvim.autocmds")
     end,
 }
