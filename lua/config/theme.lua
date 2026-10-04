@@ -1,7 +1,3 @@
--- lazy.nvim to load install all other plugins (except theme below)
--- Default colorscheme
-vim.pack.add({ gh("folke/lazy.nvim") })
-
 vim.pack.add({ gh("ribru17/bamboo.nvim") })
 
 local c = require("bamboo.palette")["vulgaris"]

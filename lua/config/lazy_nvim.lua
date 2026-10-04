@@ -1,3 +1,5 @@
+vim.pack.add({ gh("folke/lazy.nvim") })
+
 local small_plugins = {
     { "windwp/nvim-autopairs", config = true },
     {
