@@ -108,6 +108,7 @@ return {
                 explorer = {
                     auto_close = true,
                     hidden = true,
+                    focus = "input",
                     tree = false,
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
