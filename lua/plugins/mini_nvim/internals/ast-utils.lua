@@ -152,6 +152,7 @@ local function best_match(query_strings, bufnr, ref, method, n_lines)
                         or len < best_cover_len
                         or (
                             len == best_cover_len
+                            and best_cover
                             and range[3] < best_cover[3]
                         )
                     then
@@ -186,6 +187,7 @@ local function best_match(query_strings, bufnr, ref, method, n_lines)
                             or len < best_cover_len
                             or (
                                 len == best_cover_len
+                                and best_cover
                                 and range[3] < best_cover[3]
                             )
                         then
