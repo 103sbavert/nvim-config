@@ -108,6 +108,7 @@ return {
                 explorer = {
                     auto_close = true,
                     hidden = true,
+                    sort = { fields = { "#text:inc" } },
                     focus = "input",
                     tree = false,
                     actions = {
