@@ -112,7 +112,7 @@ return {
                     tree = false,
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
-                            ---@diagnostic disable-next-line: inject-field
+                            --- @diagnostic disable-next-line: inject-field
                             p.opts.tree = not p.opts.tree
                             p:refresh()
                         end,
@@ -141,6 +141,7 @@ return {
         quickfile = { enabled = true },
         scope = { enabled = true },
         terminal = { enabled = true },
+        scroll = { enabled = true },
         styles = {
             notification = {
                 border = "rounded",
