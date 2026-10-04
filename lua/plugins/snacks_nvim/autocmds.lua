@@ -63,14 +63,16 @@ local file_pickers = {
 local function set_hidden(value)
     if
         Snacks == nil
-        or Snacks.picker == nil
-        or Snacks.picker.sources == nil
+        or Snacks.config == nil
+        or Snacks.config.picker == nil
+        or Snacks.config.picker.sources == nil
     then
         return
     end
     for _, p in ipairs(file_pickers) do
-        local src = Snacks.picker.sources[p]
+        local src = Snacks.config.picker.sources[p]
         if src ~= nil then
+            --- @diagnostic disable-next-line: inject-field
             src.hidden = value
         end
     end
@@ -101,7 +103,7 @@ function M.hidden_for_cwd(raw)
     return true
 end
 
-vim.api.nvim_create_autocmd("DirChangedPre", {
+vim.api.nvim_create_autocmd("DirChanged", {
     group = snacks_hidden_file_grp,
     pattern = { "window", "tabpage", "global" },
     callback = function(args) set_hidden(M.hidden_for_cwd(args.file)) end,
