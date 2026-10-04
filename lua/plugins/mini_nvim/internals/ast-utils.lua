@@ -13,7 +13,6 @@ M.captures = {
         i = { "@block.inner", "@loop.inner", "@conditional.inner" },
     },
 }
-
 -- Cover ignores n_lines (unbounded containment); nearest is bounded by it.
 local function as_list(x) return type(x) == "table" and x or { x } end
 
@@ -21,8 +20,7 @@ local shared_cache = nil
 local notified_missing = false
 local function get_shared()
     if not shared_cache then
-        local ok, mod =
-            pcall(require, "nvim-treesitter-textobjects.shared")
+        local ok, mod = pcall(require, "nvim-treesitter-textobjects.shared")
         if ok then
             shared_cache = mod
         end
@@ -51,15 +49,14 @@ local function get_config()
 end
 
 local function line_offset(bufnr, line_1based)
-    local ok, off =
-        pcall(vim.api.nvim_buf_get_offset, bufnr, line_1based - 1)
+    local ok, off = pcall(vim.api.nvim_buf_get_offset, bufnr, line_1based - 1)
     if ok and type(off) == "number" then
         return off
     end
     return 0
 end
 
---- @return start_b, end_b_excl, from_line, to_line, empty
+--- @return number, number, number, number, boolean
 local function ref_span(bufnr, ref)
     local from_line = ref.from.line
     local to_region = ref.to or ref.from
@@ -90,8 +87,7 @@ end
 
 --- Mini-style n_lines window, applied to nearest fallback only.
 local function in_window(r, from_line, to_line, n_lines)
-    return r[1] + 1 >= from_line - n_lines
-        and r[4] + 1 <= to_line + n_lines
+    return r[1] + 1 >= from_line - n_lines and r[4] + 1 <= to_line + n_lines
 end
 
 local function ask(query_string, bufnr, pos, opts)
@@ -99,8 +95,14 @@ local function ask(query_string, bufnr, pos, opts)
     if not shared then
         return nil
     end
-    local ok, range =
-        pcall(shared.textobject_at_point, query_string, "textobjects", bufnr, pos, opts)
+    local ok, range = pcall(
+        shared.textobject_at_point,
+        query_string,
+        "textobjects",
+        bufnr,
+        pos,
+        opts
+    )
     if ok and type(range) == "table" and #range >= 6 then
         return range
     end
@@ -143,10 +145,7 @@ local function best_match(query_strings, bufnr, ref, method, n_lines)
             local best_cover, best_cover_len = nil, nil
             for _, query_string in ipairs(query_strings) do
                 local range = ask(query_string, bufnr, pos, {})
-                if
-                    range
-                    and range_covers(range, start_b, end_b, true)
-                then
+                if range and range_covers(range, start_b, end_b, true) then
                     local len = range[6] - range[3] -- byte length
                     if
                         not best_cover_len
@@ -180,11 +179,7 @@ local function best_match(query_strings, bufnr, ref, method, n_lines)
                             return -((rg[6] - rg[3]) * 4294967296 + rg[3])
                         end
                     )
-                    if
-                        ok
-                        and type(range) == "table"
-                        and #range >= 6
-                    then
+                    if ok and type(range) == "table" and #range >= 6 then
                         local len = range[6] - range[3]
                         if
                             not best_cover_len
@@ -221,10 +216,8 @@ local function best_match(query_strings, bufnr, ref, method, n_lines)
         if not in_window(range, from_line, to_line, n_lines) then
             return
         end
-        local dist = math.min(
-            math.abs(range[3] - start_b),
-            math.abs(range[6] - end_b)
-        )
+        local dist =
+            math.min(math.abs(range[3] - start_b), math.abs(range[6] - end_b))
         if not best_near_dist or dist < best_near_dist then
             best_near, best_near_dist = range, dist
         end
