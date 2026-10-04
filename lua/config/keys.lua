@@ -252,3 +252,34 @@ vim.keymap.set(
     "v:count == 0 ? 'gk' : 'k'",
     { expr = true, silent = true, desc = "Up" }
 )
+
+-- Add undo break-points
+vim.keymap.set("i", ",", ",<c-g>u")
+vim.keymap.set("i", ".", ".<c-g>u")
+vim.keymap.set("i", ";", ";<c-g>u")
+
+-- Resize window using <ctrl> arrow keys
+vim.keymap.set(
+    { "n", "x" },
+    "<C-Up>",
+    "<cmd>resize +3<cr>",
+    { desc = "Grow Win Height" }
+)
+vim.keymap.set(
+    { "n", "x" },
+    "<C-Down>",
+    "<cmd>resize -3<cr>",
+    { desc = "Shrink Win Height" }
+)
+vim.keymap.set(
+    { "n", "x" },
+    "<C-Left>",
+    "<cmd>vertical resize -3<cr>",
+    { desc = "Shrink Win Width" }
+)
+vim.keymap.set(
+    { "n", "x" },
+    "<C-Right>",
+    "<cmd>vertical resize +3<cr>",
+    { desc = "Grow Win Width" }
+)
