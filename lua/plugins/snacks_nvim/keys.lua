@@ -38,7 +38,7 @@ end
 return {
     -- File explorer
     {
-        "<leader>\\",
+        "\\",
         function()
             local explorer = Snacks.picker.get({ source = "explorer" })[1]
 
@@ -50,18 +50,13 @@ return {
                 explorer:focus()
             end
         end,
-        desc = "[\\] Toggle Explorer Focus",
+        desc = "[\\] Toggle Explorer",
     },
     -- File search (top-level shortcuts)
     {
         "<C-/>",
         function() Snacks.terminal.toggle() end,
         desc = "Toggle Terminal",
-    },
-    {
-        "\\",
-        function() Snacks.picker.files() end,
-        desc = "[\\] Workspace Files",
     },
     {
         "<leader><leader>",

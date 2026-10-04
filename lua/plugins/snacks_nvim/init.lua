@@ -107,6 +107,26 @@ return {
                 },
                 explorer = {
                     auto_close = true,
+                    hidden = true,
+                    tree = false,
+                    actions = {
+                        ["explorer_toggle_tree"] = function(p)
+                            ---@diagnostic disable-next-line: inject-field
+                            p.opts.tree = not p.opts.tree
+                            p:refresh()
+                        end,
+                    },
+                    win = {
+                        input = {
+                            keys = {
+                                ["<C-t>"] = {
+                                    "explorer_toggle_tree",
+                                    mode = { "i", "n" },
+                                    desc = "Toggle tree mode",
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
