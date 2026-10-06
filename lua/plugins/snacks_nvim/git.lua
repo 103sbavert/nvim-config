@@ -1,6 +1,8 @@
----@class snacks.picker.git.Item: snacks.picker.Item
----@field commit string the base commit hash for diff
----@field target_ref? string optional target ref - "HEAD" if not specified
+--- @module "snacks.picker"
+
+--- @class snacks.picker.git.Item: snacks.picker.Item
+--- @field commit string the base commit hash for diff
+--- @field target_ref? string optional target ref - "HEAD" if not specified
 
 --- @type snacks.picker.layout.Config
 local log_layout = {
