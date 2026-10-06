@@ -1,6 +1,7 @@
 --- @type LazySpec
 return {
     "103sbavert/lazygit.nvim",
+    branch = "main",
     lazy = true,
     cmd = {
         "LazyGit",
