@@ -32,29 +32,6 @@ vim.api.nvim_create_autocmd("FileType", {
 local snacks_hidden_file_grp =
     vim.api.nvim_create_augroup("SnacksHiddenFile", { clear = true })
 
-local function get_clean_stdpath(varname)
-    local v = os.getenv(varname)
-    if not v or v == "" then
-        return nil
-    end
-    local s = v:gsub("/+$", "")
-    return s == "" and "/" or s
-end
-
-local home = get_clean_stdpath("HOME")
-local function xdg(varname, fallback_suffix)
-    return get_clean_stdpath(varname)
-        or (home and home .. fallback_suffix or nil)
-end
-
-local large_dirs = {
-    home,
-    xdg("XDG_CONFIG_HOME", "/.config"),
-    xdg("XDG_STATE_HOME", "/.local/state"),
-    xdg("XDG_DATA_HOME", "/.local/share"),
-    xdg("XDG_CACHE_HOME", "/.cache"),
-}
-
 local file_pickers = {
     "explorer",
     "files",
@@ -78,35 +55,12 @@ local function set_hidden(value)
     end
 end
 
-local M = {}
-
---- Returns the picker `hidden` value for a directory.
---- `true` shows hidden files, `false` hides them.
-function M.hidden_for_cwd(raw)
-    if raw == nil or raw == "" or home == nil then
-        return true
-    end
-
-    local s = raw:gsub("/+$", "")
-    local cwd = s == "" and "/" or s
-
-    if vim.fs.relpath(home, cwd) == nil then
-        return false
-    end
-
-    for _, d in ipairs(large_dirs) do
-        if cwd == d then
-            return false
-        end
-    end
-
-    return true
-end
-
 vim.api.nvim_create_autocmd("DirChanged", {
     group = snacks_hidden_file_grp,
     pattern = { "window", "tabpage", "global" },
-    callback = function(args) set_hidden(M.hidden_for_cwd(args.file)) end,
+    callback = function(args)
+        set_hidden(
+            require("plugins.snacks_nvim.utils").hidden_for_cwd(args.file)
+        )
+    end,
 })
-
-return M

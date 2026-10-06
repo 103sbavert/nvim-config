@@ -1,5 +1,5 @@
 local show_hidden =
-    require("plugins.snacks_nvim.autocmds").hidden_for_cwd(vim.fn.getcwd())
+    require("plugins.snacks_nvim.utils").hidden_for_cwd(vim.fn.getcwd())
 
 --- @type LazySpec
 return {
@@ -166,45 +166,15 @@ return {
     config = function(_, opts)
         require("snacks").setup(opts)
 
-        local spinner = {
-            "⠋",
-            "⠙",
-            "⠹",
-            "⠸",
-            "⠼",
-            "⠴",
-            "⠦",
-            "⠧",
-            "⠇",
-            "⠏",
-        }
-
         -- INFO: Patch `snacks.picker.source.lsp.request` to display a spinner
         -- notification while awaiting the LSP response.
         local lsp_source = require("snacks.picker.source.lsp")
-        local og_request = lsp_source.request
 
         ---@diagnostic disable-next-line: duplicate-set-field
-        lsp_source.request = function(buf, method, params, cb)
-            local spinner_id = "await_lsp_" .. tostring(buf) .. method
-
-            vim.schedule(function()
-                Snacks.notifier.notify("Waiting for LSP", "info", {
-                    id = spinner_id,
-                    title = "Snacks picker",
-                    timeout = false,
-                    opts = function(notif)
-                        notif.icon = spinner[math.floor(
-                            vim.uv.hrtime() / (1e6 * 80)
-                        ) % #spinner + 1]
-                    end,
-                })
-            end)
-
-            og_request(buf, method, params, cb)
-
-            vim.schedule(function() Snacks.notifier.hide(spinner_id) end)
-        end
+        lsp_source.request =
+            require("plugins.snacks_nvim.utils").custom_lsp_request(
+                lsp_source.request
+            )
 
         require("plugins.snacks_nvim.autocmds")
     end,
