@@ -19,15 +19,3 @@ statusline.section_mode = function(args)
     end
     return orig_section_mode(args)
 end
-
--- Force an immediate statusline redraw on recording start/stop, since
--- toggling `q` doesn't always trigger a redraw-inducing event on its own.
-vim.api.nvim_create_autocmd({ "RecordingEnter", "RecordingLeave" }, {
-    group = vim.api.nvim_create_augroup(
-        "MiniStatuslineRecording",
-        { clear = true }
-    ),
-    callback = function()
-        vim.schedule(function() vim.cmd("redrawstatus") end)
-    end,
-})
