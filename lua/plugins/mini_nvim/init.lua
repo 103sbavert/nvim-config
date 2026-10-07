@@ -18,13 +18,7 @@ return {
             },
         })
 
-        require("mini.comment").setup({
-            mappings = {
-                comment_line = "gC",
-            },
-        })
-        -- Builtin gcc must go
-        vim.keymap.del("n", "gcc")
+        require("mini.comment").setup()
 
         if vim.g.have_nerd_font then
             require("mini.icons").setup()
