@@ -112,8 +112,12 @@ return {
                     focus = "input",
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
+                            local val = not p.opts.tree
+
                             --- @diagnostic disable-next-line: inject-field
-                            p.opts.tree = not p.opts.tree
+                            p.opts.tree = val
+                            p.opts.formatters.file.filename_only = val
+
                             p:refresh()
                         end,
                     },
