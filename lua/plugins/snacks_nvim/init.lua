@@ -110,7 +110,6 @@ return {
                     hidden = show_hidden,
                     sort = { fields = { "#text:inc" } },
                     focus = "input",
-                    tree = false,
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
                             --- @diagnostic disable-next-line: inject-field
