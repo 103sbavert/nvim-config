@@ -247,48 +247,77 @@ function M.setup()
     end
 
     --- @return boolean
-    local function is_path_writable(real_path)
-        local stat_err, stat = await(vim.uv.fs_stat, real_path)
-
-        if not stat_err and stat then
-            local access_err, permission =
-                await(vim.uv.fs_access, real_path, "w")
-            return not access_err and permission == true
-        end
-
-        local parent_dir = vim.fs.dirname(real_path)
-        if not parent_dir then
+    local function is_root_owned(real_path)
+        local ok, stat = pcall(vim.uv.fs_stat, real_path)
+        if not ok or type(stat) ~= "table" then
             return false
         end
-
-        local access_err, permission = await(vim.uv.fs_access, parent_dir, "w")
-        return not access_err and permission == true
+        return stat.uid == 0
     end
 
-    vim.api.nvim_create_autocmd("BufReadPost", {
-        group = group,
-        callback = function(args)
-            local buf = args.buf
-
-            if vim.bo[buf].buftype ~= "" then
+    --- Set up sudo redirection for buf; runs async (creates tmp file).
+    --- After setup the *current* write is already in flight as a normal
+    --- write (and will fail on permissions), so the user retries with :w
+    --- which then routes through BufWriteCmd.
+    --- @param buf integer
+    --- @param real_path string
+    local function enable_sudo_intercept(buf, real_path)
+        async_run(function()
+            if vim.b[buf].su_real_path then
                 return
             end
 
-            if not vim.bo[buf].readonly then
+            local temp_fd, _, err = make_tmp_file(buf, real_path)
+
+            if temp_fd < 0 then
+                vim.notify(
+                    "Unable to create temp file in /tmp/\n" .. (err or ""),
+                    vim.log.levels.ERROR,
+                    { title = "Sudo" }
+                )
+
                 return
             end
 
-            local real_path = utils.get_current_file(args)
-            if not real_path then
-                return
-            end
+            cleanup_on_exit(buf)
+            local sudo_name = "sudo://" .. real_path
+            pcall(vim.api.nvim_buf_set_name, buf, sudo_name)
 
-            if is_runtime_path(real_path) then
-                return
-            end
+            vim.b[buf].su_real_path = real_path
+            vim.bo[buf].readonly = false
+            vim.bo[buf].buftype = "acwrite"
 
-            async_run(function()
-                if is_path_writable(real_path) then
+            write_cmd(buf)
+            init_sudo_statusline(buf)
+
+            vim.schedule(function()
+                -- Intercept writes for non-writable files
+                vim.api.nvim_create_autocmd("BufWriteCmd", {
+                    group = group,
+                    buffer = buf,
+                    callback = function() write_cmd(buf) end,
+                })
+            end)
+        end)
+    end
+
+    --- @param buf integer
+    local function arm_sudo_on_write(buf)
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            group = group,
+            buffer = buf,
+            once = true,
+            callback = function()
+                if vim.b[buf].su_real_path then
+                    return
+                end
+
+                local real_path = utils.get_current_file({ buf = buf })
+                if not real_path then
+                    return
+                end
+
+                if is_runtime_path(real_path) then
                     return
                 end
 
@@ -302,35 +331,34 @@ function M.setup()
                     return
                 end
 
-                local temp_fd, _, err = make_tmp_file(buf, real_path)
+                enable_sudo_intercept(buf, real_path)
+            end,
+        })
+    end
 
-                if temp_fd < 0 then
-                    vim.notify(
-                        "Unable to create temp file in /tmp/\n" .. (err or ""),
-                        vim.log.levels.ERROR,
-                        { title = "Sudo" }
-                    )
+    vim.api.nvim_create_autocmd("BufReadPost", {
+        group = group,
+        callback = function(args)
+            local buf = args.buf
 
-                    return
-                end
+            if vim.bo[buf].buftype ~= "" then
+                return
+            end
 
-                cleanup_on_exit(buf)
-                local sudo_name = "sudo://" .. real_path
-                pcall(vim.api.nvim_buf_set_name, buf, sudo_name)
+            local real_path = utils.get_current_file(args)
+            if not real_path then
+                return
+            end
 
-                vim.b[buf].su_real_path = real_path
-                vim.bo[buf].readonly = false
-                vim.bo[buf].buftype = "acwrite"
+            if is_runtime_path(real_path) then
+                return
+            end
 
-                init_sudo_statusline(buf)
+            if not is_root_owned(real_path) then
+                return
+            end
 
-                -- Intercept writes for non-writable files
-                vim.api.nvim_create_autocmd("BufWriteCmd", {
-                    group = group,
-                    buffer = buf,
-                    callback = function() write_cmd(buf) end,
-                })
-            end)
+            arm_sudo_on_write(buf)
         end,
     })
 end
