@@ -124,7 +124,7 @@ return {
                     win = {
                         input = {
                             keys = {
-                                ["<C-p>"] = {
+                                ["<C-r>"] = {
                                     "explorer_toggle_tree",
                                     mode = { "i", "n" },
                                     desc = "Toggle tree mode",
