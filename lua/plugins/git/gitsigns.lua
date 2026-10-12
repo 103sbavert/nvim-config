@@ -34,7 +34,7 @@ return {
             -- Navigation
             do
                 utils.navigate_fw_mapper(
-                    "c",
+                    "g",
                     function()
                         if vim.wo.diff then
                             return "]c"
@@ -44,7 +44,7 @@ return {
                         )
                         return "<Ignore>"
                     end,
-                    "Next git [c]hange",
+                    "[g]it change",
                     {
                         buffer = bufnr,
                         expr = true,
@@ -52,7 +52,7 @@ return {
                 )
 
                 utils.navigate_bw_mapper(
-                    "c",
+                    "g",
                     function()
                         if vim.wo.diff then
                             return "[c"
@@ -62,7 +62,7 @@ return {
                         )
                         return "<Ignore>"
                     end,
-                    "Prev git [c]hange",
+                    "[g]it change",
                     {
                         buffer = bufnr,
                         expr = true,
@@ -221,14 +221,14 @@ return {
             do
                 vim.keymap.set(
                     { "o", "x" },
-                    "ac",
+                    "ag",
                     function() gitsigns.select_hunk({ greedy = true }) end,
                     { buffer = bufnr, desc = "git [c]hange" }
                 )
 
                 vim.keymap.set(
                     { "o", "x" },
-                    "ic",
+                    "ig",
                     function() gitsigns.select_hunk({ greedy = false }) end,
                     { buffer = bufnr, desc = "git [c]hange" }
                 )
