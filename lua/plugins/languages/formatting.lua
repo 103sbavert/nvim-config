@@ -1,6 +1,4 @@
-local getutils = function()
-    return require("plugins.languages.internal.utils")
-end
+local getutils = function() return require("plugins.languages.internal.utils") end
 
 -- prettierd config cache path
 -- NOTE: prettierd does not accept config as cmdline args, using this is the
@@ -44,7 +42,7 @@ return {
         },
         formatters_by_ft = {
             -- LS formatters
-            lua = { lsp_format = "prefer" }, -- uses stylua as an LS, not lua_ls
+            lua = { lsp_format = "prefer" },
             go = { lsp_format = "prefer" },
             typst = { lsp_format = "prefer" },
             -- Custom/CLI formatters
