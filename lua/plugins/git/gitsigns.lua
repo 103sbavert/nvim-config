@@ -10,7 +10,7 @@ return {
         signs = {
             add = { text = "┆" },
             change = { text = "┆" },
-            changedelete = { text = "┆̴" },
+            changedelete = { text = "¦̶" },
             delete = { text = "┄" },
             topdelete = { text = "﹉" },
             untracked = { text = "⋮" },
