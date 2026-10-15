@@ -62,10 +62,15 @@ return {
         cmdline = {
             enabled = true,
             keymap = {
-                preset = "default",
                 ["<C-s>"] = { "show_signature", "hide_signature" },
-                ["<C-k>"] = { "show_documentation", "hide_documentation" },
+                ["<C-d>"] = { "show_documentation", "hide_documentation" },
                 ["<C-space>"] = { "show", "hide" },
+                ["<C-n>"] = { "select_next" },
+                ["<C-p>"] = { "select_prev" },
+                ["<C-j>"] = { "select_next" },
+                ["<C-k>"] = { "select_prev" },
+                ["<C-y>"] = { "select_and_accept", "fallback" },
+                ["<C-e>"] = { "cancel", "fallback" },
             },
             completion = {
                 documentation = { auto_show = true },
@@ -79,10 +84,15 @@ return {
             },
         },
         keymap = {
-            preset = "default",
             ["<C-s>"] = { "show_signature", "hide_signature" },
-            ["<C-k>"] = { "show_documentation", "hide_documentation" },
+            ["<C-d>"] = { "show_documentation", "hide_documentation" },
             ["<C-space>"] = { "show", "hide" },
+            ["<C-n>"] = { "select_next" },
+            ["<C-p>"] = { "select_prev" },
+            ["<C-j>"] = { "select_next" },
+            ["<C-k>"] = { "select_prev" },
+            ["<C-y>"] = { "select_and_accept", "fallback" },
+            ["<C-e>"] = { "cancel", "fallback" },
         },
         appearance = {
             nerd_font_variant = "mono",
