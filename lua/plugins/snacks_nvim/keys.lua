@@ -1,38 +1,47 @@
---- @return snacks.picker.diagnostics.Config
-local get_ivy_split_conf = function()
-    return {
-        layout = "ivy_split",
-        jump = { close = false },
-        auto_close = false,
-        focus = "list",
-        win = {
-            input = { minimal = true },
-            list = { minimal = true },
+--- @type snacks.picker.diagnostics.Config
+local dropdown_layout = {
+    layout = {
+        backdrop = false,
+        row = 1,
+        width = 0.8,
+        min_width = 80,
+        height = 0.8,
+        border = "none",
+        box = "vertical",
+        { win = "preview", title = "{preview}", height = 0.7, border = true },
+        {
+            box = "vertical",
+            border = true,
+            title = "{title} {live} {flags}",
+            title_pos = "center",
+            height = 0.5,
+            { win = "input", height = 1, border = "bottom" },
+            { win = "list", border = "none" },
         },
-    }
-end
+    },
+}
 
---- @param focus? "input" | "list"
---- @return snacks.picker.diagnostics.Config
-local function get_dropdown_conf(focus)
-    local dropdown =
-        vim.deepcopy(require("snacks.picker.config.layouts").dropdown)
+--- @type snacks.picker.diagnostics.Config
+local dropdown_conf = {
+    layout = dropdown_layout,
+    focus = "list",
+    show_delay = math.huge,
+    win = {
+        input = { minimal = true },
+        list = { minimal = true },
+    },
+}
 
-    dropdown.layout[1].height = 0.7
-    dropdown.layout[2].height = 0.5
-    dropdown.layout.width = 0.8
-    dropdown.layout.height = 0.8
-
-    return {
-        layout = dropdown,
-        focus = focus or "list",
-        show_delay = math.huge,
-        win = {
-            input = { minimal = true },
-            list = { minimal = true },
-        },
-    }
-end
+--- @type snacks.picker.diagnostics.Config
+local dropdown_input_conf = {
+    layout = dropdown_layout,
+    focus = "input",
+    show_delay = math.huge,
+    win = {
+        input = { minimal = true },
+        list = { minimal = true },
+    },
+}
 
 --- @type LazyKeysSpec[]
 return {
@@ -65,7 +74,7 @@ return {
     },
     {
         "<leader>?",
-        function() Snacks.picker.grep(get_dropdown_conf("input")) end,
+        function() Snacks.picker.grep(dropdown_input_conf) end,
         desc = "[?] Grep Workspace",
     },
     {
@@ -75,50 +84,50 @@ return {
     },
     {
         "<leader>q",
-        function() Snacks.picker.diagnostics_buffer(get_ivy_split_conf()) end,
+        function() Snacks.picker.diagnostics_buffer() end,
         desc = "[q]uick Fix Diagnostics",
     },
     -- LSP jump bindings
     {
         "gO",
-        function() Snacks.picker.lsp_symbols(get_dropdown_conf("input")) end,
+        function() Snacks.picker.lsp_symbols(dropdown_input_conf) end,
         desc = "[g]oto symb[O]ls",
     },
     {
         "gd",
-        function() Snacks.picker.lsp_definitions(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_definitions(dropdown_conf) end,
         desc = "[g]oto [d]efinition",
     },
     {
         "gD",
-        function() Snacks.picker.lsp_declarations(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_declarations(dropdown_conf) end,
         desc = "[g]oto [D]eclaration",
     },
     {
         "gr",
-        function() Snacks.picker.lsp_references(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_references(dropdown_conf) end,
         nowait = true,
         desc = "[g]oto [r]eferences",
     },
     {
         "gI",
-        function() Snacks.picker.lsp_implementations(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_implementations(dropdown_conf) end,
         desc = "[g]oto [I]mplementation",
     },
     {
         "gy",
-        function() Snacks.picker.lsp_type_definitions(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_type_definitions(dropdown_conf) end,
         desc = "[g]oto t[y]pe Definition",
     },
     -- <leader>l LSP group
     {
         "<leader>lc",
-        function() Snacks.picker.lsp_incoming_calls(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_incoming_calls(dropdown_conf) end,
         desc = "In[c]oming Calls",
     },
     {
         "<leader>lg",
-        function() Snacks.picker.lsp_outgoing_calls(get_dropdown_conf()) end,
+        function() Snacks.picker.lsp_outgoing_calls(dropdown_conf) end,
         desc = "Out[g]oing Calls",
     },
     -- <leader>s group pickers
@@ -129,13 +138,13 @@ return {
     },
     {
         "<leader>sw",
-        function() Snacks.picker.grep_word(get_dropdown_conf()) end,
+        function() Snacks.picker.grep_word(dropdown_conf) end,
         desc = "Search Current [w]ord",
         mode = { "n", "v" },
     },
     {
         "<leader>so",
-        function() Snacks.picker.grep_buffers(get_dropdown_conf("input")) end,
+        function() Snacks.picker.grep_buffers(dropdown_input_conf) end,
         desc = "Grep [o]pen files",
     },
     {
@@ -165,14 +174,12 @@ return {
     },
     {
         "<leader>sd",
-        function() Snacks.picker.diagnostics(get_dropdown_conf()) end,
+        function() Snacks.picker.diagnostics(dropdown_conf) end,
         desc = "[d]iagnostics",
     },
     {
         "<leader>sS",
-        function()
-            Snacks.picker.lsp_workspace_symbols(get_dropdown_conf("input"))
-        end,
+        function() Snacks.picker.lsp_workspace_symbols(dropdown_input_conf) end,
         desc = "LSP [S]ymbols Workspace",
     },
     {

@@ -80,6 +80,16 @@ return {
                     hidden = true,
                     ignored = true,
                 },
+                diagnostics_buffer = {
+                    layout = "ivy_split",
+                    jump = { close = false },
+                    auto_close = false,
+                    focus = "list",
+                    win = {
+                        input = { minimal = true },
+                        list = { minimal = true },
+                    },
+                },
                 git_status = {
                     layout = {
                         preset = "git_log",
