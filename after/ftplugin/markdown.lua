@@ -34,13 +34,13 @@ map(
 )
 map(
     "n",
-    "<C-[>",
+    "[m",
     "<cmd>Mdn history go_back<CR>",
     "Go back to previously visited Markdown buffer"
 )
 map(
     "n",
-    "<C-]>",
+    "]m",
     "<cmd>Mdn history go_forward<CR>",
     "Go to next visited Markdown buffer"
 )
