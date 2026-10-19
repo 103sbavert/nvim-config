@@ -86,4 +86,35 @@ function M.custom_lsp_request(original_lsp_request)
     end
 end
 
+--- Wraps `snacks.picker.source.explorer.explorer` so the tree view is only
+--- used while the filter is empty. The user preference is kept in `tree_pref`.
+--- @param original fun(opts: table, ctx: table): any
+--- @return fun(opts: table, ctx: table): any
+function M.explorer_tree_finder(original)
+    return function(opts, ctx)
+        local p = ctx.picker
+        if p.tree_pref == nil then
+            p.tree_pref = opts.tree
+        end
+
+        local tree = p.tree_pref and ctx.filter:is_empty()
+        opts.tree = tree
+        opts.formatters.file.filename_only = tree
+
+        return original(opts, ctx)
+    end
+end
+
+--- Toggles the stored explorer tree preference and refreshes the picker.
+--- @param p snacks.Picker
+function M.explorer_toggle_tree(p)
+    local cur = p.tree_pref
+    if cur == nil then
+        cur = p.opts.tree
+    end
+    p.tree_pref = not cur
+
+    p:refresh()
+end
+
 return M

@@ -122,13 +122,7 @@ return {
                     focus = "input",
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
-                            local val = not p.opts.tree
-
-                            --- @diagnostic disable-next-line: inject-field
-                            p.opts.tree = val
-                            p.opts.formatters.file.filename_only = val
-
-                            p:refresh()
+                            require("plugins.snacks_nvim.utils").explorer_toggle_tree(p)
                         end,
                     },
                     win = {
@@ -185,6 +179,13 @@ return {
             require("plugins.snacks_nvim.utils").custom_lsp_request(
                 lsp_source.request
             )
+
+        -- INFO: Override the explorer finder so tree view is only used while the
+        -- filter is empty (full paths while searching).
+        local explorer_source = require("snacks.picker.source.explorer")
+        explorer_source.explorer = require("plugins.snacks_nvim.utils").explorer_tree_finder(
+            explorer_source.explorer
+        )
 
         require("plugins.snacks_nvim.autocmds")
     end,
