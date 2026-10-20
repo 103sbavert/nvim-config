@@ -199,9 +199,9 @@ return {
         desc = "s[t]atus",
     },
     {
-        "<leader>gl",
+        "<leader>go",
         function() Snacks.picker.git_log() end,
-        desc = "[l]og",
+        desc = "l[o]g",
     },
     {
         "<leader>gD",
