@@ -88,9 +88,9 @@ return {
 
                 -- hunk
                 utils.git_key_mapper(
-                    "s",
+                    "h",
                     visual_hunk_stage,
-                    "[s]tage selection (toggle)",
+                    "[h]unk staging (toggle)",
                     { buffer = bufnr },
                     { "v" }
                 )
@@ -105,24 +105,40 @@ return {
                 end
 
                 utils.git_key_mapper(
-                    "s",
+                    "h",
                     normal_hunk_stage,
-                    "[s]tage hunk (toggle)",
+                    "[h]unk staging (toggle)",
                     { buffer = bufnr },
                     { "n" }
                 )
 
                 utils.git_key_mapper(
-                    "S",
+                    "s",
                     function()
                         local locbufnr = vim.api.nvim_get_current_buf()
                         if not utils.ask_save_stage(locbufnr) then
                             return
                         end
 
-                        utils.toggle_buf_staging(locbufnr)
+                        gitsigns.stage_buffer()
                     end,
-                    "[S]tage file (toggle)",
+                    "[s]tage buffer",
+                    { buffer = bufnr },
+                    {
+                        "n",
+                    }
+                )
+                utils.git_key_mapper(
+                    "u",
+                    function()
+                        local locbufnr = vim.api.nvim_get_current_buf()
+                        if not utils.ask_save_stage(locbufnr) then
+                            return
+                        end
+
+                        gitsigns.reset_buffer_index()
+                    end,
+                    "[u]nstage buffer",
                     { buffer = bufnr },
                     {
                         "n",

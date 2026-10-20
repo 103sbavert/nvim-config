@@ -199,13 +199,13 @@ return {
         desc = "s[t]atus",
     },
     {
-        "<leader>go",
+        "<leader>gl",
         function() Snacks.picker.git_log() end,
-        desc = "l[o]g",
+        desc = "[l]og",
     },
     {
-        "<leader>gd",
+        "<leader>gD",
         function() Snacks.picker.git_log_file() end,
-        desc = "[d]iff with..",
+        desc = "[D]iff file..",
     },
 }

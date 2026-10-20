@@ -10,7 +10,7 @@ return {
     },
     cmd = "Neogit",
     keys = {
-        { "<leader>gg", "<cmd>Neogit<cr>", desc = "Show Neogit UI" },
+        { "<leader>gn", "<cmd>Neogit<cr>", desc = "[n]eogit" },
         {
             "<leader>gc",
             function() require("plugins.git.utils").open_commit_tab() end,

@@ -15,7 +15,7 @@ return {
         "nvim-lua/plenary.nvim",
     },
     keys = {
-        { "<leader>gl", "<cmd>LazyGitCurrentFile<cr>", desc = "[l]azyGit" },
+        { "<leader>gz", "<cmd>LazyGitCurrentFile<cr>", desc = "la[z]yGit" },
     },
     config = true,
 }

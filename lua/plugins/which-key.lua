@@ -42,12 +42,12 @@ return {
             -- `<leader>` prefix groups
             { "<leader>d", group = "[d]ebug", mode = { "n" } },
             { "<leader>g", group = "[g]it", mode = { "x", "n" } },
+            { "<leader>gd", group = "[d]iff", mode = { "n" } },
             { "<leader>b", group = "[b]reakpoints", mode = "n" },
             { "<leader>t", group = "[t]oggle", mode = "n" },
             { "<leader>z", group = "Che[z]moi", mode = "n" },
             { "<leader>s", group = "[s]earch", mode = { "x", "n" } },
             { "<leader>l", group = "[l]SP", mode = { "x", "n" } },
-            { "<leader>p", group = "[p]i agent", mode = { "x", "n" } },
         },
     },
 }
