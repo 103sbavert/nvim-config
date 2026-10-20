@@ -133,6 +133,7 @@ do
 end
 
 require("config.autocmds")
+require("config.commands")
 require("config.theme")
 require("config.keys")
 require("config.lazy_nvim")
