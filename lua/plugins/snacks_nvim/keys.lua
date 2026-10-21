@@ -54,9 +54,11 @@ return {
 
             if not explorer then
                 Snacks.explorer()
+            ---@diagnostic disable-next-line: undefined-field
             elseif explorer:is_focused() then
                 vim.cmd.wincmd("p")
             else
+                ---@diagnostic disable-next-line: undefined-field
                 explorer:focus()
             end
         end,

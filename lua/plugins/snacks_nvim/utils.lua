@@ -110,8 +110,10 @@ end
 function M.explorer_toggle_tree(p)
     local cur = p.tree_pref
     if cur == nil then
+        ---@diagnostic disable-next-line: undefined-field explorer opts defines it
         cur = p.opts.tree
     end
+    ---@diagnostic disable-next-line: inject-field
     p.tree_pref = not cur
 
     p:refresh()
