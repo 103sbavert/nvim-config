@@ -1,3 +1,4 @@
+--- @module "snacks"
 --- @type snacks.picker.diagnostics.Config
 local dropdown_layout = {
     layout = {
