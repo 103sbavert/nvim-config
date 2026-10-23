@@ -2,6 +2,15 @@ local M = {}
 
 function M.setup()
     local utils = require("config.utils")
+
+    if vim.fn.executable("sudo") == 0 then
+        vim.notify(
+            "'sudo' executable not found on PATH, privileged writes are not possible for readonly files"
+        )
+
+        return
+    end
+
     local await = utils.await
     local async_run = function(fn) utils.async_run(fn, { error_title = "Sudo" }) end
 

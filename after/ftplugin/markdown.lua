@@ -1,3 +1,22 @@
+if vim.fn.executable("pandoc") == 0 then
+    vim.notify(
+        "Pandoc CLI is not installed, skipping PandocCompile user command registration",
+        vim.log.levels.WARN
+    )
+
+    return
+end
+
+local is_engine_typst = vim.g.pandoc_pdf_engine == nil
+    or vim.g.pandoc_pdf_engine == "typst"
+
+if is_engine_typst and vim.fn.executable("typst") == 0 then
+    vim.notify(
+        "Pandoc engine is 'typst' but Typst CLI is not available, skipping PandocCompile user command registration",
+        vim.log.levels.WARN
+    )
+end
+
 local map = function(mode, lhs, rhs, desc)
     vim.keymap.set(mode, lhs, rhs, { buffer = 0, desc = desc })
 end

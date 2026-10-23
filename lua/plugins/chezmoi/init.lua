@@ -9,6 +9,17 @@ return {
         "folke/snacks.nvim",
         "j-hui/fidget.nvim",
     },
+    enabled = function()
+        if vim.fn.executable("chezmoi") == 0 then
+            vim.notify(
+                "Chezmoi is not on PATH, nvim-chezmoi plugin is disabled"
+            )
+
+            return false
+        end
+
+        return true
+    end,
     main = "nvim-chezmoi",
     event = "BufReadPre " .. vim.fs.joinpath(vim.env.CHEZMOI_SOURCE_DIR, "*"),
     opts = {

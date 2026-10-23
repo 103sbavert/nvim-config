@@ -1,3 +1,12 @@
+if vim.fn.executable("typst") == 0 then
+    vim.notify(
+        "Typst CLI is not installed, skipping TypstCompile user command registration",
+        vim.log.levels.WARN
+    )
+
+    return
+end
+
 local function resolve_filename(arg_filename)
     if arg_filename and arg_filename ~= "" then
         return arg_filename
