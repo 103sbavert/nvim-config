@@ -122,7 +122,9 @@ return {
                     focus = "input",
                     actions = {
                         ["explorer_toggle_tree"] = function(p)
-                            require("plugins.snacks_nvim.utils").explorer_toggle_tree(p)
+                            require("plugins.snacks_nvim.utils").explorer_toggle_tree(
+                                p
+                            )
                         end,
                     },
                     win = {
@@ -188,9 +190,10 @@ return {
         -- INFO: Override the explorer finder so tree view is only used while the
         -- filter is empty (full paths while searching).
         local explorer_source = require("snacks.picker.source.explorer")
-        explorer_source.explorer = require("plugins.snacks_nvim.utils").explorer_tree_finder(
-            explorer_source.explorer
-        )
+        explorer_source.explorer =
+            require("plugins.snacks_nvim.utils").explorer_tree_finder(
+                explorer_source.explorer
+            )
 
         require("plugins.snacks_nvim.autocmds")
     end,
