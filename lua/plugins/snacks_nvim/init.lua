@@ -128,6 +128,11 @@ return {
                     win = {
                         input = {
                             keys = {
+                                ["<C-CR>"] = {
+                                    "jump",
+                                    mode = { "i", "n" },
+                                    desc = "Jump to selection",
+                                },
                                 ["<C-r>"] = {
                                     "explorer_toggle_tree",
                                     mode = { "i", "n" },
