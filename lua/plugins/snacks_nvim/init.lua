@@ -155,22 +155,10 @@ return {
         },
         quickfile = { enabled = true },
         scope = { enabled = true },
-        terminal = { enabled = true },
         scroll = { enabled = true },
         styles = {
             notification = {
                 border = "rounded",
-            },
-            terminal = {
-                keys = {
-                    term_normal = {
-                        "<C-n>",
-                        "<C-\\><C-n>",
-                        mode = "t",
-                        expr = true,
-                        desc = "Terminal normal",
-                    },
-                },
             },
         },
     },

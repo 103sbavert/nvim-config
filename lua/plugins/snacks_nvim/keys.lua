@@ -64,12 +64,6 @@ return {
         end,
         desc = "[\\] Toggle Explorer",
     },
-    -- File search (top-level shortcuts)
-    {
-        "<C-/>",
-        function() Snacks.terminal.toggle() end,
-        desc = "Toggle Terminal",
-    },
     {
         "<leader><leader>",
         function() Snacks.picker.buffers() end,
