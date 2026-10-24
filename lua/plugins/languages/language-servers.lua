@@ -188,8 +188,7 @@ return {
                     return true
                 end
 
-                local lang_utils =
-                    require("plugins.languages.internal.utils")
+                local lang_utils = require("plugins.languages.internal.utils")
 
                 return not lang_utils.has_lua_config(root_dir)
             end,

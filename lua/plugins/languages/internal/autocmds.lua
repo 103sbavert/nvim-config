@@ -60,10 +60,7 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
-    require("plugins.languages.internal.utils").map_lsp_actions(
-        client,
-        bufnr
-    )
+    require("plugins.languages.internal.utils").map_lsp_actions(client, bufnr)
 
     if client:supports_method("textDocument/documentHighlight", bufnr) then
         local highlight_augroup = vim.api.nvim_create_augroup(

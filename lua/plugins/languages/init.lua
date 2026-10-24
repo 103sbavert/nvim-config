@@ -1,6 +1,4 @@
-local get_lang_mod = function(modname)
-    return "plugins.languages." .. modname
-end
+local get_lang_mod = function(modname) return "plugins.languages." .. modname end
 
 --- @type LazySpec[]
 return {
