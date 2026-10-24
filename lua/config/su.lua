@@ -247,27 +247,14 @@ function M.setup()
     end
 
     --- @return boolean
-    local function is_runtime_path(real_path)
-        local resolved = vim.uv.fs_realpath(real_path) or real_path
-        local resolved_rtp = vim.uv.fs_realpath(vim.env.VIMRUNTIME)
-
-        return resolved_rtp ~= nil
-            and vim.startswith(resolved, resolved_rtp .. "/")
-    end
-
-    --- @return boolean
-    local function is_root_owned(real_path)
-        local ok, stat = pcall(vim.uv.fs_stat, real_path)
-        if not ok or type(stat) ~= "table" then
-            return false
-        end
-        return stat.uid == 0
+    local function is_writable(real_path)
+        local ok, writable = pcall(vim.uv.fs_access, real_path, "W")
+        return ok and writable == true
     end
 
     --- Set up sudo redirection for buf; runs async (creates tmp file).
-    --- After setup the *current* write is already in flight as a normal
-    --- write (and will fail on permissions), so the user retries with :w
-    --- which then routes through BufWriteCmd.
+    --- Saves the current buffer through sudo immediately (prompts for the
+    --- password); later writes route through BufWriteCmd.
     --- @param buf integer
     --- @param real_path string
     local function enable_sudo_intercept(buf, real_path)
@@ -312,10 +299,15 @@ function M.setup()
 
     --- @param buf integer
     local function arm_sudo_on_write(buf)
+        vim.api.nvim_clear_autocmds({
+            group = group,
+            event = "BufWritePre",
+            buffer = buf,
+        })
+
         vim.api.nvim_create_autocmd("BufWritePre", {
             group = group,
             buffer = buf,
-            once = true,
             callback = function()
                 if vim.b[buf].su_real_path then
                     return
@@ -323,10 +315,6 @@ function M.setup()
 
                 local real_path = utils.get_current_file({ buf = buf })
                 if not real_path then
-                    return
-                end
-
-                if is_runtime_path(real_path) then
                     return
                 end
 
@@ -359,11 +347,7 @@ function M.setup()
                 return
             end
 
-            if is_runtime_path(real_path) then
-                return
-            end
-
-            if not is_root_owned(real_path) then
+            if is_writable(real_path) then
                 return
             end
 
