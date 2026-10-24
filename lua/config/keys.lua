@@ -12,6 +12,14 @@ vim.keymap.set(
     { desc = "[w]rap" }
 )
 
+-- Toggle-open the terminal
+vim.keymap.set(
+    { "n", "o", "t", "x", "v" },
+    "<C-/>",
+    require("config.utils").toggle_term,
+    { desc = "Open terminal" }
+)
+
 -- Sane gg and G behavior
 -- Move to the last character of the last line
 vim.keymap.set({ "n", "o", "x" }, "G", function()
