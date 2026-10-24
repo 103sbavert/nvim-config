@@ -189,6 +189,7 @@ function M.setup()
 
         local cmd = {
             "sudo",
+            "-k",
             "-S",
             "cp",
             "-f",
@@ -200,7 +201,8 @@ function M.setup()
 
         if obj.code ~= 0 then
             vim.notify(
-                "Sudo write failed: " .. (obj.stderr or ""),
+                "Sudo write failed, buffer still modified; :w to retry.\n"
+                    .. vim.trim(obj.stderr or ""),
                 vim.log.levels.ERROR,
                 { title = "Sudo" }
             )
