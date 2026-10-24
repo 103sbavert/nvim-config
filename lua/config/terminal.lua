@@ -5,9 +5,6 @@ vim.g.toggle_term = {
 
 local term_tracker = vim.g.toggle_term
 
-local enter_group =
-    vim.api.nvim_create_augroup("EnterTermGroup", { clear = true })
-
 --- Toggles terminal visibility if a valid window already exists,
 --- re-opens if buffer exists, or creates a new terminal buffer/job.
 local function toggle_terminal()
@@ -25,7 +22,6 @@ local function toggle_terminal()
     if term_tracker.buf and vim.api.nvim_buf_is_valid(term_tracker.buf) then
         term_tracker.win_id =
             vim.api.nvim_open_win(term_tracker.buf, true, { split = "below" })
-        vim.cmd("startinsert")
         return
     end
 
@@ -39,18 +35,6 @@ local function toggle_terminal()
         vim.notify("Unable to open the terminal", vim.log.levels.ERROR)
         return
     end
-
-    vim.api.nvim_create_autocmd("BufEnter", {
-        buf = term_tracker.buf,
-        group = enter_group,
-        callback = function()
-            if vim.fn.mode() ~= "t" then
-                vim.cmd("startinsert")
-            end
-        end,
-    })
-
-    vim.cmd("startinsert")
 end
 
 vim.keymap.set(

@@ -53,6 +53,25 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function() vim.hl.on_yank() end,
 })
 
+local enter_group =
+    vim.api.nvim_create_augroup("EnterTermGroup", { clear = true })
+
+-- Always enter insert/terminal mode when opening a new or focusing an existing
+-- terminal window
+--
+-- See `:help Terminal-mode`
+vim.api.nvim_create_autocmd("TermOpen", {
+    group = enter_group,
+    callback = function(args)
+        vim.cmd("startinsert")
+        vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+            group = enter_group,
+            buffer = args.buf,
+            callback = function() vim.cmd("startinsert") end,
+        })
+    end,
+})
+
 -- Below aucmds are inspired from LazyNvim
 
 -- Closes certain non-file buffers on 'q' press if file type matches.
