@@ -465,37 +465,36 @@ function M.free_tcp_port()
     return port
 end
 
-vim.g.toggle_term = {
-    buf = nil,
-    win_id = nil,
-}
-
 --- Toggles terminal visibility if a valid window already exists,
 --- re-opens if buffer exists, or creates a new terminal buffer/job.
 function M.toggle_term()
-    local term_tracker = vim.g.toggle_term
-
     -- Hide terminal if window is open and valid
     if
-        term_tracker.win_id
-        and vim.api.nvim_win_is_valid(term_tracker.win_id)
+        vim.g.toggle_term_win_id
+        and vim.api.nvim_win_is_valid(vim.g.toggle_term_win_id)
     then
-        vim.api.nvim_win_close(term_tracker.win_id, false)
-        term_tracker.win_id = nil
+        vim.api.nvim_win_close(vim.g.toggle_term_win_id, false)
+        vim.g.toggle_term_win_id = nil
         return
     end
 
     -- Re-open window if valid buffer exists
-    if term_tracker.buf and vim.api.nvim_buf_is_valid(term_tracker.buf) then
-        term_tracker.win_id =
-            vim.api.nvim_open_win(term_tracker.buf, true, { split = "below" })
+    if
+        vim.g.toggle_term_buf
+        and vim.api.nvim_buf_is_valid(vim.g.toggle_term_buf)
+    then
+        vim.g.toggle_term_win_id = vim.api.nvim_open_win(
+            vim.g.toggle_term_buf,
+            true,
+            { split = "below" }
+        )
         return
     end
 
     -- Create new buffer and terminal job if no valid buffer exists
-    term_tracker.buf = vim.api.nvim_create_buf(false, false)
-    term_tracker.win_id =
-        vim.api.nvim_open_win(term_tracker.buf, true, { split = "below" })
+    vim.g.toggle_term_buf = vim.api.nvim_create_buf(false, false)
+    vim.g.toggle_term_win_id =
+        vim.api.nvim_open_win(vim.g.toggle_term_buf, true, { split = "below" })
 
     local chan_id = vim.fn.jobstart({ vim.o.shell }, { term = true })
     if chan_id <= 0 then
