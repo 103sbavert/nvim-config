@@ -225,7 +225,7 @@ end
 --- @param prefix_keys string Group prefix key sequence (such as "<leader>g" for all key maps starting in "<leader>g")
 --- @param default_modes string|string[] Default vim modes
 --- @return fun(keys: string, func: string|function, desc: string, opts: table?, modes?: string|string[]): nil
-function _G.create_keymap_group(prefix_keys, default_modes)
+local function create_keymap_group(prefix_keys, default_modes)
     return function(keys, func, desc, keymap_opts, modes)
         local final_opts = vim.tbl_deep_extend("force", {}, keymap_opts or {})
         final_opts.desc = desc
