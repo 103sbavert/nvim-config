@@ -217,8 +217,8 @@ local function format_log(head_hash, commit_icon, item, picker)
 end
 
 --- Confirm handler for the diff-base commit picker. Closes the picker and
---- forwards the selected commit hash to `callback`; notifies and aborts if
---- no commit was selected.
+--- forwards the selected commit hash to `callback`; notifies and aborts if no
+--- commit was selected.
 --- @param picker snacks.Picker Picker instance to close.
 --- @param item snacks.picker.Item? Selected picker item.
 --- @param callback fun(hash: string) Invoked with the selected commit hash.
@@ -287,8 +287,8 @@ function M.toggle_buf_staging(bufnr)
 end
 
 --- Selects the hunk under the cursor, preferring unstaged hunks and falling
---- back to staged ones. Bultin `gitsigns.select_hunk()` only looks at
---- unstaged hunks.
+--- back to staged ones. Bultin `gitsigns.select_hunk()` only looks at unstaged
+--- hunks.
 --- @param greedy boolean Select contiguous hunks (see 'diff_opts.linematch').
 --- @return nil
 function M.select_hunk(greedy)
@@ -367,10 +367,9 @@ local function await_refresh(repo, source)
     )()
 end
 
---- Opens a picker over the file's git log so the user can choose a base
---- commit to diff against. Resolves the file's repo, refreshes it, then
---- marks HEAD from Neogit repo state. Notifies and aborts outside a
---- git worktree.
+--- Opens a picker over the file's git log so the user can choose a base commit
+--- to diff against. Resolves the file's repo, refreshes it, then marks HEAD
+--- from Neogit repo state. Notifies and aborts outside a git worktree.
 --- @param file_name? string optional file name to query log against
 --- @param callback? fun(hash: string) Invoked with the chosen commit hash, use
 --- nil to use Snacks.picker.git_log default on_confirm action
