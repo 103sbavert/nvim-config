@@ -52,10 +52,6 @@ function M.get_layout()
     return git_layout
 end
 
--- Initialize mappers
---- Keymap group for git actions, mapped under "<leader>g".
-M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
-
 --- Prompts to save buffer if modified. Returns false on cancel.
 --- @param bufnr integer
 --- @return boolean proceed
