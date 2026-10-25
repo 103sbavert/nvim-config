@@ -180,8 +180,6 @@ local snacks_fmt = nil
 --- @param item snacks.picker.Item Git log picker item being formatted.
 --- @param picker snacks.Picker Picker instance the item belongs to.
 --- @return snacks.picker.Highlight[] Formatted item parts with head highlighting.
---- Cached Snacks formatter refs, resolved lazily on first picker render so
---- this module never indexes the `Snacks` global at load time.
 local function format_log(head_hash, commit_icon, item, picker)
     if not snacks_fmt then
         snacks_fmt = {
