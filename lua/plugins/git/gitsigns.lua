@@ -224,14 +224,14 @@ return {
                 vim.keymap.set(
                     { "o", "x" },
                     "ag",
-                    function() gitsigns.select_hunk({ greedy = true }) end,
+                    function() utils.select_hunk(true) end,
                     { buffer = bufnr, desc = "[g]it hunk" }
                 )
 
                 vim.keymap.set(
                     { "o", "x" },
                     "ig",
-                    function() gitsigns.select_hunk({ greedy = false }) end,
+                    function() utils.select_hunk(false) end,
                     { buffer = bufnr, desc = "[g]it hunk" }
                 )
             end

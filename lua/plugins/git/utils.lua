@@ -6,6 +6,9 @@ local gitsigns = nil
 --- @module "gitsigns.cache?"
 local gitsigns_cache = nil
 
+--- @module "gitsigns.async?"
+local gitsigns_async = nil
+
 local UT = require("config.utils")
 
 --- Cached layout config for Snacks.picker.git* using default options but with
@@ -287,6 +290,40 @@ function M.toggle_buf_staging(bufnr)
             gitsigns.reset_buffer_index()
         end
     end)
+end
+
+--- Selects the hunk under the cursor, preferring unstaged hunks and falling
+--- back to staged ones. Bultin `gitsigns.select_hunk()` only looks at
+--- unstaged hunks.
+--- @param greedy boolean Select contiguous hunks (see 'diff_opts.linematch').
+--- @return nil
+function M.select_hunk(greedy)
+    gitsigns_cache = gitsigns_cache or require("gitsigns.cache")
+    gitsigns_async = gitsigns_async or require("gitsigns.async")
+
+    local entry = gitsigns_cache.cache[vim.api.nvim_get_current_buf()]
+    if not entry then
+        return
+    end
+
+    local hunk = gitsigns_async
+        .run(function()
+            --- @diagnostic disable-next-line: return-type-mismatch annontations for `run` do not match the return type of `get_hunk`
+            return entry:get_hunk(nil, greedy, false)
+                or entry:get_hunk(nil, greedy, true)
+        end)
+        :wait()
+
+    if not hunk then
+        return
+    end
+
+    local start, vend = hunk.added.start, hunk.vend
+    if vim.fn.mode():find("v") then
+        vim.cmd(("normal! %dGoV%dG"):format(start, vend))
+    else
+        vim.cmd(("normal! %dGV%dG"):format(start, vend))
+    end
 end
 
 --- @type Gitsigns.NavOpts
