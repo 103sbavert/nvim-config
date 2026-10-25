@@ -27,46 +27,32 @@ return {
             local gitsigns = require("gitsigns")
             local utils = require("plugins.git.utils")
 
-            --- @type Gitsigns.NavOpts
-            --- @diagnostic disable-next-line: missing-fields
-            local navopts = { foldopen = true, target = "all", wrap = true }
+            --- Buffer-local git keymap under "<leader>g".
+            --- @param keys string Key suffix appended to "<leader>g".
+            --- @param rhs string|fun() Right-hand side of the mapping.
+            --- @param desc string Keymap description.
+            --- @param modes string|string[]? Defaults to "n".
+            local function map_git(keys, rhs, desc, modes)
+                vim.keymap.set(modes or "n", "<leader>g" .. keys, rhs, {
+                    buffer = bufnr,
+                    desc = desc,
+                })
+            end
 
             -- Navigation
             do
-                utils.navigate_fw_mapper(
-                    "g",
-                    function()
-                        if vim.wo.diff then
-                            return "]c"
-                        end
-                        vim.schedule(
-                            function() gitsigns.nav_hunk("next", navopts) end
-                        )
-                        return "<Ignore>"
-                    end,
-                    "[g]it change",
-                    {
-                        buffer = bufnr,
-                        expr = true,
-                    }
+                vim.keymap.set(
+                    { "n", "v" },
+                    "]]",
+                    utils.nav_hunk("next"),
+                    { buffer = bufnr, expr = true, desc = "Next hunk" }
                 )
 
-                utils.navigate_bw_mapper(
-                    "g",
-                    function()
-                        if vim.wo.diff then
-                            return "[c"
-                        end
-                        vim.schedule(
-                            function() gitsigns.nav_hunk("prev", navopts) end
-                        )
-                        return "<Ignore>"
-                    end,
-                    "[g]it change",
-                    {
-                        buffer = bufnr,
-                        expr = true,
-                    }
+                vim.keymap.set(
+                    { "n", "v" },
+                    "[[",
+                    utils.nav_hunk("prev"),
+                    { buffer = bufnr, expr = true, desc = "Previous hunk" }
                 )
             end
 

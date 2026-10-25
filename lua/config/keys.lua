@@ -20,6 +20,20 @@ vim.keymap.set(
     { desc = "Open terminal" }
 )
 
+vim.keymap.set(
+    { "n", "v" },
+    "]]",
+    function() return vim.wo.diff and "]c" or "<Ignore>" end,
+    { expr = true, desc = "Next hunk" }
+)
+
+vim.keymap.set(
+    { "n", "v" },
+    "[[",
+    function() return vim.wo.diff and "[c" or "<Ignore>" end,
+    { expr = true, desc = "Previous hunk" }
+)
+
 -- Sane gg and G behavior
 -- Move to the last character of the last line
 vim.keymap.set({ "n", "o", "x" }, "G", function()

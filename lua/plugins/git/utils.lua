@@ -52,10 +52,6 @@ end
 -- Initialize mappers
 --- Keymap group for git actions, mapped under "<leader>g".
 M.git_key_mapper = create_keymap_group("<leader>g", { "n", "v" })
---- Keymap group for backward hunk/change navigation, mapped under "[".
-M.navigate_bw_mapper = create_keymap_group("[", { "n", "v" })
---- Keymap group for forward hunk/change navigation, mapped under "]".
-M.navigate_fw_mapper = create_keymap_group("]", { "n", "v" })
 
 --- Prompts to save buffer if modified. Returns false on cancel.
 --- @param bufnr integer
@@ -291,6 +287,27 @@ function M.toggle_buf_staging(bufnr)
             gitsigns.reset_buffer_index()
         end
     end)
+end
+
+--- @type Gitsigns.NavOpts
+local nav_opts = { target = "all" }
+
+--- Builds a keymap callback that navigates between git hunks,
+--- falling back to the builtin diff motions inside a diff window.
+--- @param direction "next" | "prev"
+--- @return fun(): string
+function M.nav_hunk(direction)
+    return function()
+        if vim.wo.diff then
+            return direction == "next" and "]c" or "[c"
+        end
+
+        vim.schedule(function()
+            gitsigns = gitsigns or require("gitsigns")
+            gitsigns.nav_hunk(direction, nav_opts)
+        end)
+        return "<Ignore>"
+    end
 end
 
 --- Resolves the Neogit repo instance for a file (or cwd).

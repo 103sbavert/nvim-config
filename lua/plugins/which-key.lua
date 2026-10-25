@@ -39,6 +39,9 @@ return {
             { "gw", desc = "Format (dumb)", mode = { "x", "n" } },
             { "gx", desc = "Open URI/path under cusor", mode = { "x", "n" } },
 
+            { "[", group = "Backwards" },
+            { "]", group = "Forwards" },
+
             -- `<leader>` prefix groups
             { "<leader>d", group = "[d]ebug", mode = { "n" } },
             { "<leader>g", group = "[g]it", mode = { "x", "n" } },

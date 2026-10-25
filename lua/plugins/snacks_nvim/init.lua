@@ -142,6 +142,14 @@ return {
                                 },
                             },
                         },
+                        list = {
+                            keys = {
+                                ["[g"] = false,
+                                ["]g"] = false,
+                                ["]]"] = "explorer_git_next",
+                                ["[["] = "explorer_git_prev",
+                            },
+                        },
                     },
                 },
             },
