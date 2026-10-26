@@ -310,7 +310,6 @@ local function make_textobj(id)
     end
 end
 
-M.make_textobj = make_textobj
 M.make_decl_textobj = function() return make_textobj("d") end
 M.make_func_textobj = function() return make_textobj("f") end
 M.make_scope_textobj = function() return make_textobj("s") end

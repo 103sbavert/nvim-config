@@ -6,34 +6,6 @@ M.default_ignored_dirs = {
     ["node_modules"] = true,
 }
 
---- @type table<boolean, table<string,string>>
-M.git_diff_glyphs = {
-    [true] = {
-        -- Change type
-        added = "",
-        deleted = "",
-        modified = "",
-        renamed = "",
-        -- Status type
-        untracked = "？",
-        conflict = "！",
-        unstaged = "～",
-        staged = "＋",
-    },
-    [false] = {
-        -- Change type
-        added = "𝗔",
-        deleted = "𝗗",
-        modified = "𝗠",
-        renamed = "𝗥",
-        -- Status type
-        untracked = "？",
-        conflict = "！",
-        unstaged = "～",
-        staged = "＋",
-    },
-}
-
 --- @type table<boolean, table<vim.diagnostic.Severity, string>>
 M.lsp_diagnostic_glyphs = {
     [true] = {
