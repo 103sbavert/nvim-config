@@ -29,7 +29,7 @@ local exec_buf
 local exec_job
 local exec_gen = 0
 
-vim.api.nvim_create_user_command("Exec", function(opts)
+vim.api.nvim_create_user_command("X", function(opts)
     local lines = {}
     for _, raw in ipairs(exec_source_files) do
         local p = vim.fn.shellescape(vim.fn.expand(raw))
