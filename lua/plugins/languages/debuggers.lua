@@ -35,7 +35,7 @@ return {
             {
                 "<leader>dd",
                 function() require("dap").continue() end,
-                desc = "[c]ontinue",
+                desc = "Start",
                 mode = { "n" },
             },
         },
