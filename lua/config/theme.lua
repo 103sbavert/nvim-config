@@ -53,6 +53,10 @@ require("bamboo").setup({
         DapBreakpointRejected = { fg = hl_dap_breakpoint_rejected },
         DapStopped = { fg = hl_dap_stopped_text },
         DapStoppedLine = { bg = hl_dap_stopped_line },
+        -- :Exec output highlights
+        ExecPrompt = { fg = c.red },
+        ExecCommand = { fg = c.blue },
+        ExecExit = { fg = c.grey },
     },
 })
 

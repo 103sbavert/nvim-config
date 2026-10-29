@@ -91,6 +91,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "lspinfo",
         "notify",
         "qf",
+        "ExecOut",
         "startuptime",
         "tsplayground",
     },
