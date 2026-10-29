@@ -33,9 +33,9 @@ return {
                 mode = { "n" },
             },
             {
-                "<leader>dd",
+                "<leader>d",
                 function() require("dap").continue() end,
-                desc = "Start",
+                desc = "[d]ebug",
                 mode = { "n" },
             },
         },
@@ -65,8 +65,23 @@ return {
                     utils.del_dap_keymaps()
                 end
             end
-            dap.listeners.before.event_exited["dap_keymaps"] = function()
-                utils.del_dap_keymaps()
+
+            -- override keymap description based on the debugger state (Debug vs Continue)
+            do
+                local set_start_keymap = function()
+                    vim.keymap.set("n", "<leader>d", dap.continue, {
+                        desc = "[d]ebug",
+                    })
+                end
+
+                dap.listeners.after.event_initialized["continue_keymap_desc"] = function()
+                    pcall(vim.keymap.del, "n", "<leader>d")
+                end
+
+                dap.listeners.after.event_terminated["continue_keymap_desc"] =
+                    set_start_keymap
+                dap.listeners.after.event_exited["continue_keymap_desc"] =
+                    set_start_keymap
             end
         end,
     },
