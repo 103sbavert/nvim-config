@@ -48,14 +48,22 @@ return {
             utils.setup_dap_signs()
             delve.setup()
 
+            -- open dap ui on startup
             dap.listeners.after.event_initialized["open_dap_ui"] = function()
                 require("dap-view").open()
             end
-            dap.listeners.after.event_initialized["dap_keymaps"] = function()
-                utils.add_dap_keymaps()
-            end
-            dap.listeners.before.event_terminated["dap_keymaps"] = function()
-                utils.del_dap_keymaps()
+
+            -- map debug-session-only keymaps
+            do
+                dap.listeners.after.event_initialized["dap_keymaps"] = function()
+                    utils.add_dap_keymaps()
+                end
+                dap.listeners.before.event_terminated["dap_keymaps"] = function()
+                    utils.del_dap_keymaps()
+                end
+                dap.listeners.before.event_exited["dap_keymaps"] = function()
+                    utils.del_dap_keymaps()
+                end
             end
             dap.listeners.before.event_exited["dap_keymaps"] = function()
                 utils.del_dap_keymaps()
