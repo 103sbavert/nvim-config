@@ -134,26 +134,44 @@ local function on_client_attach(client, bufnr)
             "roslyn-diagnostics-refresh-" .. bufnr,
             { clear = true }
         )
-        vim.api.nvim_create_autocmd("InsertLeave", {
-            buffer = bufnr,
-            group = roslyn_buf_augroup,
-            callback = function()
-                if client:is_stopped() then
-                    return
-                end
+        local last_tick = -1
+        vim.api.nvim_create_autocmd(
+            { "InsertLeave", "CursorHold", "CursorHoldI" },
+            {
+                buffer = bufnr,
+                group = roslyn_buf_augroup,
+                callback = function()
+                    if client:is_stopped() then
+                        return
+                    end
 
-                if not vim.api.nvim_buf_is_valid(bufnr) then
-                    return
-                end
+                    if not vim.api.nvim_buf_is_valid(bufnr) then
+                        return
+                    end
 
-                local params = {
-                    textDocument = vim.lsp.util.make_text_document_params(
+                    local tick = vim.api.nvim_buf_get_changedtick(bufnr)
+
+                    if tick == last_tick then
+                        return
+                    end
+
+                    last_tick = tick
+
+                    local params = {
+                        textDocument = vim.lsp.util.make_text_document_params(
+                            bufnr
+                        ),
+                    }
+
+                    client:request(
+                        "textDocument/diagnostic",
+                        params,
+                        nil,
                         bufnr
-                    ),
-                }
-                client:request("textDocument/diagnostic", params, nil, bufnr)
-            end,
-        })
+                    )
+                end,
+            }
+        )
     end
 end
 
