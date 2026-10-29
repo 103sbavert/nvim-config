@@ -185,7 +185,7 @@ local get_debug_overrides = function()
     return {
         n = {
             ["<leader>dx"] = {
-                rhs = dap.close,
+                rhs = dap.terminate,
                 opts = { desc = "E[x]it" },
             },
             ["<leader>di"] = {
