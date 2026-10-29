@@ -134,7 +134,8 @@ return {
         config = true,
     },
     {
-        "seblyng/roslyn.nvim",
+        "GustavEikaas/easy-dotnet.nvim",
+        dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
         lazy = true,
         ft = { "cs", "razor", "msbuild_proj", "solution" },
         init = function()
@@ -150,11 +151,6 @@ return {
                 },
             })
         end,
-        ---@module "roslyn.config"
-        ---@type RoslynNvimConfig
-        opts = {
-            lock_target = true,
-        },
         config = true,
     },
     {
