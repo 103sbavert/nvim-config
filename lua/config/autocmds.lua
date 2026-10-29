@@ -57,17 +57,35 @@ local enter_group =
     vim.api.nvim_create_augroup("EnterTermGroup", { clear = true })
 
 -- Always enter insert/terminal mode when opening a new or focusing an existing
--- terminal window
+-- terminal window.
 --
 -- See `:help Terminal-mode`
 vim.api.nvim_create_autocmd("TermOpen", {
     group = enter_group,
     callback = function(args)
-        vim.cmd("startinsert")
+        -- Enter insertmode if:
+        -- Current buffer is the same as the event buffer
+        -- Current buffer is a regular terminal (not DAP or somethinge else)
+        local function term_startinsert(buf)
+            local is_current_buf = function()
+                return vim.api.nvim_get_current_buf() == buf
+            end
+
+            local is_regular_term = function()
+                return vim.bo[buf].filetype == "" or not vim.bo[buf].filetype
+            end
+
+            if is_current_buf() and is_regular_term() then
+                vim.cmd("startinsert")
+            end
+        end
+
+        vim.schedule(function() term_startinsert(args.buf) end)
+
         vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
             group = enter_group,
             buffer = args.buf,
-            callback = function() vim.cmd("startinsert") end,
+            callback = function() term_startinsert(args.buf) end,
         })
     end,
 })
