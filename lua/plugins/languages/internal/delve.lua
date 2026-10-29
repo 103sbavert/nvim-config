@@ -63,6 +63,7 @@ end
 --- @return thread
 local function prompt_args()
     return coroutine.create(function(dap_co)
+        --- @module "snacks"
         Snacks.input(
             { prompt = "Args: " },
             function(value)
