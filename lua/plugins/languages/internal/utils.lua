@@ -1,5 +1,87 @@
 local M = {}
 
+-- Enable the following language servers
+--- @type table<string, vim.lsp.Config>
+M.LsConfig = {
+    gitlab_ci_ls = {},
+    pyright = {},
+    stylua = {},
+    phpactor = {},
+    vtsls = {},
+    eslint = {},
+    bashls = {},
+    markdown_oxide = {},
+    tinymist = {
+        settings = {
+            formatterMode = "typstyle",
+            semanticTokens = "enabled",
+        },
+        before_init = function(_, config)
+            local font_paths = require("config.utils").get_env_paths(
+                { config.root_dir, vim.fn.getcwd() },
+                ".typstrc",
+                "TYPST_FONT_PATHS"
+            )
+
+            if font_paths then
+                config.settings = config.settings or {}
+                config.settings.fontPaths = font_paths
+            end
+        end,
+    },
+    gopls = {
+        settings = {
+            gopls = {
+                gofumpt = true,
+                semanticTokens = true,
+                hints = {
+                    assignVariableTypes = true,
+                    compositeLiteralFields = true,
+                    compositeLiteralTypes = true,
+                    constantValues = true,
+                    functionTypeParameters = true,
+                    parameterNames = true,
+                    rangeVariableTypes = true,
+                },
+                analyses = {
+                    unusedparams = true,
+                    shadow = true,
+                },
+                staticcheck = true,
+            },
+        },
+    },
+    lua_ls = {
+        on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+        on_init = function(client)
+            local lang_utils = require("plugins.languages.internal.utils")
+
+            if
+                vim.g.lazy_lua_ls
+                or not lang_utils.is_nvim_config(client.workspace_folders)
+                or lang_utils.has_lua_config(client.workspace_folders)
+            then
+                return
+            end
+
+            local base_ls_opts = client.config.settings.Lua
+
+            --- @cast base_ls_opts table
+            client.config.settings.Lua =
+                lang_utils.get_nvim_lua_opts(base_ls_opts)
+        end,
+        settings = {
+            Lua = {
+                format = { enable = false },
+                diagnostics = { disable = { "missing-fields" } },
+            },
+        },
+    },
+}
+
 --- @param key string
 --- @param lsp_config LspKeyConfig
 --- @param client vim.lsp.Client

@@ -1,3 +1,16 @@
+local ls_config = nil
+local get_ls_conf = function()
+    ls_config = ls_config
+        or require("plugins.languages.internal.utils").LsConfig
+
+    if not ls_config or #ls_config == 0 then
+        vim.notify("No language servers configured", vim.log.levels.WARN)
+        return nil
+    end
+
+    return ls_config
+end
+
 --- @type LazySpec
 return {
     {
@@ -6,110 +19,17 @@ return {
             "config.utils",
             "j-hui/fidget.nvim",
         },
+        init = function()
+            local configured_ls = vim.tbl_keys(get_ls_conf() or {})
+            local managed_ls = { "roslyn_ls" }
+            vim.list_extend(configured_ls, managed_ls)
+
+            MasonInstall(configured_ls)
+        end,
         config = function()
-            -- NOTE: roslyn.nvim enables "roslyn" server on its own (see:
-            -- plugin/roslyn.lua), so the LSP can stay out of this map.
-
-            -- Enable the following language servers
-            --- @type table<string, vim.lsp.Config>
-            local server_config_map = {
-                phpactor = {},
-                tinymist = {
-                    settings = {
-                        formatterMode = "typstyle",
-                        semanticTokens = "enabled",
-                    },
-                    before_init = function(_, config)
-                        local font_paths =
-                            require("config.utils").get_env_paths(
-                                { config.root_dir, vim.fn.getcwd() },
-                                ".typstrc",
-                                "TYPST_FONT_PATHS"
-                            )
-
-                        if font_paths then
-                            config.settings = config.settings or {}
-                            config.settings.fontPaths = font_paths
-                        end
-                    end,
-                },
-                vtsls = {},
-                eslint = {},
-                bashls = {},
-                markdown_oxide = {},
-                gopls = {
-                    settings = {
-                        gopls = {
-                            gofumpt = true,
-                            semanticTokens = true,
-                            hints = {
-                                assignVariableTypes = true,
-                                compositeLiteralFields = true,
-                                compositeLiteralTypes = true,
-                                constantValues = true,
-                                functionTypeParameters = true,
-                                parameterNames = true,
-                                rangeVariableTypes = true,
-                            },
-                            analyses = {
-                                unusedparams = true,
-                                shadow = true,
-                            },
-                            staticcheck = true,
-                        },
-                    },
-                },
-                gitlab_ci_ls = {},
-                pyright = {},
-                stylua = {},
-                lua_ls = {
-                    on_attach = function(client)
-                        client.server_capabilities.documentFormattingProvider =
-                            false
-                        client.server_capabilities.documentRangeFormattingProvider =
-                            false
-                    end,
-                    on_init = function(client)
-                        local lang_utils =
-                            require("plugins.languages.internal.utils")
-
-                        if
-                            vim.g.lazy_lua_ls
-                            or not lang_utils.is_nvim_config(
-                                client.workspace_folders
-                            )
-                            or lang_utils.has_lua_config(
-                                client.workspace_folders
-                            )
-                        then
-                            return
-                        end
-
-                        local base_ls_opts = client.config.settings.Lua
-
-                        --- @cast base_ls_opts table
-                        client.config.settings.Lua =
-                            lang_utils.get_nvim_lua_opts(base_ls_opts)
-                    end,
-                    settings = {
-                        Lua = {
-                            format = { enable = false },
-                            diagnostics = { disable = { "missing-fields" } },
-                        },
-                    },
-                },
-            }
-
-            local server_names = vim.tbl_keys(server_config_map or {})
-
-            -- NOTE: only install as the configuration is handled externally, like config below
-            local managed = { "roslyn_ls" }
-            vim.list_extend(server_names, managed)
-
-            MasonInstall(server_names)
             require("plugins.languages.internal.autocmds")
 
-            for name, server_conf in pairs(server_config_map) do
+            for name, server_conf in pairs(get_ls_conf() or {}) do
                 vim.lsp.config(name, server_conf)
                 vim.lsp.enable(name)
             end
