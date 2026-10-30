@@ -243,6 +243,7 @@ end
 function M.setup()
     local dap = require("dap")
 
+    dap.configurations.go = configs
     dap.adapters.go = function(callback, config)
         if not (assert_tool("dlv") and assert_tool("go")) then
             return
@@ -262,8 +263,6 @@ function M.setup()
             function(bin, err) on_build_finish(callback, config, bin, err) end
         )
     end
-
-    dap.configurations.go = configs
 
     dap.listeners.on_session["delve_tty"] = function(_, session)
         local cfg = session and session.config

@@ -42,11 +42,10 @@ return {
         init = function() MasonInstall(dap_list) end,
         config = function()
             local utils = require("plugins.languages.internal.utils")
-            local delve = require("plugins.languages.internal.delve")
             local dap = require("dap")
 
+            require("plugins.languages.internal.delve").setup()
             utils.setup_dap_signs()
-            delve.setup()
 
             -- open dap ui on startup
             dap.listeners.after.event_initialized["open_dap_ui"] = function()
