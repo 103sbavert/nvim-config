@@ -43,14 +43,14 @@ return {
             do
                 vim.keymap.set(
                     { "n", "v" },
-                    "]]",
+                    "]g",
                     utils.nav_hunk("next"),
                     { buffer = bufnr, expr = true, desc = "Next hunk" }
                 )
 
                 vim.keymap.set(
                     { "n", "v" },
-                    "[[",
+                    "[g",
                     utils.nav_hunk("prev"),
                     { buffer = bufnr, expr = true, desc = "Previous hunk" }
                 )
