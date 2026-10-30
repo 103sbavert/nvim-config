@@ -3,7 +3,7 @@ local get_ls_conf = function()
     ls_config = ls_config
         or require("plugins.languages.internal.utils").LsConfig
 
-    if not ls_config or #ls_config == 0 then
+    if not ls_config or vim.tbl_isempty(ls_config) then
         vim.notify("No language servers configured", vim.log.levels.WARN)
         return nil
     end
