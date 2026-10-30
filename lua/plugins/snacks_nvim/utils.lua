@@ -1,18 +1,5 @@
 local M = {}
 
-local spinner = {
-    "⠋",
-    "⠙",
-    "⠹",
-    "⠸",
-    "⠼",
-    "⠴",
-    "⠦",
-    "⠧",
-    "⠇",
-    "⠏",
-}
-
 local function get_clean_stdpath(varname)
     local v = os.getenv(varname)
     if not v or v == "" then
@@ -72,11 +59,7 @@ function M.custom_lsp_request(original_lsp_request)
                 id = spinner_id,
                 title = "Snacks picker",
                 timeout = false,
-                opts = function(notif)
-                    notif.icon = spinner[math.floor(
-                        vim.uv.hrtime() / (1e6 * 80)
-                    ) % #spinner + 1]
-                end,
+                opts = function(notif) notif.icon = Snacks.util.spinner() end,
             })
         end)
 
