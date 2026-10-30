@@ -18,7 +18,7 @@ return {
         },
     },
     opts = {
-        disable_insert_on_commit = false,
+        disable_insert_on_commit = true,
         graph_style = "kitty",
         process_spinner = true,
         integrations = {
