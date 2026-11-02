@@ -131,7 +131,7 @@ return {
                         input = {
                             keys = {
                                 ["<C-CR>"] = {
-                                    "jump",
+                                    "confirm",
                                     mode = { "i", "n" },
                                     desc = "Jump to selection",
                                 },
