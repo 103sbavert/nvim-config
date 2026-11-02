@@ -120,13 +120,6 @@ return {
                     hidden = show_hidden,
                     sort = { fields = { "#text:inc" } },
                     focus = "input",
-                    actions = {
-                        ["explorer_toggle_tree"] = function(p)
-                            require("plugins.snacks_nvim.utils").explorer_toggle_tree(
-                                p
-                            )
-                        end,
-                    },
                     win = {
                         input = {
                             keys = {
@@ -134,11 +127,6 @@ return {
                                     "confirm",
                                     mode = { "i", "n" },
                                     desc = "Jump to selection",
-                                },
-                                ["<C-r>"] = {
-                                    "explorer_toggle_tree",
-                                    mode = { "i", "n" },
-                                    desc = "Toggle tree mode",
                                 },
                             },
                         },
