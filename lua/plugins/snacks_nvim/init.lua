@@ -124,8 +124,8 @@ return {
                         input = {
                             keys = {
                                 ["<C-CR>"] = {
-                                    "confirm",
-                                    mode = { "i", "n" },
+                                    --- @diagnostic disable-next-line: assign-type-mismatch Both actions are invoked despite type mismatch warning
+                                    { "confirm", "jump" },
                                     desc = "Jump to selection",
                                 },
                             },
