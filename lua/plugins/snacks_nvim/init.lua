@@ -1,5 +1,5 @@
 local show_hidden =
-    require("plugins.snacks_nvim.utils").hidden_for_cwd(vim.fn.getcwd())
+    require("plugins.snacks_nvim.utils").should_show_hidden(vim.fn.getcwd())
 
 --- @type LazySpec
 return {

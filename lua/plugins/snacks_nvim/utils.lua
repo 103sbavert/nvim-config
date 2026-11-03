@@ -25,7 +25,7 @@ local large_dirs = {
 
 --- Returns the picker `hidden` value for a directory.
 --- `true` shows hidden files, `false` hides them.
-function M.hidden_for_cwd(raw)
+function M.should_show_hidden(raw)
     if raw == nil or raw == "" or home == nil then
         return true
     end

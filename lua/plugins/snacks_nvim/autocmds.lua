@@ -60,7 +60,7 @@ vim.api.nvim_create_autocmd("DirChanged", {
     pattern = { "window", "tabpage", "global" },
     callback = function(args)
         set_hidden(
-            require("plugins.snacks_nvim.utils").hidden_for_cwd(args.file)
+            require("plugins.snacks_nvim.utils").should_show_hidden(args.file)
         )
     end,
 })
