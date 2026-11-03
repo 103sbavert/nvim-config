@@ -120,17 +120,6 @@ return {
                     hidden = show_hidden,
                     sort = { fields = { "#text:inc" } },
                     focus = "input",
-                    win = {
-                        input = {
-                            keys = {
-                                ["<C-CR>"] = {
-                                    --- @diagnostic disable-next-line: assign-type-mismatch Both actions are invoked despite type mismatch warning
-                                    { "confirm", "jump" },
-                                    desc = "Jump to selection",
-                                },
-                            },
-                        },
-                    },
                 },
             },
         },
