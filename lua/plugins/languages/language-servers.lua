@@ -42,7 +42,6 @@ return {
         cmd = {
             "Mdn",
         },
-        lazy = true,
         config = true,
     },
     {
@@ -51,13 +50,11 @@ return {
         dependencies = {
             "folke/snacks.nvim",
         },
-        lazy = true,
         config = true,
     },
     {
         "GustavEikaas/easy-dotnet.nvim",
         dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
-        lazy = true,
         ft = { "cs", "razor", "msbuild_proj", "solution" },
         init = function()
             vim.filetype.add({
@@ -78,7 +75,6 @@ return {
         "chomosuke/typst-preview.nvim",
         ft = "typst",
         version = "1.*",
-        lazy = true,
         config = true,
     },
     {
