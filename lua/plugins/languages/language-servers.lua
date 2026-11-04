@@ -19,6 +19,7 @@ return {
             "config.utils",
             "j-hui/fidget.nvim",
         },
+        event = "VimEnter",
         init = function()
             local configured_ls = vim.tbl_keys(get_ls_conf() or {})
             local managed_ls = { "roslyn_ls" }
