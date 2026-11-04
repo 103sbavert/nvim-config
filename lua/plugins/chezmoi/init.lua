@@ -1,6 +1,6 @@
 --- @type LazySpec
 return {
-    "103sbavert/nvim-chezmoi",
+    "andre-kotake/nvim-chezmoi",
     branch = "main",
     dependencies = {
         "config.utils",
