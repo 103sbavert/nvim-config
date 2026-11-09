@@ -12,7 +12,7 @@ vim.api.nvim_create_user_command("Copyfile", function()
         return
     end
 
-    local path = vim.fs.normalize(vim.fn.fnamemodify(name, ":p"))
+    local path = vim.fs.normalize(name)
 
     vim.fn.setreg("+", path)
 
@@ -25,35 +25,24 @@ end, { desc = "Copy current buffer path" })
 local exec_source_files = {}
 
 local exec_ns = vim.api.nvim_create_namespace("exec_output")
-local exec_buf
-local exec_job
-local exec_gen = 0
 
-vim.api.nvim_create_user_command("X", function(opts)
+local function build_script(cmd_args)
     local lines = {}
     for _, raw in ipairs(exec_source_files) do
         local p = vim.fn.shellescape(vim.fn.expand(raw))
         table.insert(lines, ("[ -r %s ] && source %s"):format(p, p))
     end
-    table.insert(lines, opts.args)
-    local script = table.concat(lines, "\n")
+    table.insert(lines, cmd_args)
+    return table.concat(lines, "\n")
+end
 
-    -- Stop any in-flight run and bump the generation so its pending
-    -- callbacks bail instead of writing into the reused buffer.
-    if exec_job then
-        exec_job:kill("sigterm")
-        exec_job = nil
-    end
-    exec_gen = exec_gen + 1
-    local gen = exec_gen
+local function setup_exec_window(cmd_args)
+    local buf = vim.api.nvim_create_buf(true, true)
+    vim.bo[buf].buftype = "nofile"
+    vim.bo[buf].filetype = "ExecOut"
+    vim.bo[buf].bufhidden = "wipe"
 
-    -- Reuse the buffer if it is still valid
-    if not (exec_buf and vim.api.nvim_buf_is_valid(exec_buf)) then
-        exec_buf = vim.api.nvim_create_buf(true, true)
-        vim.bo[exec_buf].buftype = "nofile"
-        vim.bo[exec_buf].filetype = "ExecOut"
-    end
-    local buf = exec_buf
+    local win_id = vim.api.nvim_open_win(buf, true, { split = "below" })
 
     local function write(first, last, repl)
         vim.bo[buf].modifiable = true
@@ -61,9 +50,9 @@ vim.api.nvim_create_user_command("X", function(opts)
         vim.bo[buf].modifiable = false
     end
 
-    vim.api.nvim_buf_set_name(buf, ("ExecOut://%d %s"):format(buf, opts.args))
+    vim.api.nvim_buf_set_name(buf, ("ExecOut://%d %s"):format(buf, cmd_args))
     vim.api.nvim_buf_clear_namespace(buf, exec_ns, 0, -1)
-    write(0, -1, { "$ " .. opts.args, "" })
+    write(0, -1, { "$ " .. cmd_args, "" })
 
     vim.api.nvim_buf_set_extmark(buf, exec_ns, 0, 0, {
         end_col = 1,
@@ -71,11 +60,29 @@ vim.api.nvim_create_user_command("X", function(opts)
     })
 
     vim.api.nvim_buf_set_extmark(buf, exec_ns, 0, 2, {
-        end_col = 2 + #opts.args,
+        end_col = 2 + #cmd_args,
         hl_group = "ExecCommand",
     })
 
-    vim.api.nvim_set_current_buf(buf)
+    vim.api.nvim_create_autocmd("CmdlineEnter", {
+        once = true,
+        callback = function()
+            if
+                vim.api.nvim_buf_is_valid(buf)
+                and vim.api.nvim_win_is_valid(win_id)
+                and vim.api.nvim_win_get_buf(win_id) == buf
+            then
+                vim.api.nvim_win_close(win_id, true)
+            end
+        end,
+    })
+
+    return buf, write
+end
+
+vim.api.nvim_create_user_command("X", function(opts)
+    local script = build_script(opts.args)
+    local buf, write = setup_exec_window(opts.args)
 
     local function feed(data, hl)
         if not vim.api.nvim_buf_is_valid(buf) then
@@ -98,49 +105,37 @@ vim.api.nvim_create_user_command("X", function(opts)
             end
         end
 
-        -- Follow output
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-            if vim.api.nvim_win_get_buf(win) == buf then
-                local cur = vim.api.nvim_win_get_cursor(win)
-                if cur[1] >= last - 1 then
-                    vim.api.nvim_win_set_cursor(
-                        win,
-                        { vim.api.nvim_buf_line_count(buf), 0 }
-                    )
-                end
+        local cur_win = vim.api.nvim_get_current_win()
+        if vim.api.nvim_win_get_buf(cur_win) == buf then
+            local cur = vim.api.nvim_win_get_cursor(cur_win)
+            if cur[1] >= last - 1 then
+                vim.api.nvim_win_set_cursor(
+                    cur_win,
+                    { vim.api.nvim_buf_line_count(buf), 0 }
+                )
             end
         end
-    end
-
-    -- Run `fn` on the main loop, but only if this invocation is still current.
-    local function schedule_current(fn)
-        vim.schedule(function()
-            if gen == exec_gen then
-                fn()
-            end
-        end)
     end
 
     local function on_data(hl)
         return function(_, data)
             if data then
-                schedule_current(function() feed(data, hl) end)
+                vim.schedule(function() feed(data, hl) end)
             end
         end
     end
 
-    exec_job = vim.system({ "zsh", "-c", script }, {
+    vim.system({ "zsh", "-c", script }, {
         text = true,
         stdout = on_data(nil),
         stderr = on_data("DiagnosticError"),
     }, function(obj)
-        schedule_current(function()
-            feed(("\n[exit %d]\n"):format(obj.code), "ExecExit")
-            exec_job = nil
-        end)
+        vim.schedule(
+            function() feed(("\n[exit %d]\n"):format(obj.code), "ExecExit") end
+        )
     end)
 end, {
     nargs = "+",
     complete = "shellcmd",
-    desc = "Async zsh -c with $ZSH_CUSTOM sources into a scratch buffer",
+    desc = "Async zsh -c with $ZSH_CUSTOM sources into a new horizontal split",
 })
