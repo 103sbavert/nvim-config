@@ -91,7 +91,7 @@ function M.FormatBuffer(bufnr, async, range)
     local opts = {
         bufnr = bufnr,
         async = async or false,
-        name = has_nonels and "null-ls" or nil,
+        id = has_nonels and clients[1].id or nil,
     }
 
     if range then
