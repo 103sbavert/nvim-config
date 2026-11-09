@@ -118,6 +118,15 @@ do
     -- Don't wrap the text
     vim.o.wrap = false
 
+    -- Cosmetic diagnostic configuration
+    vim.diagnostic.config({
+        virtual_text = false,
+        signs = {
+            text = require("config.utils").lsp_diagnostic_glyphs[vim.g.have_nerd_font],
+        },
+        severity_sort = true,
+    })
+
     -- set $EDITOR and $GIT_EDITOR to allow external commands launched from
     -- within Neovim to use the running Neovim instance instead of opening
     -- nested instances
