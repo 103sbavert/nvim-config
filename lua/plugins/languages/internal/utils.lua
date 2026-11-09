@@ -1,11 +1,9 @@
 local M = {}
 
--- Enable the following language servers
 --- @type table<string, vim.lsp.Config>
 M.LsConfig = {
     gitlab_ci_ls = {},
     pyright = {},
-    stylua = {},
     phpactor = {},
     vtsls = {},
     eslint = {},
@@ -32,7 +30,6 @@ M.LsConfig = {
     gopls = {
         settings = {
             gopls = {
-                gofumpt = true,
                 semanticTokens = true,
                 hints = {
                     assignVariableTypes = true,
@@ -52,10 +49,6 @@ M.LsConfig = {
         },
     },
     lua_ls = {
-        on_attach = function(client)
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-        end,
         on_init = function(client)
             local lang_utils = require("plugins.languages.internal.utils")
 
@@ -82,14 +75,41 @@ M.LsConfig = {
     },
 }
 
+--- Formats buffers strictly using the remaining formatting provider (none-ls)
+--- @param bufnr number ID of the buffer to format
+--- @param async boolean? Whether to run the formatting asynchronously
+--- @param range? table Optional explicit range containing {start_line, end_line}
+function M.FormatBuffer(bufnr, async, range)
+    local clients = vim.lsp.get_clients({
+        bufnr = bufnr,
+        name = "null-ls",
+    })
+
+    local has_nonels = clients and #clients > 0
+
+    --- @type vim.lsp.buf.format.Opts
+    local opts = {
+        bufnr = bufnr,
+        async = async or false,
+        name = has_nonels and "null-ls" or nil,
+    }
+
+    if range then
+        opts.range = {
+            ["start"] = { range.start_line, 0 },
+            ["end"] = { range.end_line, 0 },
+        }
+    end
+
+    vim.lsp.buf.format(opts)
+    return 0
+end
+
 --- @param key string
 --- @param lsp_config LspKeyConfig
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function map_if_capable(key, lsp_config, client, bufnr)
-    -- Gate initial mapping on the attaching client, but resolve live
-    -- clients at invoke time so re-attach (e.g. dynamic registration)
-    -- never leaves a keymap bound to a stale client object.
     if
         lsp_config.capability
         and not client:supports_method(lsp_config.capability, bufnr)

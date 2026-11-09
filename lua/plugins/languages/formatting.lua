@@ -1,127 +1,97 @@
 local getutils = function() return require("plugins.languages.internal.utils") end
 
--- prettierd config cache path
--- NOTE: prettierd does not accept config as cmdline args, using this is the
--- best option we have
-local prettierd_config_cache = {}
-
---- @param indent integer
---- @return string path Absolute path to a prettierd config file requesting `indent` as tabWidth.
-local function get_prettierd_config_path(indent)
-    local cached = prettierd_config_cache[indent]
-    if cached then
-        return cached
-    end
-
-    local path = vim.fs.joinpath(
-        vim.fn.stdpath("cache"),
-        string.format("prettierd-tabwidth-%d.json", indent)
-    )
-
-    if not vim.uv.fs_stat(path) then
-        vim.fn.writefile({ vim.fn.json_encode({ tabWidth = indent }) }, path)
-    end
-
-    prettierd_config_cache[indent] = path
-    return path
-end
-
 --- @type LazySpec
 return {
-    "stevearc/conform.nvim",
-    main = "conform",
-    --- @type conform.setupOpts
-    opts = {
-        notify_on_error = false,
-        default_format_opts = {
-            lsp_format = "fallback", -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
-        },
-        format_on_save = {
-            async = false,
-            timeout_ms = 500,
-        },
-        formatters_by_ft = {
-            -- LS formatters
-            lua = { lsp_format = "prefer" },
-            go = { lsp_format = "prefer" },
-            typst = { lsp_format = "prefer" },
-            -- Custom/CLI formatters
-            javascript = { "prettierd" },
-            typescript = { "prettierd" },
-            javascriptreact = { "prettierd" },
-            typescriptreact = { "prettierd" },
-            json = { "prettierd" },
-            jsonc = { "prettierd" },
-            css = { "prettierd" },
-            graphql = { "prettierd" },
-            markdown = { "prettierd" },
-            yaml = { "prettierd" },
-            toml = { "taplo" },
-            python = { "isort" },
-            sh = { "shfmt" },
-            bash = { "shfmt" },
-            zsh = { "shfmt" },
-        },
-        formatters = {
-            shfmt = {
-                args = function(_, ctx)
-                    return {
-                        "-i",
-                        tostring(getutils().get_indent(ctx.buf)),
-                        "-ci",
-                    }
-                end,
-            },
-            prettierd = {
-                env = function(_, ctx)
-                    return {
-                        PRETTIERD_DEFAULT_CONFIG = get_prettierd_config_path(
-                            getutils().get_indent(ctx.buf)
-                        ),
-                    }
-                end,
-            },
-            taplo = {
-                args = function(_, ctx)
-                    local indent_string =
-                        string.rep(" ", getutils().get_indent(ctx.buf))
-                    return {
-                        "fmt",
-                        "--option",
-                        "indent_string=" .. indent_string,
-                        "-",
-                    }
-                end,
-            },
+    "nvimtools/none-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    cmd = { "Format" },
+    keys = {
+        {
+            "<leader>f",
+            "<CMD>Format<CR>",
+            desc = "[f]ormat buffer",
+            mode = "n",
         },
     },
-    config = function(plugin, opts)
-        --- @module "conform"
-        local conform = require(plugin.main)
-        conform.setup(opts)
-
+    init = function()
         local mason_formatters = {
             "shfmt",
-            "taplo",
-            "prettierd",
+            "prettier",
             "isort",
+            "goimports",
+            "gofumpt",
+            "stylua",
         }
 
         MasonInstall(mason_formatters)
 
+        _G.format_expr_fn = function()
+            local utils = require("plugins.languages.internal.utils")
+            local bufnr = vim.api.nvim_get_current_buf()
+            local range = nil
+
+            if vim.v.lnum > 0 and vim.v.count > 0 then
+                range = {
+                    start_line = vim.v.lnum,
+                    end_line = vim.v.lnum + vim.v.count - 1,
+                }
+            end
+            return utils.FormatBuffer(bufnr, false, range)
+        end
+
+        vim.o.formatexpr = "v:lua.format_expr_fn()"
+    end,
+    config = function()
+        local null_ls = require("null-ls")
+        local b = null_ls.builtins
+        local utils = getutils()
+
+        local formatters = {
+            b.formatting.prettier.with({
+                extra_args = function(ctx)
+                    return {
+                        "--tab-width",
+                        tostring(utils.get_indent(ctx.bufnr)),
+                    }
+                end,
+                filetypes = {
+                    "javascript",
+                    "typescript",
+                    "javascriptreact",
+                    "typescriptreact",
+                    "json",
+                    "jsonc",
+                    "css",
+                    "graphql",
+                    "markdown",
+                    "yaml",
+                },
+            }),
+            b.formatting.shfmt.with({
+                extra_args = function(ctx)
+                    return {
+                        "-i",
+                        tostring(utils.get_indent(ctx.bufnr)),
+                        "-ci",
+                    }
+                end,
+            }),
+            b.formatting.isort,
+            b.formatting.stylua,
+            b.formatting.goimports,
+            b.formatting.gofumpt,
+        }
+
+        null_ls.setup({
+            sources = formatters,
+        })
+
         vim.api.nvim_create_user_command(
             "Format",
-            function() conform.format({ async = true }) end,
-            { desc = "Format current buffer or visual selection" }
+            function() utils.FormatBuffer(vim.api.nvim_get_current_buf(), true) end,
+            {
+                desc = "Format current buffer using none-ls",
+            }
         )
-
-        vim.keymap.set(
-            { "n", "v" },
-            "<leader>f",
-            function() conform.format({ async = true }) end,
-            { desc = "[f]ormat" }
-        )
-
-        vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,
 }

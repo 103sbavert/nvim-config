@@ -146,10 +146,20 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
--- Servers that perform dynamic registration may register capabilities any
--- time after LspAttach. Re-run the on-attach logic for every buffer the
--- client is already attached to when that happens.
--- See: https://neovim.io/doc/user/lsp.html (LspAttach)
+local lsp_fmt_grp =
+    vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = lsp_fmt_grp,
+    pattern = "*",
+    callback = function(args)
+        require("plugins.languages.internal.utils").FormatBuffer(
+            args.buf,
+            false
+        )
+    end,
+})
+
 vim.lsp.handlers["client/registerCapability"] = (function(overridden)
     return function(err, res, ctx)
         local result = overridden(err, res, ctx)
