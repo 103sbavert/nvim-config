@@ -59,6 +59,6 @@ return {
         require(plugin.main).setup(opts)
         require("plugins.chezmoi.statusline")
         require("plugins.chezmoi.template")
-        require("plugins.chezmoi.aucmd")
+        require("plugins.chezmoi.autocmd")
     end,
 }
