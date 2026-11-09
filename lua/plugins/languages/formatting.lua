@@ -1,18 +1,8 @@
-local getutils = function() return require("plugins.languages.internal.utils") end
-
 --- @type LazySpec
 return {
     "nvimtools/none-ls.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
-    cmd = { "Format" },
-    keys = {
-        {
-            "<leader>f",
-            "<CMD>Format<CR>",
-            desc = "[f]ormat buffer",
-            mode = "n",
-        },
-    },
+    event = { "BufReadPost", "BufNewFile" },
     init = function()
         local mason_formatters = {
             "shfmt",
@@ -27,7 +17,6 @@ return {
 
         _G.format_expr_fn = function()
             local utils = require("plugins.languages.internal.utils")
-            local bufnr = vim.api.nvim_get_current_buf()
             local range = nil
 
             if vim.v.lnum > 0 and vim.v.count > 0 then
@@ -36,7 +25,10 @@ return {
                     end_line = vim.v.lnum + vim.v.count - 1,
                 }
             end
-            return utils.FormatBuffer(bufnr, false, range)
+            return utils.FormatBuffer(vim.api.nvim_get_current_buf(), {
+                async = false,
+                range = range,
+            })
         end
 
         vim.o.formatexpr = "v:lua.format_expr_fn()"
@@ -44,9 +36,9 @@ return {
     config = function()
         local null_ls = require("null-ls")
         local b = null_ls.builtins
-        local utils = getutils()
+        local utils = require("plugins.languages.internal.utils")
 
-        local formatters = {
+        local sources = {
             b.formatting.prettier.with({
                 extra_args = function(ctx)
                     return {
@@ -83,15 +75,35 @@ return {
         }
 
         null_ls.setup({
-            sources = formatters,
-        })
+            sources = sources,
+            --- @param client vim.lsp.Client
+            --- @param bufnr integer
+            on_attach = function(client, bufnr)
+                if
+                    not client:supports_method("textDocument/formatting", bufnr)
+                then
+                    return
+                end
 
-        vim.api.nvim_create_user_command(
-            "Format",
-            function() utils.FormatBuffer(vim.api.nvim_get_current_buf(), true) end,
-            {
-                desc = "Format current buffer using none-ls",
-            }
-        )
+                local format = function()
+                    utils.FormatBuffer(bufnr, {
+                        client_id = client.id,
+                        async = true,
+                    })
+                end
+
+                vim.keymap.set("n", "<leader>f", format, {
+                    buffer = bufnr,
+                    desc = "[f]ormat buffer",
+                })
+
+                vim.api.nvim_buf_create_user_command(
+                    bufnr,
+                    "Format",
+                    format,
+                    { desc = "Format current buffer using none-ls" }
+                )
+            end,
+        })
     end,
 }

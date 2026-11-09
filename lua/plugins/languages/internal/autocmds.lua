@@ -1,3 +1,4 @@
+local utils = require("plugins.languages.internal.utils")
 local function highlight_cursor_symbol(client, bufnr)
     local win = vim.api.nvim_get_current_win()
     if vim.api.nvim_win_get_buf(win) ~= bufnr then
@@ -60,7 +61,7 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
-    require("plugins.languages.internal.utils").map_lsp_actions(client, bufnr)
+    utils.map_lsp_actions(client, bufnr)
 
     if client:supports_method("textDocument/documentHighlight", bufnr) then
         local highlight_augroup = vim.api.nvim_create_augroup(
@@ -146,18 +147,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
-local lsp_fmt_grp =
-    vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
-
 vim.api.nvim_create_autocmd("BufWritePre", {
-    group = lsp_fmt_grp,
-    pattern = "*",
-    callback = function(args)
-        require("plugins.languages.internal.utils").FormatBuffer(
-            args.buf,
-            false
-        )
-    end,
+    group = utils.LspFormatGrp,
+    callback = function(args) utils.FormatBuffer(args.buf, { async = false }) end,
 })
 
 vim.lsp.handlers["client/registerCapability"] = (function(overridden)

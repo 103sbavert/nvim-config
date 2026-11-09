@@ -75,34 +75,55 @@ M.LsConfig = {
     },
 }
 
---- Formats buffers strictly using the remaining formatting provider (none-ls)
---- @param bufnr number ID of the buffer to format
---- @param async boolean? Whether to run the formatting asynchronously
---- @param range? table Optional explicit range containing {start_line, end_line}
-function M.FormatBuffer(bufnr, async, range)
-    local clients = vim.lsp.get_clients({
-        bufnr = bufnr,
-        name = "null-ls",
-    })
+M.LspFormatGrp =
+    vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
 
-    local has_nonels = clients and #clients > 0
+--- @class utils.FormatOpts
+--- @field client_id? integer Assume this client supports formatting; skip capability checks and pin it.
+--- @field async? boolean
+--- @field range? { start_line: integer, end_line: integer }
 
-    --- @type vim.lsp.buf.format.Opts
-    local opts = {
+--- Formats bufnr. With `client_id`, formats exclusively through that client
+--- Otherwise prefers none-ls when it supports formatting, falling back to any
+--- other attached client.
+--- @param bufnr integer The buffer to format.
+--- @param opts? utils.FormatOpts
+function M.FormatBuffer(bufnr, opts)
+    opts = opts or {}
+
+    local format_opts = {
         bufnr = bufnr,
-        async = async or false,
-        id = has_nonels and clients[1].id or nil,
+        async = opts.async == true,
+        formatting_options = {
+            tabSize = M.get_indent(bufnr),
+            insertSpaces = vim.bo[bufnr].expandtab,
+        },
     }
 
-    if range then
-        opts.range = {
-            ["start"] = { range.start_line, 0 },
-            ["end"] = { range.end_line, 0 },
+    if opts.client_id then
+        format_opts.id = opts.client_id
+    else
+        local nonels = vim.lsp.get_clients({
+            bufnr = bufnr,
+            name = "null-ls",
+            method = "textDocument/formatting",
+        })[1]
+        if
+            nonels
+            and nonels:supports_method("textDocument/formatting", bufnr)
+        then
+            format_opts.id = nonels.id
+        end
+    end
+
+    if opts.range then
+        format_opts.range = {
+            ["start"] = { opts.range.start_line, 0 },
+            ["end"] = { opts.range.end_line, 0 },
         }
     end
 
-    vim.lsp.buf.format(opts)
-    return 0
+    vim.lsp.buf.format(format_opts)
 end
 
 --- @param key string
