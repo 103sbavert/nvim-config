@@ -18,6 +18,7 @@ return {
             "gofumpt",
             "stylua",
             "golangci-lint",
+            "gitlint",
         }
 
         MasonInstall(mason_tools)
@@ -71,8 +72,6 @@ return {
                 end,
             }),
 
-            eslint_diagnostics,
-
             b.formatting.shfmt.with({
                 extra_args = function(ctx)
                     return {
@@ -83,17 +82,28 @@ return {
                 end,
             }),
 
+            b.diagnostics.golangci_lint.with({
+                extra_args = {
+                    "--enable=nakedret,nonamedreturns",
+                },
+            }),
+
+            -- b.diagnostics.gitlint,
+            b.diagnostics.gitlint.with({
+                extra_args = {
+                    "--ignore",
+                    "B1", -- commit-msg hook wraps the body
+                    "B6", -- body-is-missing
+                },
+            }),
+
             b.formatting.isort,
             b.formatting.stylua,
             b.formatting.goimports,
             b.formatting.gofumpt,
             b.diagnostics.markdownlint_cli2,
 
-            b.diagnostics.golangci_lint.with({
-                extra_args = {
-                    "--enable=nakedret,nonamedreturns",
-                },
-            }),
+            eslint_diagnostics,
         }
 
         null_ls.setup({
