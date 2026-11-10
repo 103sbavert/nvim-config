@@ -2,8 +2,10 @@
 return {
     "nvim-mini/mini.nvim",
     dependencies = {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        branch = "main",
+        {
+            "nvim-treesitter/nvim-treesitter-textobjects",
+            branch = "main",
+        },
     },
     config = function()
         require("plugins.mini_nvim.around_in")

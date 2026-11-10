@@ -5,10 +5,7 @@ return {
     {
         "mfussenegger/nvim-dap",
         dependencies = {
-            {
-                "theHamsta/nvim-dap-virtual-text",
-                config = true,
-            },
+            "theHamsta/nvim-dap-virtual-text",
         },
         keys = {
             {
