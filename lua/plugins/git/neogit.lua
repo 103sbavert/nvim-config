@@ -16,6 +16,8 @@ return {
             desc = "[c]ommit staged",
         },
     },
+    --- @module "neogit"
+    --- @type NeogitConfig
     opts = {
         disable_insert_on_commit = true,
         graph_style = "kitty",
