@@ -21,6 +21,7 @@ return {
     opts = {
         disable_insert_on_commit = true,
         graph_style = "kitty",
+        remember_settings = false,
         process_spinner = true,
         integrations = {
             snacks = true,
