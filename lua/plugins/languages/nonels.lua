@@ -1,12 +1,18 @@
 --- @type LazySpec
 return {
     "nvimtools/none-ls.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvimtools/none-ls-extras.nvim",
+    },
     event = { "BufReadPost", "BufNewFile" },
+
     init = function()
-        local mason_formatters = {
+        local mason_tools = {
             "shfmt",
             "prettier",
+            "eslint_d",
+            "markdownlint-cli2",
             "isort",
             "goimports",
             "gofumpt",
@@ -14,7 +20,7 @@ return {
             "golangci-lint",
         }
 
-        MasonInstall(mason_formatters)
+        MasonInstall(mason_tools)
 
         _G.format_expr_fn = function()
             local utils = require("plugins.languages.internal.utils")
@@ -26,6 +32,7 @@ return {
                     end_line = vim.v.lnum + vim.v.count - 1,
                 }
             end
+
             return utils.FormatBuffer(vim.api.nvim_get_current_buf(), {
                 async = false,
                 range = range,
@@ -34,19 +41,16 @@ return {
 
         vim.o.formatexpr = "v:lua.format_expr_fn()"
     end,
+
     config = function()
         local null_ls = require("null-ls")
         local b = null_ls.builtins
         local utils = require("plugins.languages.internal.utils")
 
+        local eslint_diagnostics = require("none-ls.diagnostics.eslint_d")
+
         local sources = {
             b.formatting.prettier.with({
-                extra_args = function(ctx)
-                    return {
-                        "--tab-width",
-                        tostring(utils.get_indent(ctx.bufnr)),
-                    }
-                end,
                 filetypes = {
                     "javascript",
                     "typescript",
@@ -59,7 +63,16 @@ return {
                     "markdown",
                     "yaml",
                 },
+                extra_args = function(ctx)
+                    return {
+                        "--tab-width",
+                        tostring(utils.get_indent(ctx.bufnr)),
+                    }
+                end,
             }),
+
+            eslint_diagnostics,
+
             b.formatting.shfmt.with({
                 extra_args = function(ctx)
                     return {
@@ -69,10 +82,13 @@ return {
                     }
                 end,
             }),
+
             b.formatting.isort,
             b.formatting.stylua,
             b.formatting.goimports,
             b.formatting.gofumpt,
+            b.diagnostics.markdownlint_cli2,
+
             b.diagnostics.golangci_lint.with({
                 extra_args = {
                     "--enable=nakedret,nonamedreturns",
@@ -82,6 +98,7 @@ return {
 
         null_ls.setup({
             sources = sources,
+
             --- @param client vim.lsp.Client
             --- @param bufnr integer
             on_attach = function(client, bufnr)

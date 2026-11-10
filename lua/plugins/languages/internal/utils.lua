@@ -76,7 +76,6 @@ M.LsConfig = {
     pyright = {},
     phpactor = {},
     vtsls = {},
-    eslint = {},
     bashls = {},
     markdown_oxide = {},
     tinymist = {
