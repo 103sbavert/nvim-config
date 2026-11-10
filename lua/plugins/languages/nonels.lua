@@ -92,8 +92,7 @@ return {
             b.diagnostics.gitlint.with({
                 extra_args = {
                     "--ignore",
-                    "B1", -- commit-msg hook wraps the body
-                    "B6", -- body-is-missing
+                    "body-max-line-length,body-is-missing",
                 },
             }),
 
