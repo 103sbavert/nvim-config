@@ -18,20 +18,7 @@ return {
         dependencies = {
             "config.utils",
             "j-hui/fidget.nvim",
-            {
-                "rachartier/tiny-inline-diagnostic.nvim",
-                --- @module "tiny-inline-diagnostic"
-                --- @type PluginConfig
-                opts = {
-                    preset = "modern",
-                    options = {
-                        throttle = 500,
-                        add_messages = {
-                            display_count = true,
-                        },
-                    },
-                },
-            },
+            "rachartier/tiny-inline-diagnostic.nvim",
         },
         event = "VimEnter",
         init = function()

@@ -41,6 +41,22 @@ local small_plugins = {
         config = true,
     },
     {
+        --- @module "tiny-inline-diagnostic"
+        "rachartier/tiny-inline-diagnostic.nvim",
+        event = "LspAttach",
+        --- @type PluginConfig
+        opts = {
+            preset = "modern",
+            options = {
+                throttle = 500,
+                add_messages = {
+                    display_count = true,
+                },
+            },
+        },
+        config = true,
+    },
+    {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = true,
