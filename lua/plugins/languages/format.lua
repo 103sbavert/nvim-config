@@ -11,6 +11,7 @@ return {
             "goimports",
             "gofumpt",
             "stylua",
+            "golangci-lint",
         }
 
         MasonInstall(mason_formatters)
@@ -72,6 +73,11 @@ return {
             b.formatting.stylua,
             b.formatting.goimports,
             b.formatting.gofumpt,
+            b.diagnostics.golangci_lint.with({
+                extra_args = {
+                    "--enable=nakedret,nonamedreturns",
+                },
+            }),
         }
 
         null_ls.setup({
