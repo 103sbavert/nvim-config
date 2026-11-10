@@ -139,6 +139,11 @@ do
         vim.env.GIT_EDITOR = git_editor
         vim.env.EDITOR = editor_cmd
     end
+
+    -- disable '[[/]]' mappings from runtime's go ftplugin
+    --
+    -- See: $VIMRUNTIME/ftplugin/go.vim
+    vim.g.no_go_maps = 1
 end
 
 require("config.autocmds")
