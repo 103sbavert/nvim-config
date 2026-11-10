@@ -141,6 +141,7 @@ M.LsConfig = {
     },
 }
 
+local nonels_client_name = "null-ls"
 M.LspFormatGrp =
     vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
 
@@ -157,30 +158,35 @@ M.LspFormatGrp =
 function M.FormatBuffer(bufnr, opts)
     opts = opts or {}
 
+    local client_id = opts.client_id
+    if not client_id then
+        local fmt_clients = vim.lsp.get_clients({
+            bufnr = bufnr,
+            method = "textDocument/formatting",
+        })
+
+        if #fmt_clients == 0 then
+            return
+        end
+
+        for i = 1, #fmt_clients do
+            local client = fmt_clients[i]
+            if client.name == nonels_client_name then
+                client_id = client.id
+                break
+            end
+        end
+    end
+
     local format_opts = {
         bufnr = bufnr,
         async = opts.async == true,
+        id = client_id,
         formatting_options = {
             tabSize = M.get_indent(bufnr),
             insertSpaces = vim.bo[bufnr].expandtab,
         },
     }
-
-    if opts.client_id then
-        format_opts.id = opts.client_id
-    else
-        local nonels = vim.lsp.get_clients({
-            bufnr = bufnr,
-            name = "null-ls",
-            method = "textDocument/formatting",
-        })[1]
-        if
-            nonels
-            and nonels:supports_method("textDocument/formatting", bufnr)
-        then
-            format_opts.id = nonels.id
-        end
-    end
 
     if opts.range then
         format_opts.range = {
