@@ -7,9 +7,10 @@ local function dk(k) return "<leader>gd" .. k end
 --- @type LazySpec
 return {
     "esmuellert/codediff.nvim",
+    cmd = {
+        "CodeDiff",
+    },
     dependencies = {
-        "NeogitOrg/neogit",
-        "folke/snacks.nvim",
         "config.utils",
     },
     keys = {

@@ -4,9 +4,6 @@ local show_hidden =
 --- @type LazySpec
 return {
     "folke/snacks.nvim",
-    dependencies = {
-        "esmuellert/codediff.nvim",
-    },
     priority = 1000,
     lazy = false,
     keys = function()

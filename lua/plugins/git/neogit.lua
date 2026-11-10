@@ -4,7 +4,6 @@ return {
     main = "neogit",
     lazy = true,
     dependencies = {
-        "esmuellert/codediff.nvim",
         "m00qek/baleia.nvim",
         "folke/snacks.nvim",
     },
