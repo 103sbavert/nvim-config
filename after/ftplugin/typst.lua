@@ -1,3 +1,7 @@
+if vim.b.did_typst_ftplugin then
+    return
+end
+
 if vim.fn.executable("typst") == 0 then
     vim.notify(
         "Typst CLI is not installed, skipping TypstCompile user command registration",
@@ -87,3 +91,5 @@ vim.api.nvim_buf_create_user_command(0, "TypstCompile", compile_typst, {
     bang = true,
     desc = "Compile provided file (default to current buffer)",
 })
+
+vim.b.did_typst_ftplugin = true

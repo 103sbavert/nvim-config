@@ -1,3 +1,7 @@
+if vim.b.did_markdown_ftplugin then
+    return
+end
+
 if vim.fn.executable("pandoc") == 0 then
     vim.notify(
         "Pandoc CLI is not installed, skipping PandocCompile user command registration",
@@ -174,3 +178,5 @@ vim.api.nvim_buf_create_user_command(0, "PandocCompile", compile_markdown, {
     complete = "file",
     desc = "Compile provided Markdown file using Pandoc with GFM reader",
 })
+
+vim.b.did_markdown_ftplugin = true
