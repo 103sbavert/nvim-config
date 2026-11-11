@@ -1,4 +1,13 @@
 local utils = require("plugins.languages.internal.utils")
+
+_G.format_expr_fn = function()
+    if vim.fn.mode() == "i" then
+        return 1
+    end
+    utils.FormatBuffer(vim.api.nvim_get_current_buf(), false)
+    return 0
+end
+
 local function highlight_cursor_symbol(client, bufnr)
     local win = vim.api.nvim_get_current_win()
     if vim.api.nvim_win_get_buf(win) ~= bufnr then
@@ -62,6 +71,8 @@ end
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
     utils.map_lsp_actions(client, bufnr)
+
+    vim.bo[bufnr].formatexpr = "v:lua.format_expr_fn()"
 
     if client:supports_method("textDocument/documentHighlight", bufnr) then
         local highlight_augroup = vim.api.nvim_create_augroup(
@@ -149,7 +160,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = utils.LspFormatGrp,
-    callback = function(args) utils.FormatBuffer(args.buf, { async = false }) end,
+    callback = function(args) utils.FormatBuffer(args.buf, false) end,
 })
 
 vim.lsp.handlers["client/registerCapability"] = (function(overridden)

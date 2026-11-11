@@ -1,5 +1,31 @@
 local M = {}
 
+local CTRL_V = require("config.utils").CTRL_V
+local CTRL_S = require("config.utils").CTRL_S
+
+--- @type table<string, string>
+local ft_formatters = {
+    typst = "tinymist",
+    sh = "shuck",
+    bash = "shuck",
+    zsh = "shuck",
+    ksh = "shuck",
+    javascript = "null-ls", -- none-ls source: prettier
+    typescript = "null-ls", -- none-ls source: prettier
+    javascriptreact = "null-ls", -- none-ls source: prettier
+    typescriptreact = "null-ls", -- none-ls source: prettier
+    json = "null-ls", -- none-ls source: prettier
+    jsonc = "null-ls", -- none-ls source: prettier
+    css = "null-ls", -- none-ls source: prettier
+    graphql = "null-ls", -- none-ls source: prettier
+    markdown = "null-ls", -- none-ls source: prettier
+    yaml = "null-ls", -- none-ls source: prettier
+    python = "null-ls", -- none-ls source: isort
+    go = "null-ls", -- none-ls source: goimports, gofumpt
+    lua = "null-ls", -- none-ls source: stylua
+}
+local VISUAL_LIKE_MODES = { "v", "V", "s", "S", CTRL_V, CTRL_S }
+
 local golang_analyses = {
     -- Staticcheck Quick Fixes
     QF1005 = true, -- Expand call to math.Pow (https://staticcheck.dev/docs/checks/#QF1005)
@@ -76,11 +102,7 @@ M.LsConfig = {
     pyright = {},
     phpactor = {},
     vtsls = {},
-    shuck = {
-        on_attach = function(client, bufnr)
-            vim.b[bufnr].fmt_client_id = client.id
-        end,
-    },
+    shuck = {},
     markdown_oxide = {},
     tinymist = {
         settings = {
@@ -145,57 +167,66 @@ M.LsConfig = {
     },
 }
 
-local nonels_client_name = "null-ls"
 M.LspFormatGrp =
     vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
 
---- @class utils.FormatOpts
---- @field client_id? integer Assume this client supports formatting; skip capability checks and pin it.
---- @field async? boolean
---- @field range? { start_line: integer, end_line: integer }
-
---- Formats bufnr. With `client_id`, formats exclusively through that client
---- Otherwise prefers none-ls when it supports formatting, falling back to any
---- other attached client.
---- @param bufnr integer The buffer to format.
---- @param opts? utils.FormatOpts
-function M.FormatBuffer(bufnr, opts)
-    opts = opts or {}
-
-    local client_id = opts.client_id
-    if not client_id then
-        local fmt_clients = vim.lsp.get_clients({
-            bufnr = bufnr,
-            method = "textDocument/formatting",
-        })
-
-        if #fmt_clients == 0 then
-            return
-        end
-
-        for i = 1, #fmt_clients do
-            local client = fmt_clients[i]
-            if client.name == nonels_client_name then
-                client_id = client.id
-                break
-            end
-        end
+--- @param range? table
+--- @return integer? start_line, integer? end_line
+local function caller_range(range)
+    if range and range.start_line and range.end_line then
+        return range.start_line, range.end_line
     end
+end
+
+--- @return integer? start_line, integer? end_line
+local function visual_range()
+    if not vim.tbl_contains(VISUAL_LIKE_MODES, vim.fn.mode()) then
+        return
+    end
+
+    local a = vim.fn.getpos("v")[2]
+    local b = vim.fn.getpos(".")[2]
+    return math.min(a, b), math.max(a, b)
+end
+
+--- @return integer? start_line, integer? end_line
+local function formatexpr_range()
+    if vim.v.lnum > 0 and vim.v.count > 0 then
+        return vim.v.lnum, vim.v.lnum + vim.v.count - 1
+    end
+end
+
+--- Formats bufnr, optionally asynchronously. If selection ranges are present,
+--- only formats the selecton.
+--- @param bufnr? integer Buffer to format (Default: current buffer)
+--- @param async? boolean Whether to format asynchronously (default: false)
+--- @param range? table Buffer range to format (Default: auto-detected)
+function M.FormatBuffer(bufnr, async, range)
+    async = async == true
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
 
     local format_opts = {
         bufnr = bufnr,
-        async = opts.async == true,
-        id = client_id,
+        async = async,
+        name = ft_formatters[vim.bo[bufnr].filetype],
         formatting_options = {
             tabSize = M.get_indent(bufnr),
             insertSpaces = vim.bo[bufnr].expandtab,
         },
     }
 
-    if opts.range then
+    local start_line, end_line = caller_range(range)
+    if not (start_line and end_line) then
+        start_line, end_line = visual_range()
+    end
+    if not (start_line and end_line) then
+        start_line, end_line = formatexpr_range()
+    end
+
+    if start_line and end_line then
         format_opts.range = {
-            ["start"] = { opts.range.start_line, 0 },
-            ["end"] = { opts.range.end_line, 0 },
+            ["start"] = { start_line, 0 },
+            ["end"] = { end_line, #vim.fn.getline(end_line) },
         }
     end
 

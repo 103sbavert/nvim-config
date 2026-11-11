@@ -38,6 +38,16 @@ M.lsp_jump = {
         capability = "textDocument/codeAction",
         modes = { "n", "v" },
     },
+    ["<leader>f"] = {
+        description = "[f]ormat buffer",
+        modes = { "n", "v" },
+        jump_action = function()
+            require("plugins.languages.internal.utils").FormatBuffer(
+                vim.api.nvim_get_current_buf(),
+                true
+            )
+        end,
+    },
 }
 
 return M

@@ -22,25 +22,6 @@ return {
         }
 
         MasonInstall(mason_tools)
-
-        _G.format_expr_fn = function()
-            local utils = require("plugins.languages.internal.utils")
-            local range = nil
-
-            if vim.v.lnum > 0 and vim.v.count > 0 then
-                range = {
-                    start_line = vim.v.lnum,
-                    end_line = vim.v.lnum + vim.v.count - 1,
-                }
-            end
-
-            return utils.FormatBuffer(vim.api.nvim_get_current_buf(), {
-                async = false,
-                range = range,
-            })
-        end
-
-        vim.o.formatexpr = "v:lua.format_expr_fn()"
     end,
 
     config = function()
@@ -97,35 +78,6 @@ return {
 
         null_ls.setup({
             sources = sources,
-
-            --- @param client vim.lsp.Client
-            --- @param bufnr integer
-            on_attach = function(client, bufnr)
-                if
-                    not client:supports_method("textDocument/formatting", bufnr)
-                then
-                    return
-                end
-
-                local format = function()
-                    utils.FormatBuffer(bufnr, {
-                        client_id = client.id,
-                        async = true,
-                    })
-                end
-
-                vim.keymap.set("n", "<leader>f", format, {
-                    buffer = bufnr,
-                    desc = "[f]ormat buffer",
-                })
-
-                vim.api.nvim_buf_create_user_command(
-                    bufnr,
-                    "Format",
-                    format,
-                    { desc = "Format current buffer using none-ls" }
-                )
-            end,
         })
     end,
 }
