@@ -1,6 +1,5 @@
-local CTRL_V = vim.api.nvim_replace_termcodes("<C-V>", true, true, true)
-local CTRL_S = vim.api.nvim_replace_termcodes("<C-S>", true, true, true)
 local DEFAULT_LOC = "%2l:%-2v"
+local UT = require("config.utils")
 
 local statusline = require("mini.statusline")
 
@@ -20,11 +19,11 @@ statusline.section_location = function()
     -- getregionpos() only accepts visual types
     local vmode = mode == "s" and "v"
         or mode == "S" and "V"
-        or mode == CTRL_S and CTRL_V
+        or mode == UT.CTRL_S and UT.CTRL_V
         or mode
 
     -- fall back in non-visual-like modes
-    if not (vmode == "v" or vmode == "V" or vmode == CTRL_V) then
+    if not (vmode == "v" or vmode == "V" or vmode == UT.CTRL_V) then
         return DEFAULT_LOC
     end
 

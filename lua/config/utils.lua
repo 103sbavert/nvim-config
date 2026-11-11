@@ -1,5 +1,8 @@
 local M = {}
 
+M.CTRL_V = vim.api.nvim_replace_termcodes("<C-V>", true, true, true)
+M.CTRL_S = vim.api.nvim_replace_termcodes("<C-S>", true, true, true)
+
 M.default_ignored_dirs = {
     ["vendor"] = true,
     [".git"] = true,
