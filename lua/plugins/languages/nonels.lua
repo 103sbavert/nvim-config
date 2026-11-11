@@ -72,16 +72,6 @@ return {
                 end,
             }),
 
-            b.formatting.shfmt.with({
-                extra_args = function(ctx)
-                    return {
-                        "-i",
-                        tostring(utils.get_indent(ctx.bufnr)),
-                        "-ci",
-                    }
-                end,
-            }),
-
             b.diagnostics.golangci_lint.with({
                 extra_args = {
                     "--enable=nakedret,nonamedreturns",

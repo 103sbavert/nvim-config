@@ -76,7 +76,11 @@ M.LsConfig = {
     pyright = {},
     phpactor = {},
     vtsls = {},
-    bashls = {},
+    shuck = {
+        on_attach = function(client, bufnr)
+            vim.b[bufnr].fmt_client_id = client.id
+        end,
+    },
     markdown_oxide = {},
     tinymist = {
         settings = {
