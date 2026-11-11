@@ -133,11 +133,14 @@ do
     --
     -- See `:help vim.env`
     if vim.fn.executable("nvr") == 1 then
+        local visual_cmd = "nvr --remote-tab-silent"
         local editor_cmd = "nvr --remote-silent -o"
-        local git_editor = "nvr --remote-tab-wait-silent +'set bufhidden=wipe'"
+        local git_editor =
+            "nvr --remote-tab-wait-silent +'setlocal bufhidden=wipe'"
 
-        vim.env.GIT_EDITOR = git_editor
+        vim.env.VISUAL = visual_cmd
         vim.env.EDITOR = editor_cmd
+        vim.env.GIT_EDITOR = git_editor
     end
 
     -- disable '[[/]]' mappings from runtime's go ftplugin
