@@ -16,6 +16,8 @@ local ls_config = {
     lua_ls = lua_ls.lsp_config,
 }
 
+local mason_lsps = vim.list_extend(vim.tbl_keys(ls_config), { "roslyn_ls" })
+
 --- @type LazySpec
 return {
     {
@@ -26,13 +28,7 @@ return {
             "rachartier/tiny-inline-diagnostic.nvim",
         },
         event = "VimEnter",
-        init = function()
-            local configured_ls = vim.tbl_keys(ls_config)
-            local managed_ls = { "roslyn_ls" }
-            vim.list_extend(configured_ls, managed_ls)
-
-            MasonInstall(configured_ls)
-        end,
+        init = function() MasonInstall(mason_lsps) end,
         config = function()
             require("plugins.languages.internal.autocmds")
 

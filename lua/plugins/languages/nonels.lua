@@ -1,3 +1,16 @@
+local mason_tools = {
+    "shfmt",
+    "prettier",
+    "eslint_d",
+    "markdownlint-cli2",
+    "isort",
+    "goimports",
+    "gofumpt",
+    "stylua",
+    "golangci-lint",
+    "gitlint",
+}
+
 --- @type LazySpec
 return {
     "nvimtools/none-ls.nvim",
@@ -7,22 +20,7 @@ return {
     },
     event = { "BufReadPost", "BufNewFile" },
 
-    init = function()
-        local mason_tools = {
-            "shfmt",
-            "prettier",
-            "eslint_d",
-            "markdownlint-cli2",
-            "isort",
-            "goimports",
-            "gofumpt",
-            "stylua",
-            "golangci-lint",
-            "gitlint",
-        }
-
-        MasonInstall(mason_tools)
-    end,
+    init = function() MasonInstall(mason_tools) end,
 
     config = function()
         local null_ls = require("null-ls")
