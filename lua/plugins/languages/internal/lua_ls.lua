@@ -1,7 +1,7 @@
 local M = {}
 
 --- Checks if the given workspace root contains a dedicated Lua configuration file.
---- @param workspace_folders? table[]|string List of workspace folders provided by the LSP client.
+--- @param workspace_folders? lsp.WorkspaceFolder[]|string List of workspace folders provided by the LSP client.
 --- @return boolean has_config True if `.luarc.json` or `.luarc.jsonc` exists in the workspace root.
 function M.has_lua_config(workspace_folders)
     --- @type string
@@ -26,7 +26,7 @@ function M.has_lua_config(workspace_folders)
 end
 
 --- Determines whether the workspace root matches the active Neovim configuration directory.
---- @param workspace_folders? table[] List of workspace folders provided by the LSP client.
+--- @param workspace_folders? lsp.WorkspaceFolder[] List of workspace folders provided by the LSP client.
 --- @return boolean is_nvim True if the workspace path matches standard Neovim config path.
 local function is_nvim_config(workspace_folders)
     if workspace_folders and #workspace_folders > 0 then
@@ -38,7 +38,7 @@ local function is_nvim_config(workspace_folders)
     return false
 end
 
---- @type vim.lsp.Config
+--- @type table
 local nvim_lua_opts = {
     runtime = {
         version = "LuaJIT",

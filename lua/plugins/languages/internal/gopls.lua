@@ -1,5 +1,6 @@
 local M = {}
 
+--- @type table<string, boolean>
 local analyses = {
     -- Staticcheck Quick Fixes
     QF1005 = true, -- Expand call to math.Pow (https://staticcheck.dev/docs/checks/#QF1005)

@@ -9,7 +9,7 @@ M.filetypes = { "sh", "bash", "zsh" }
 local dialects = { bash = "bash", zsh = "zsh" }
 
 --- Builds `shuck format` args for stdin formatting of the buffer in params.
---- @param params table none-ls params (bufnr, bufname, ft).
+--- @param params { bufnr: integer, bufname: string, ft: string } none-ls params.
 --- @return string[] args
 function M.format_args(params)
     local name = params.bufname ~= "" and params.bufname

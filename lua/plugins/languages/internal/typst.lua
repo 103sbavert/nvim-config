@@ -1,7 +1,7 @@
 local M = {}
 
---- @param _ vim.lsp.Client
---- @param config vim.lsp.Config
+--- @param _ lsp.InitializeParams
+--- @param config vim.lsp.ClientConfig
 local function before_init(_, config)
     local font_paths = require("config.utils").get_env_paths(
         { config.root_dir, vim.fn.getcwd() },

@@ -11,6 +11,7 @@ end
 local attach_base = { type = "go", request = "attach", mode = "remote" }
 
 --- Finds the `main.go` package to debug, prompting only when ambiguous.
+--- @return string|thread
 local function detect_main()
     local cwd = vim.fn.getcwd(0, 0)
     local main_files =
