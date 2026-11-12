@@ -27,7 +27,8 @@ return {
     config = function()
         local null_ls = require("null-ls")
         local b = null_ls.builtins
-        local utils = require("plugins.languages.internal.utils")
+        local formatting = require("plugins.languages.internal.formatting")
+        local shuck = require("plugins.languages.internal.shuck")
 
         local eslint_diagnostics = require("none-ls.diagnostics.eslint_d")
 
@@ -38,13 +39,13 @@ return {
             name = "shuck_format",
             meta = {
                 url = "https://github.com/ewhauser/shuck",
-                description = "Shell formatter with per-buffer indent from utils.get_indent.",
+                description = "Shell formatter with per-buffer indent from formatting.get_indent.",
             },
             method = FORMATTING,
-            filetypes = utils.shuck_filetypes,
+            filetypes = shuck.filetypes,
             generator_opts = {
                 command = "shuck",
-                args = utils.shuck_format_args,
+                args = shuck.format_args,
                 to_stdin = true,
             },
             factory = h.formatter_factory,
@@ -67,7 +68,7 @@ return {
                 extra_args = function(ctx)
                     return {
                         "--tab-width",
-                        tostring(utils.get_indent(ctx.bufnr)),
+                        tostring(formatting.get_indent(ctx.bufnr)),
                     }
                 end,
             }),

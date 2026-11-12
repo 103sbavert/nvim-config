@@ -1,10 +1,13 @@
-local utils = require("plugins.languages.internal.utils")
+local formatting = require("plugins.languages.internal.formatting")
+local lsp_actions = require("plugins.languages.internal.lsp_actions")
+local lsp_format_grp =
+    vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
 
 _G.format_expr_fn = function()
     if vim.fn.mode() == "i" then
         return 1
     end
-    utils.FormatBuffer(vim.api.nvim_get_current_buf(), false)
+    formatting.FormatBuffer(vim.api.nvim_get_current_buf(), false)
     return 0
 end
 
@@ -70,7 +73,7 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
-    utils.map_lsp_actions(client, bufnr)
+    lsp_actions.map_lsp_actions(client, bufnr)
 
     vim.bo[bufnr].formatexpr = "v:lua.format_expr_fn()"
 
@@ -159,8 +162,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
-    group = utils.LspFormatGrp,
-    callback = function(args) utils.FormatBuffer(args.buf, false) end,
+    group = lsp_format_grp,
+    callback = function(args) formatting.FormatBuffer(args.buf, false) end,
 })
 
 vim.lsp.handlers["client/registerCapability"] = (function(overridden)

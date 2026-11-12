@@ -1,15 +1,20 @@
-local ls_config = nil
-local get_ls_conf = function()
-    ls_config = ls_config
-        or require("plugins.languages.internal.utils").LsConfig
+local shuck = require("plugins.languages.internal.shuck")
+local gopls = require("plugins.languages.internal.gopls")
+local lua_ls = require("plugins.languages.internal.lua_ls")
+local typst = require("plugins.languages.internal.typst")
 
-    if not ls_config or vim.tbl_isempty(ls_config) then
-        vim.notify("No language servers configured", vim.log.levels.WARN)
-        return nil
-    end
-
-    return ls_config
-end
+--- @type table<string, vim.lsp.Config>
+local ls_config = {
+    gitlab_ci_ls = {},
+    pyright = {},
+    phpactor = {},
+    vtsls = {},
+    shuck = shuck.lsp_config,
+    markdown_oxide = {},
+    tinymist = typst.lsp_config,
+    gopls = gopls.lsp_config,
+    lua_ls = lua_ls.lsp_config,
+}
 
 --- @type LazySpec
 return {
@@ -22,7 +27,7 @@ return {
         },
         event = "VimEnter",
         init = function()
-            local configured_ls = vim.tbl_keys(get_ls_conf() or {})
+            local configured_ls = vim.tbl_keys(ls_config)
             local managed_ls = { "roslyn_ls" }
             vim.list_extend(configured_ls, managed_ls)
 
@@ -31,7 +36,7 @@ return {
         config = function()
             require("plugins.languages.internal.autocmds")
 
-            for name, server_conf in pairs(get_ls_conf() or {}) do
+            for name, server_conf in pairs(ls_config) do
                 vim.lsp.config(name, server_conf)
                 vim.lsp.enable(name)
             end
@@ -102,9 +107,7 @@ return {
                     return true
                 end
 
-                local lang_utils = require("plugins.languages.internal.utils")
-
-                return not lang_utils.has_lua_config(root_dir)
+                return not lua_ls.has_lua_config(root_dir)
             end,
         },
     },

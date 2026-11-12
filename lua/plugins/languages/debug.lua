@@ -38,11 +38,11 @@ return {
         },
         init = function() MasonInstall(dap_list) end,
         config = function()
-            local utils = require("plugins.languages.internal.utils")
+            local dap_utils = require("plugins.languages.internal.dap")
             local dap = require("dap")
 
-            require("plugins.languages.internal.delve").setup()
-            utils.setup_dap_signs()
+            require("plugins.languages.internal.delve").setup_delve()
+            dap_utils.setup_dap_signs()
 
             -- open dap ui on startup
             dap.listeners.after.event_initialized["open_dap_ui"] = function()
@@ -52,13 +52,13 @@ return {
             -- map debug-session-only keymaps
             do
                 dap.listeners.after.event_initialized["dap_keymaps"] = function()
-                    utils.add_dap_keymaps()
+                    dap_utils.add_dap_keymaps()
                 end
                 dap.listeners.before.event_terminated["dap_keymaps"] = function()
-                    utils.del_dap_keymaps()
+                    dap_utils.del_dap_keymaps()
                 end
                 dap.listeners.before.event_exited["dap_keymaps"] = function()
-                    utils.del_dap_keymaps()
+                    dap_utils.del_dap_keymaps()
                 end
             end
 

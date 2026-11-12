@@ -240,7 +240,7 @@ local function on_build_finish(callback, config, bin, err)
 end
 
 --- Register the delve adapter, add DAP attach configurations
-function M.setup()
+function M.setup_delve()
     local dap = require("dap")
 
     dap.configurations.go = configs
