@@ -1,4 +1,4 @@
-local dap_list = { "delve" }
+local mason_daps = { "delve" }
 
 --- @type LazySpec[]
 return {
@@ -36,7 +36,7 @@ return {
                 mode = { "n" },
             },
         },
-        init = function() MasonInstall(dap_list) end,
+        init = function() MasonInstall(mason_daps) end,
         config = function()
             local dap_utils = require("plugins.languages.internal.dap")
             local dap = require("dap")
