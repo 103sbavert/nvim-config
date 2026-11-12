@@ -3,13 +3,18 @@ local M = {}
 local CTRL_V = require("config.utils").CTRL_V
 local CTRL_S = require("config.utils").CTRL_S
 
+--- @type string[]
+M.shuck_filetypes = { "sh", "bash", "zsh" }
+
+--- @type table<string, string>
+M.shuck_dialects = { bash = "bash", zsh = "zsh" }
+
 --- @type table<string, string>
 local ft_formatters = {
     typst = "tinymist",
-    sh = "shuck",
-    bash = "shuck",
-    zsh = "shuck",
-    ksh = "shuck",
+    sh = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
+    bash = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
+    zsh = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
     javascript = "null-ls", -- none-ls source: prettier
     typescript = "null-ls", -- none-ls source: prettier
     javascriptreact = "null-ls", -- none-ls source: prettier
@@ -102,7 +107,9 @@ M.LsConfig = {
     pyright = {},
     phpactor = {},
     vtsls = {},
-    shuck = {},
+    shuck = {
+        filetypes = M.shuck_filetypes,
+    },
     markdown_oxide = {},
     tinymist = {
         settings = {
@@ -297,6 +304,31 @@ function M.get_indent(bufnr)
         return ts
     end
     return 4
+end
+
+--- Builds `shuck format` args for stdin formatting of the buffer in params.
+--- @param params table none-ls params (bufnr, bufname, ft).
+--- @return string[] args
+function M.shuck_format_args(params)
+    local name = params.bufname ~= "" and params.bufname
+        or ("untitled." .. params.ft)
+
+    local args = {
+        "format",
+        "--indent-style",
+        "space",
+        "--indent-width",
+        tostring(M.get_indent(params.bufnr)),
+        "--stdin-filename",
+        name,
+    }
+
+    local dialect = M.shuck_dialects[params.ft]
+    if dialect then
+        vim.list_extend(args, { "--dialect", dialect })
+    end
+    table.insert(args, "-")
+    return args
 end
 
 --- Checks if the given workspace root contains a dedicated Lua configuration file.

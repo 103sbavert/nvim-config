@@ -31,6 +31,25 @@ return {
 
         local eslint_diagnostics = require("none-ls.diagnostics.eslint_d")
 
+        local h = require("null-ls.helpers")
+        local FORMATTING = require("null-ls.methods").internal.FORMATTING
+
+        local shuck_format = h.make_builtin({
+            name = "shuck_format",
+            meta = {
+                url = "https://github.com/ewhauser/shuck",
+                description = "Shell formatter with per-buffer indent from utils.get_indent.",
+            },
+            method = FORMATTING,
+            filetypes = utils.shuck_filetypes,
+            generator_opts = {
+                command = "shuck",
+                args = utils.shuck_format_args,
+                to_stdin = true,
+            },
+            factory = h.formatter_factory,
+        })
+
         local sources = {
             b.formatting.prettier.with({
                 filetypes = {
@@ -74,6 +93,7 @@ return {
             b.diagnostics.markdownlint_cli2,
 
             eslint_diagnostics,
+            shuck_format,
         }
 
         null_ls.setup({
