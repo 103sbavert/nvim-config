@@ -117,6 +117,16 @@ return {
                     hidden = show_hidden,
                     sort = { fields = { "#text:inc" } },
                     focus = "input",
+                    win = {
+                        list = {
+                            keys = {
+                                ["]c"] = "explorer_git_next",
+                                ["]g"] = false,
+                                ["[c"] = "explorer_git_prev",
+                                ["[g"] = false,
+                            },
+                        },
+                    },
                 },
             },
         },
