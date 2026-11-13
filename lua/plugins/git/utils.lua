@@ -1,8 +1,5 @@
 local M = {}
 
---- @module "gitsigns?"
-local gitsigns = nil
-
 --- @module "gitsigns.cache?"
 local gitsigns_cache = nil
 
