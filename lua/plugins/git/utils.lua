@@ -163,9 +163,6 @@ function M.select_hunk(greedy)
     end
 end
 
---- @type Gitsigns.NavOpts
-local nav_opts = { target = "all" }
-
 --- Builds a keymap callback that navigates between git hunks,
 --- falling back to the builtin diff motions inside a diff window.
 --- @param direction "next" | "prev"
@@ -176,10 +173,7 @@ function M.nav_hunk(direction)
             return direction == "next" and "]c" or "[c"
         end
 
-        vim.schedule(function()
-            gitsigns = gitsigns or require("gitsigns")
-            gitsigns.nav_hunk(direction, nav_opts)
-        end)
+        vim.cmd("Gitsigns " .. direction .. "_hunk --target=all")
         return "<Ignore>"
     end
 end
