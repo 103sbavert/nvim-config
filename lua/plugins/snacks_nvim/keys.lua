@@ -86,9 +86,9 @@ return {
     },
     -- LSP jump bindings
     {
-        "gO",
+        "gs",
         function() Snacks.picker.lsp_symbols(dropdown_input_conf) end,
-        desc = "[g]oto symb[O]ls",
+        desc = "[g]oto [s]ymbols",
     },
     {
         "gd",
@@ -117,6 +117,11 @@ return {
         desc = "[g]oto t[y]pe Definition",
     },
     -- <leader>l LSP group
+    {
+        "<leader>ls",
+        function() Snacks.picker.lsp_workspace_symbols(dropdown_input_conf) end,
+        desc = "workspace [s]ymbols",
+    },
     {
         "<leader>lc",
         function() Snacks.picker.lsp_incoming_calls(dropdown_conf) end,
@@ -173,11 +178,6 @@ return {
         "<leader>sd",
         function() Snacks.picker.diagnostics(dropdown_conf) end,
         desc = "[d]iagnostics",
-    },
-    {
-        "<leader>sS",
-        function() Snacks.picker.lsp_workspace_symbols(dropdown_input_conf) end,
-        desc = "LSP [S]ymbols Workspace",
     },
     {
         "<leader>sp",
