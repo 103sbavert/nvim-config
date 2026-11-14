@@ -38,6 +38,7 @@ local file_pickers = {
 }
 
 local function set_hidden(value)
+    --- @module "snacks"
     if
         Snacks == nil
         or Snacks.config == nil
