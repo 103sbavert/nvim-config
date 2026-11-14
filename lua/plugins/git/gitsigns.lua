@@ -5,7 +5,8 @@ return {
     --- @type Gitsigns.Config
     opts = {
         diff_opts = {
-            linematch = 60,
+            linematch = 100,
+            algorithm = "histogram",
         },
         signs = {
             add = { text = "┆" },
