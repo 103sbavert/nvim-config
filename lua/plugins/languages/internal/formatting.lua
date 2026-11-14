@@ -2,6 +2,7 @@ local M = {}
 
 local CTRL_V = require("config.utils").CTRL_V
 local CTRL_S = require("config.utils").CTRL_S
+local VISUAL_LIKE_MODES = { "v", "V", "s", "S", CTRL_V, CTRL_S }
 
 --- @type table<string, string>
 local ft_formatters = {
@@ -23,7 +24,6 @@ local ft_formatters = {
     go = "null-ls", -- none-ls source: goimports, gofumpt
     lua = "null-ls", -- none-ls source: stylua
 }
-local VISUAL_LIKE_MODES = { "v", "V", "s", "S", CTRL_V, CTRL_S }
 
 --- @param range? table
 --- @return integer? start_line, integer? end_line
