@@ -126,10 +126,11 @@ function M.open_commit_tab()
     end)()
 end
 
---- Returns the hunk closest to `lnum`.
+--- Returns the hunk closest to `lnum` and its distance in lines.
 --- @param hunks table[]?
 --- @param lnum integer
---- @return table?
+--- @return table? hunk
+--- @return integer? dist
 local function nearest_hunk(hunks, lnum)
     local best, best_dist
     for _, hunk in ipairs(hunks or {}) do
@@ -146,43 +147,110 @@ local function nearest_hunk(hunks, lnum)
             best, best_dist = hunk, dist
         end
     end
-    return best
+    return best, best_dist
 end
 
---- Selects the hunk under the cursor, preferring unstaged hunks and falling
---- back to staged ones. Bultin `gitsigns.select_hunk()` only looks at unstaged
---- hunks. Falls back to the nearest hunk in the buffer.
---- @param greedy boolean Select contiguous hunks (see 'diff_opts.linematch').
---- @return nil
-function M.select_hunk(greedy)
-    gitsigns_cache = gitsigns_cache or require("gitsigns.cache")
+--- Yields the async task for `ms` without blocking the event loop.
+--- @param ms integer
+local function sleep(ms)
     gitsigns_async = gitsigns_async or require("gitsigns.async")
 
-    local entry = gitsigns_cache.cache[vim.api.nvim_get_current_buf()]
-    if not entry then
-        return
+    gitsigns_async.await(
+        2,
+        function(duration, cb) vim.defer_fn(cb, duration) end,
+        ms
+    )
+end
+
+--- Waits up to one second for gitsigns to populate a hunk list.
+--- @param entry table
+--- @param staged boolean
+--- @return boolean
+local function wait_for_hunks(entry, staged)
+    if staged and not require("gitsigns.config").config.signs_staged_enable then
+        return false
     end
 
-    local hunk = gitsigns_async
-        .run(function()
-            local lnum = vim.api.nvim_win_get_cursor(0)[1]
-            --- @diagnostic disable-next-line: return-type-mismatch annontations for `run` do not match the return type of `get_hunk`
-            return entry:get_hunk(nil, greedy, false)
-                or entry:get_hunk(nil, greedy, true)
-                or nearest_hunk(entry:get_hunks(greedy, false), lnum)
-                or nearest_hunk(entry:get_hunks(greedy, true), lnum)
-        end)
-        :wait()
+    local key = staged and "hunks_staged" or "hunks"
+    for _ = 1, 10 do
+        if entry[key] ~= nil then
+            return true
+        end
+        sleep(100)
+    end
+    return entry[key] ~= nil
+end
 
-    if not hunk then
+--- @param entry table
+--- @param greedy boolean
+--- @param staged boolean
+--- @param lnum integer
+--- @return table? hunk
+--- @return integer? dist
+local function closest_hunk(entry, greedy, staged, lnum)
+    if not wait_for_hunks(entry, staged) then
         return
     end
+    return nearest_hunk(entry:get_hunks(greedy, staged), lnum)
+end
 
+--- Picks the closest hunk, preferring unstaged ones on equal distance.
+--- @param entry table
+--- @param greedy boolean
+--- @param lnum integer
+--- @return table? hunk
+local function pick_hunk(entry, greedy, lnum)
+    local hunk, dist = closest_hunk(entry, greedy, false, lnum)
+
+    -- Staged hunks are only considered when the cursor is not already on an
+    -- unstaged one.
+    if hunk and dist == 0 then
+        return hunk
+    end
+
+    local staged_hunk, staged_dist = closest_hunk(entry, greedy, true, lnum)
+    if staged_hunk and (not hunk or staged_dist < dist) then
+        return staged_hunk
+    end
+    return hunk
+end
+
+--- Visually selects the lines a hunk spans, extending the current selection
+--- when called from visual mode.
+--- @param hunk table
+local function select_hunk_lines(hunk)
     local start, vend = hunk.added.start, hunk.vend
     if vim.fn.mode():find("v") then
         vim.cmd(("normal! %dGoV%dG"):format(start, vend))
     else
         vim.cmd(("normal! %dGV%dG"):format(start, vend))
+    end
+end
+
+--- Selects the hunk under the cursor, preferring unstaged hunks and falling
+--- back to staged ones. Builtin `gitsigns.select_hunk()` only looks at unstaged
+--- hunks. Falls back to the nearest hunk in the buffer.
+--- @param greedy boolean Select contiguous hunks (see 'diff_opts.linematch').
+--- @return nil
+function M.select_hunk(greedy)
+    gitsigns_cache = gitsigns_cache or require("gitsigns.cache")
+    local entry = gitsigns_cache.cache[vim.api.nvim_get_current_buf()]
+
+    if not entry then
+        return
+    end
+
+    gitsigns_async = gitsigns_async or require("gitsigns.async")
+
+    local hunk = gitsigns_async
+        .run(function()
+            --- @diagnostic disable-next-line: return-type-mismatch annotations for `run` do not match the return type of `pick_hunk`
+            return pick_hunk(entry, greedy, vim.api.nvim_win_get_cursor(0)[1])
+        end)
+        :wait()
+
+    if hunk then
+        select_hunk_lines(hunk)
     end
 end
 
