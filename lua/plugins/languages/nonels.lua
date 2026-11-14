@@ -2,7 +2,7 @@ local mason_tools = {
     "shfmt",
     "prettier",
     "eslint_d",
-    "markdownlint-cli2",
+    "markdownlint",
     "isort",
     "goimports",
     "gofumpt",
@@ -89,7 +89,7 @@ return {
             b.formatting.stylua,
             b.formatting.goimports,
             b.formatting.gofumpt,
-            b.diagnostics.markdownlint_cli2,
+            b.diagnostics.markdownlint,
 
             eslint_diagnostics,
             shuck_format,
