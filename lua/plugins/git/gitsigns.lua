@@ -160,16 +160,16 @@ return {
             do
                 vim.keymap.set(
                     { "o", "x" },
-                    "ag",
+                    "ac",
                     function() utils.select_hunk(true) end,
-                    { buffer = bufnr, desc = "[g]it hunk" }
+                    { buffer = bufnr, desc = "git [c]hange" }
                 )
 
                 vim.keymap.set(
                     { "o", "x" },
-                    "ig",
+                    "ic",
                     function() utils.select_hunk(false) end,
-                    { buffer = bufnr, desc = "[g]it hunk" }
+                    { buffer = bufnr, desc = "git [c]hange" }
                 )
             end
 
