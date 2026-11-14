@@ -2,7 +2,7 @@ local ai = require("mini.ai")
 local ast_utils = require("plugins.mini_nvim.internals.ast-utils")
 
 ai.setup({
-    n_lines = 50,
+    n_lines = 100,
     search_method = "cover_or_nearest",
     -- d/f/s: cover ignores n_lines; nearest stays bounded by it.
     custom_textobjects = {
