@@ -126,9 +126,32 @@ function M.open_commit_tab()
     end)()
 end
 
+--- Returns the hunk closest to `lnum`.
+--- @param hunks table[]?
+--- @param lnum integer
+--- @return table?
+local function nearest_hunk(hunks, lnum)
+    local best, best_dist
+    for _, hunk in ipairs(hunks or {}) do
+        local dist
+        if lnum < hunk.added.start then
+            dist = hunk.added.start - lnum
+        elseif lnum > hunk.vend then
+            dist = lnum - hunk.vend
+        else
+            dist = 0
+        end
+
+        if not best_dist or dist < best_dist then
+            best, best_dist = hunk, dist
+        end
+    end
+    return best
+end
+
 --- Selects the hunk under the cursor, preferring unstaged hunks and falling
 --- back to staged ones. Bultin `gitsigns.select_hunk()` only looks at unstaged
---- hunks.
+--- hunks. Falls back to the nearest hunk in the buffer.
 --- @param greedy boolean Select contiguous hunks (see 'diff_opts.linematch').
 --- @return nil
 function M.select_hunk(greedy)
@@ -142,9 +165,12 @@ function M.select_hunk(greedy)
 
     local hunk = gitsigns_async
         .run(function()
+            local lnum = vim.api.nvim_win_get_cursor(0)[1]
             --- @diagnostic disable-next-line: return-type-mismatch annontations for `run` do not match the return type of `get_hunk`
             return entry:get_hunk(nil, greedy, false)
                 or entry:get_hunk(nil, greedy, true)
+                or nearest_hunk(entry:get_hunks(greedy, false), lnum)
+                or nearest_hunk(entry:get_hunks(greedy, true), lnum)
         end)
         :wait()
 
