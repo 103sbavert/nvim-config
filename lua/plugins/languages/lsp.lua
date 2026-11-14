@@ -2,6 +2,7 @@ local shuck = require("plugins.languages.internal.shuck")
 local gopls = require("plugins.languages.internal.gopls")
 local lua_ls = require("plugins.languages.internal.lua_ls")
 local typst = require("plugins.languages.internal.typst")
+local markdown_oxide = require("plugins.languages.internal.markdown-oxide")
 
 --- @type table<string, vim.lsp.Config>
 local ls_config = {
@@ -10,7 +11,7 @@ local ls_config = {
     phpactor = {},
     vtsls = {},
     shuck = shuck.lsp_config,
-    markdown_oxide = {},
+    markdown_oxide = markdown_oxide.lsp_config,
     tinymist = typst.lsp_config,
     gopls = gopls.lsp_config,
     lua_ls = lua_ls.lsp_config,
