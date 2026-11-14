@@ -64,18 +64,17 @@ local small_plugins = {
     {
         "j-hui/fidget.nvim",
         lazy = true,
-        config = function()
-            require("fidget").setup({
-                progress = {
-                    ignore_done_already = true,
-                    ignore_empty_message = true,
-                    display = {
-                        render_limit = 3,
-                        done_ttl = 1,
-                    },
+        opts = {
+            progress = {
+                ignore_done_already = true,
+                ignore_empty_message = true,
+                display = {
+                    render_limit = 3,
+                    done_ttl = 1,
                 },
-            })
-        end,
+            },
+        },
+        config = true,
     },
 }
 
