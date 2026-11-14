@@ -7,6 +7,9 @@ local VISUAL_LIKE_MODES = { "v", "V", "s", "S", CTRL_V, CTRL_S }
 --- @type table<string, string>
 local ft_formatters = {
     typst = "tinymist",
+    php = "phpactor",
+    gomod = "gopls",
+    gowork = "gopls",
     sh = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
     bash = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
     zsh = "null-ls", -- none-ls source: shuck_format (stdin, get_indent)
