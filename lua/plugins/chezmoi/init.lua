@@ -1,6 +1,6 @@
 --- @type LazySpec
 return {
-    "andre-kotake/nvim-chezmoi",
+    "103sbavert/nvim-chezmoi",
     branch = "main",
     dependencies = {
         "config.utils",
@@ -53,6 +53,7 @@ return {
         "ChezmoiApply",
         "ChezmoiManaged",
         "ChezmoiFiles",
+        "ChezmoiDiff",
     },
     config = function(plugin, opts)
         --- @module "nvim-chezmoi"
