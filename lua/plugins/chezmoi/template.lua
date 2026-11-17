@@ -1,5 +1,7 @@
 local UT = require("config.utils")
 
+local error_ns = vim.api.nvim_create_namespace("czm_template_error")
+
 ---@type fun(): ChezmoiExecuteTemplate
 local get_cmd_execute_template =
     UT.lazy_require("nvim-chezmoi.chezmoi.commands.execute_template")
@@ -55,6 +57,29 @@ local function disable_preview_mode()
     preview_win = nil
 end
 
+--- Replaces buffer contents with rendered lines and clears any error highlight.
+--- @param buf integer
+--- @param lines string[]
+local function write_preview(buf, lines)
+    vim.api.nvim_buf_clear_namespace(buf, error_ns, 0, -1)
+    vim.bo[buf].modifiable = true
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].modifiable = false
+end
+
+--- Replaces buffer contents with error lines and highlights them as errors.
+--- @param buf integer
+--- @param lines string[]
+local function write_preview_error(buf, lines)
+    write_preview(buf, lines)
+    local last = #lines - 1
+    vim.api.nvim_buf_set_extmark(buf, error_ns, 0, 0, {
+        end_row = last,
+        end_col = #lines[last + 1],
+        hl_group = "DiagnosticError",
+    })
+end
+
 --- Executes the template and writes result into the single preview buffer.
 --- @param buf_file string Absolute path of the source .tmpl file being rendered.
 local function render_template(buf_file)
@@ -67,6 +92,7 @@ local function render_template(buf_file)
         return
     end
 
+    local buf = preview_buf
     local lines = vim.api.nvim_buf_get_lines(src_bufnr, 0, -1, false)
     local content = table.concat(lines, "\n")
 
@@ -74,7 +100,12 @@ local function render_template(buf_file)
         local buf_still_valid = preview_buf ~= nil
             and vim.api.nvim_buf_is_valid(preview_buf)
 
-        if not result.success or not buf_still_valid then
+        if not buf_still_valid then
+            return
+        end
+
+        if not result.success then
+            write_preview_error(buf, result.data)
             return
         end
 
@@ -84,9 +115,7 @@ local function render_template(buf_file)
             vim.bo[preview_buf].filetype = ft
         end
 
-        vim.bo[preview_buf].modifiable = true
-        vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, result.data)
-        vim.bo[preview_buf].modifiable = false
+        write_preview(buf, result.data)
 
         -- Sync cursor from source window into preview window after render.
         if preview_win and vim.api.nvim_win_is_valid(preview_win) then
