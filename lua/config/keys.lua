@@ -169,6 +169,7 @@ vim.keymap.set(
     "<cmd>vertical resize +3<cr>",
     { desc = "Increase width" }
 )
+vim.keymap.set({ "n", "v" }, "<leader>wq", "<cmd>q<cr>", { desc = "Close" })
 
 -- [[ Merged LazyVim Enhancements ]]
 
