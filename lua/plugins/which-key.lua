@@ -51,6 +51,20 @@ return {
             { "<leader>z", group = "Che[z]moi", mode = "n" },
             { "<leader>s", group = "[s]earch", mode = { "x", "n" } },
             { "<leader>l", group = "[l]SP", mode = { "x", "n" } },
+
+            -- `[w]indows` group and mappings
+            { "<leader>w", group = "[w]indows", mode = { "n", "v" } },
+            {
+                "<leader>ww",
+                function()
+                    require("which-key").show({
+                        keys = "<leader>w",
+                        loop = true,
+                    })
+                end,
+                desc = "Enter Hydra mode",
+                mode = { "n", "v" },
+            },
         },
     },
 }
