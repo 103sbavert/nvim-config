@@ -129,28 +129,60 @@ vim.keymap.set(
 
 -- Move window positions in split layout
 vim.keymap.set(
-    { "n", "i", "x", "t" },
-    "<C-S-h>",
+    { "n", "v" },
+    "<leader>wH",
     "<C-w>H",
-    { desc = "Move window to the left" }
+    { desc = "Move window left" }
 )
 vim.keymap.set(
-    { "n", "i", "x", "t" },
-    "<C-S-l>",
+    { "n", "v" },
+    "<leader>wL",
     "<C-w>L",
-    { desc = "Move window to the right" }
+    { desc = "Move window right" }
 )
 vim.keymap.set(
-    { "n", "i", "x", "t" },
-    "<C-S-j>",
+    { "n", "v" },
+    "<leader>wJ",
     "<C-w>J",
-    { desc = "Move window to the lower" }
+    { desc = "Move window down" }
 )
 vim.keymap.set(
-    { "n", "i", "x", "t" },
-    "<C-S-k>",
+    { "n", "v" },
+    "<leader>wK",
     "<C-w>K",
-    { desc = "Move window to the upper" }
+    { desc = "Move window up" }
+)
+vim.keymap.set(
+    { "n", "v" },
+    "<leader>w=",
+    "<C-w>=",
+    { desc = "Equalize all splits" }
+)
+
+-- Resize windows
+vim.keymap.set(
+    { "n", "v" },
+    "<leader>wh",
+    "<cmd>vertical resize -3<cr>",
+    { desc = "Decrease width" }
+)
+vim.keymap.set(
+    { "n", "v" },
+    "<leader>wj",
+    "<cmd>resize -3<cr>",
+    { desc = "Decrease height" }
+)
+vim.keymap.set(
+    { "n", "v" },
+    "<leader>wk",
+    "<cmd>resize +3<cr>",
+    { desc = "Increase height" }
+)
+vim.keymap.set(
+    { "n", "v" },
+    "<leader>wl",
+    "<cmd>vertical resize +3<cr>",
+    { desc = "Increase width" }
 )
 
 -- [[ Merged LazyVim Enhancements ]]
@@ -265,29 +297,3 @@ vim.keymap.set(
 vim.keymap.set("i", ",", ",<c-g>u")
 vim.keymap.set("i", ".", ".<c-g>u")
 vim.keymap.set("i", ";", ";<c-g>u")
-
--- Resize window using <ctrl> arrow keys
-vim.keymap.set(
-    { "n", "x" },
-    "<C-Up>",
-    "<cmd>resize +3<cr>",
-    { desc = "Grow Win Height" }
-)
-vim.keymap.set(
-    { "n", "x" },
-    "<C-Down>",
-    "<cmd>resize -3<cr>",
-    { desc = "Shrink Win Height" }
-)
-vim.keymap.set(
-    { "n", "x" },
-    "<C-Left>",
-    "<cmd>vertical resize -3<cr>",
-    { desc = "Shrink Win Width" }
-)
-vim.keymap.set(
-    { "n", "x" },
-    "<C-Right>",
-    "<cmd>vertical resize +3<cr>",
-    { desc = "Grow Win Width" }
-)
