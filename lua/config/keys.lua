@@ -99,7 +99,7 @@ vim.keymap.set(
 
 -- Move current buffer/window to a new tab
 vim.keymap.set(
-    { "n", "i", "", "t" },
+    { "n", "i", "v", "t" },
     "<A-t>",
     function() vim.cmd.wincmd("T") end,
     { silent = true, desc = "Move window to new tab" }
