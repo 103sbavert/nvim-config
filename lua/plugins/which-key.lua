@@ -35,22 +35,22 @@ return {
         spec = {
             -- `g` prefix groups
             -- { "gc", desc = "Comment", mode = "n" },
-            { "gq", desc = "Format (smart)", mode = { "x", "n" } },
-            { "gw", desc = "Format (dumb)", mode = { "x", "n" } },
-            { "gx", desc = "Open URI/path under cusor", mode = { "x", "n" } },
+            { "gq", desc = "Format (smart)", mode = { "v", "n" } },
+            { "gw", desc = "Format (dumb)", mode = { "v", "n" } },
+            { "gx", desc = "Open URI/path under cusor", mode = { "v", "n" } },
 
             { "[", group = "Backwards" },
             { "]", group = "Forwards" },
 
             -- `<leader>` prefix groups
             { "<leader>d", group = "[d]ebug", mode = { "n" } },
-            { "<leader>g", group = "[g]it", mode = { "x", "n" } },
+            { "<leader>g", group = "[g]it", mode = { "v", "n" } },
             { "<leader>gd", group = "[d]iff", mode = { "n" } },
             { "<leader>b", group = "[b]reakpoints", mode = "n" },
             { "<leader>t", group = "[t]oggle", mode = "n" },
             { "<leader>z", group = "Che[z]moi", mode = "n" },
-            { "<leader>s", group = "[s]earch", mode = { "x", "n" } },
-            { "<leader>l", group = "[l]SP", mode = { "x", "n" } },
+            { "<leader>s", group = "[s]earch", mode = { "v", "n" } },
+            { "<leader>l", group = "[l]SP", mode = { "v", "n" } },
 
             -- `[w]indows` group and mappings
             { "<leader>w", group = "[w]indows", mode = { "n", "v" } },
