@@ -35,7 +35,11 @@ return {
                 view = "shell_display",
                 filter = {
                     event = "msg_show",
-                    kind = { "shell_out", "shell_err" },
+                    kind = {
+                        "shell_cmd",
+                        "shell_out",
+                        "shell_err",
+                    },
                 },
             },
         },
@@ -89,32 +93,30 @@ return {
                     events = { "BufLeave", "CmdlineEnter" },
                     keys = { "<CR>", "q", "<Esc>" },
                 },
+                win_options = {
+                    relativenumber = false,
+                    number = false,
+                },
                 buf_options = {
                     filetype = "noice_shell_split",
                     buftype = "nofile",
                     bufhidden = "wipe",
                 },
-                format = { "{cmdline}\n", "{message}\n" },
+                format = { "{shell_display}" },
             },
         },
     },
-    init = function()
-        local shell_out_grp =
-            vim.api.nvim_create_augroup("ShellOutputGrp", { clear = true })
+    config = function(_, opts)
+        local Formatters = require("noice.text.format.formatters")
 
-        vim.api.nvim_create_autocmd("WinLeave", {
-            group = shell_out_grp,
-            callback = function(ev)
-                if vim.bo[ev.buf].filetype ~= "noice_shell_split" then
-                    return
-                end
+        Formatters.shell_display = function(message, fmt_opts, input)
+            if input.kind == "shell_cmd" and input.cmdline then
+                Formatters.cmdline(message, fmt_opts)
+            else
+                Formatters.message(message, fmt_opts, input)
+            end
+        end
 
-                vim.schedule(function()
-                    if vim.api.nvim_buf_is_valid(ev.buf) then
-                        vim.api.nvim_buf_delete(ev.buf, { force = true })
-                    end
-                end)
-            end,
-        })
+        require("noice").setup(opts)
     end,
 }
