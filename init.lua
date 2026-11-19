@@ -19,6 +19,12 @@ do
     -- Enable faster startup by caching compiled Lua modules
     vim.loader.enable()
 
+    -- Use interactive login shell with `:!` (my .zshrc skips interactive
+    -- plugins when no stdin is present)
+    -- See `:help 'shellcmdflag'`
+    -- See `:!man zsh`
+    vim.o.shellcmdflag = "-ic"
+
     -- Set <space> as the leader key
     --
     -- See `:help mapleader`
