@@ -51,26 +51,13 @@ local function setup_exec_window(cmd_str)
     vim.api.nvim_buf_set_name(buf, ("%s: $ %s"):format(vim.o.shell, cmd_str))
 
     -- The terminal inherits the window size, so it must be displayed first.
-    local win_id = vim.api.nvim_open_win(buf, true, { split = "below" })
+    vim.api.nvim_open_win(buf, true, { split = "below" })
     local chan = vim.api.nvim_open_term(buf, {})
     if chan == 0 then
         return buf, nil
     end
 
     vim.api.nvim_chan_send(chan, EXEC_PROMPT_FMT:format(cmd_str))
-
-    vim.api.nvim_create_autocmd("CmdlineEnter", {
-        once = true,
-        callback = function()
-            if
-                vim.api.nvim_buf_is_valid(buf)
-                and vim.api.nvim_win_is_valid(win_id)
-                and vim.api.nvim_win_get_buf(win_id) == buf
-            then
-                vim.api.nvim_win_close(win_id, true)
-            end
-        end,
-    })
 
     return buf, chan
 end

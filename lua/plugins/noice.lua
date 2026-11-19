@@ -90,7 +90,7 @@ return {
                 size = { height = "40%" },
                 enter = true,
                 close = {
-                    events = { "BufLeave", "CmdlineEnter" },
+                    events = { "BufLeave" },
                     keys = { "<CR>", "q", "<Esc>" },
                 },
                 win_options = {
