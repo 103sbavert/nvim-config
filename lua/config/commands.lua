@@ -19,50 +19,45 @@ vim.api.nvim_create_user_command("Copyfile", function()
     vim.notify("Copied: " .. path, vim.log.levels.INFO)
 end, { desc = "Copy current buffer path" })
 
---- Files to source before each :Exec command. Entries may be absolute or
---- relative and may contain `~` and environment variables
---- @type string[]
-local exec_source_files = {}
+local SGR_RESET = "\27[0m"
+local SGR_RED = "\27[31m"
+local SGR_BLUE = "\27[34m"
+local SGR_GREY = "\27[90m"
 
-local exec_ns = vim.api.nvim_create_namespace("exec_output")
+--- Header and footer of an X run; the prompt takes the command, the exit line
+--- takes the exit status.
+local EXEC_PROMPT_FMT = table.concat({
+    SGR_RED,
+    "$",
+    SGR_RESET,
+    " ",
+    SGR_BLUE,
+    "%s",
+    SGR_RESET,
+    "\n\n",
+})
+local EXEC_EXIT_FMT = "\n" .. SGR_GREY .. "[exit %d]" .. SGR_RESET .. "\n"
 
-local function build_script(cmd_args)
-    local lines = {}
-    for _, raw in ipairs(exec_source_files) do
-        local p = vim.fn.shellescape(vim.fn.expand(raw))
-        table.insert(lines, ("[ -r %s ] && source %s"):format(p, p))
-    end
-    table.insert(lines, cmd_args)
-    return table.concat(lines, "\n")
-end
-
-local function setup_exec_window(cmd_args)
+--- Output is rendered by a libvterm instance opened on the buffer, so ANSI and
+--- truecolor sequences from the child are interpreted instead of stored raw.
+--- @param cmd_str string command run in the terminal to format using $ <cmd>
+--- @return integer `buffer number` of the opened buffer
+--- @return integer? `channel id` of the opened channel, nil if channel could not be opened
+local function setup_exec_window(cmd_str)
     local buf = vim.api.nvim_create_buf(true, true)
-    vim.bo[buf].buftype = "nofile"
-    vim.bo[buf].filetype = "ExecOut"
     vim.bo[buf].bufhidden = "wipe"
+    vim.bo[buf].filetype = "ExecOut"
 
+    vim.api.nvim_buf_set_name(buf, ("%s: $ %s"):format(vim.o.shell, cmd_str))
+
+    -- The terminal inherits the window size, so it must be displayed first.
     local win_id = vim.api.nvim_open_win(buf, true, { split = "below" })
-
-    local function write(first, last, repl)
-        vim.bo[buf].modifiable = true
-        vim.api.nvim_buf_set_lines(buf, first, last, false, repl)
-        vim.bo[buf].modifiable = false
+    local chan = vim.api.nvim_open_term(buf, {})
+    if chan == 0 then
+        return buf, nil
     end
 
-    vim.api.nvim_buf_set_name(buf, ("ExecOut://%d %s"):format(buf, cmd_args))
-    vim.api.nvim_buf_clear_namespace(buf, exec_ns, 0, -1)
-    write(0, -1, { "$ " .. cmd_args, "" })
-
-    vim.api.nvim_buf_set_extmark(buf, exec_ns, 0, 0, {
-        end_col = 1,
-        hl_group = "ExecPrompt",
-    })
-
-    vim.api.nvim_buf_set_extmark(buf, exec_ns, 0, 2, {
-        end_col = 2 + #cmd_args,
-        hl_group = "ExecCommand",
-    })
+    vim.api.nvim_chan_send(chan, EXEC_PROMPT_FMT:format(cmd_str))
 
     vim.api.nvim_create_autocmd("CmdlineEnter", {
         once = true,
@@ -77,7 +72,7 @@ local function setup_exec_window(cmd_args)
         end,
     })
 
-    return buf, write
+    return buf, chan
 end
 
 vim.api.nvim_create_user_command("X", function(opts)
@@ -87,58 +82,31 @@ vim.api.nvim_create_user_command("X", function(opts)
     end
     local arg_str = table.concat(args, " ")
 
-    local function feed(data, hl)
+    local buf, chan = setup_exec_window(arg_str)
+    if not chan then
+        vim.notify("X: could not open terminal buffer", vim.log.levels.ERROR)
+        return
+    end
+
+    local feed = vim.schedule_wrap(function(data)
+        if not data then
+            return
+        end
+
         if not vim.api.nvim_buf_is_valid(buf) then
             return
         end
 
-        local last = vim.api.nvim_buf_line_count(buf)
-        local tail = vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1]
-            or ""
-        local parts = vim.split(data, "\n", { plain = true })
-        parts[1] = tail .. parts[1]
-        write(last - 1, last, parts)
-
-        if hl then
-            local new_last = vim.api.nvim_buf_line_count(buf)
-            for l = last - 1, new_last - 1 do
-                vim.api.nvim_buf_set_extmark(buf, exec_ns, l, 0, {
-                    line_hl_group = hl,
-                })
-            end
-        end
-
-        local cur_win = vim.api.nvim_get_current_win()
-        if vim.api.nvim_win_get_buf(cur_win) == buf then
-            local cur = vim.api.nvim_win_get_cursor(cur_win)
-            if cur[1] >= last - 1 then
-                vim.api.nvim_win_set_cursor(
-                    cur_win,
-                    { vim.api.nvim_buf_line_count(buf), 0 }
-                )
-            end
-        end
-    end
-
-    local function on_data(hl)
-        return function(_, data)
-            if data then
-                vim.schedule(function() feed(data, hl) end)
-            end
-        end
-    end
-
-    vim.system({ "zsh", "-c", script }, {
-        text = true,
-        stdout = on_data(nil),
-        stderr = on_data("DiagnosticError"),
-    }, function(obj)
-        vim.schedule(
-            function() feed(("\n[exit %d]\n"):format(obj.code), "ExecExit") end
-        )
+        pcall(vim.api.nvim_chan_send, chan, data)
     end)
+
+    vim.system({ vim.o.shell, vim.o.shellcmdflag, arg_str }, {
+        text = true,
+        stdout = function(_, data) feed(data) end,
+        stderr = function(_, data) feed(data) end,
+    }, function(obj) feed(EXEC_EXIT_FMT:format(obj.code)) end)
 end, {
     nargs = "+",
     complete = "shellcmd",
-    desc = "Async zsh -c with $ZSH_CUSTOM sources into a new horizontal split",
+    desc = "Runs vim.o.shell in an async environment",
 })
