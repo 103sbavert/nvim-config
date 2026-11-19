@@ -81,8 +81,11 @@ local function setup_exec_window(cmd_args)
 end
 
 vim.api.nvim_create_user_command("X", function(opts)
-    local script = build_script(opts.args)
-    local buf, write = setup_exec_window(opts.args)
+    local args = {}
+    for _, argw in ipairs(opts.fargs) do
+        table.insert(args, vim.fn.expandcmd(argw))
+    end
+    local arg_str = table.concat(args, " ")
 
     local function feed(data, hl)
         if not vim.api.nvim_buf_is_valid(buf) then
