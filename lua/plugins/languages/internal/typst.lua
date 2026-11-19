@@ -19,7 +19,7 @@ end
 M.lsp_config = {
     settings = {
         formatterMode = "typstyle",
-        semanticTokens = "enabled",
+        semanticTokens = "enable",
     },
     before_init = before_init,
 }
