@@ -42,55 +42,39 @@ local lsp_actions = {
     ["<leader>f"] = {
         description = "[f]ormat buffer",
         modes = { "n", "v" },
-        action = function()
-            formatting.FormatBuffer(vim.api.nvim_get_current_buf(), true)
-        end,
+        capability = "textDocument/formatting",
+        action = function(bufnr) formatting.FormatBuffer(bufnr, true) end,
     },
 }
 
---- @param key string
---- @param lsp_config LspKeyConfig
---- @param client vim.lsp.Client
+--- @param capability? vim.lsp.protocol.Method.ClientToServer
+--- @param bufnr? integer
+--- @return boolean
+local function has_clients(capability, bufnr)
+    bufnr = (not bufnr or bufnr == 0) and vim.api.nvim_get_current_buf()
+        or bufnr
+    return #vim.lsp.get_clients({ bufnr = bufnr, method = capability }) > 0
+end
+
 --- @param bufnr integer
-local function map_if_capable(key, lsp_config, client, bufnr)
-    if
-        lsp_config.capability
-        and not client:supports_method(lsp_config.capability, bufnr)
-    then
+function M.sync_keymaps(bufnr)
+    if not vim.api.nvim_buf_is_valid(bufnr) then
         return
     end
 
-    local capability = lsp_config.capability
+    for key, lsp_config in pairs(lsp_actions) do
+        if lsp_config.action then
+            if #has_clients(lsp_config.capability, bufnr) == 0 then
+                pcall(vim.keymap.del, lsp_config.modes, key, { buffer = bufnr })
+                return
+            end
 
-    vim.keymap.set(lsp_config.modes or "n", key, function()
-        local live
-        if capability then
-            live = vim.lsp.get_clients({ bufnr = bufnr, method = capability })
-        else
-            live = vim.lsp.get_clients({ bufnr = bufnr })
-        end
-
-        if #live == 0 then
-            vim.notify(
-                string.format(
-                    "%s: no attached client supports this buffer",
-                    lsp_config.description
-                ),
-                vim.log.levels.WARN
+            vim.keymap.set(
+                lsp_config.modes or "n",
+                key,
+                function() lsp_config.action(bufnr) end,
+                { buffer = bufnr, desc = lsp_config.description }
             )
-            return
-        end
-
-        lsp_config.action(bufnr)
-    end, { buffer = bufnr, desc = lsp_config.description })
-end
-
---- @param client vim.lsp.Client
---- @param bufnr integer
-function M.map_lsp_actions(client, bufnr)
-    for key, config in pairs(lsp_actions) do
-        if config.action then
-            map_if_capable(key, config, client, bufnr)
         end
     end
 end

@@ -1,7 +1,5 @@
 local formatting = require("plugins.languages.internal.formatting")
 local lsp_actions = require("plugins.languages.internal.lsp_actions")
-local lsp_format_grp =
-    vim.api.nvim_create_augroup("GlobalLspFormatting", { clear = true })
 
 _G.format_expr_fn = function()
     if vim.fn.mode() == "i" then
@@ -73,7 +71,7 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local function on_client_attach(client, bufnr)
-    lsp_actions.map_lsp_actions(client, bufnr)
+    lsp_actions.sync_keymaps(bufnr)
 
     vim.bo[bufnr].formatexpr = "v:lua.format_expr_fn()"
 
@@ -143,6 +141,19 @@ local function on_client_attach(client, bufnr)
             })
         end
     end
+
+    if client:supports_method("textDocument/formatting", bufnr) then
+        local format_augroup = vim.api.nvim_create_augroup(
+            "lsp-format-buf-" .. bufnr,
+            { clear = true }
+        )
+
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            group = format_augroup,
+            buffer = bufnr,
+            callback = function(args) formatting.FormatBuffer(args.buf, false) end,
+        })
+    end
 end
 
 local lsp_highlight_augroup =
@@ -161,12 +172,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePre", {
-    group = lsp_format_grp,
-    callback = function(args) formatting.FormatBuffer(args.buf, false) end,
-})
-
 vim.lsp.handlers["client/registerCapability"] = (function(overridden)
+    --- @type lsp.Handler
     return function(err, res, ctx)
         local result = overridden(err, res, ctx)
         local client = vim.lsp.get_client_by_id(ctx.client_id)
@@ -174,12 +181,28 @@ vim.lsp.handlers["client/registerCapability"] = (function(overridden)
             return result
         end
 
-        for bufnr, _ in pairs(client.attached_buffers) do
-            if vim.api.nvim_buf_is_valid(bufnr) then
-                on_client_attach(client, bufnr)
-            end
+        if vim.api.nvim_buf_is_valid(ctx.bufnr) then
+            on_client_attach(client, ctx.bufnr)
         end
 
         return result
     end
 end)(vim.lsp.handlers["client/registerCapability"])
+
+vim.lsp.handlers["client/unregisterCapability"] = (function(overridden)
+    --- @type lsp.Handler
+    return function(err, res, ctx)
+        local result = overridden(err, res, ctx)
+        local client = vim.lsp.get_client_by_id(ctx.client_id)
+
+        if not client then
+            return result
+        end
+
+        if vim.api.nvim_buf_is_valid(ctx.bufnr) then
+            lsp_actions.sync_keymaps(ctx.bufnr)
+        end
+
+        return result
+    end
+end)(vim.lsp.handlers["client/unregisterCapability"])
