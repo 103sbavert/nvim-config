@@ -64,7 +64,7 @@ function M.sync_keymaps(bufnr)
 
     for key, lsp_config in pairs(lsp_actions) do
         if lsp_config.action then
-            if #has_clients(lsp_config.capability, bufnr) == 0 then
+            if not has_clients(lsp_config.capability, bufnr) then
                 pcall(vim.keymap.del, lsp_config.modes, key, { buffer = bufnr })
                 return
             end
