@@ -90,27 +90,18 @@ vim.keymap.set(
     { silent = true, desc = "Move window to new tab" }
 )
 
--- Switch between split windows (CTRL+<hjkl>)
-vim.keymap.set(
-    { "n", "i", "v", "t" },
-    "<C-h>",
-    function() vim.cmd.wincmd("h") end
-)
-vim.keymap.set(
-    { "n", "i", "v", "t" },
-    "<C-j>",
-    function() vim.cmd.wincmd("j") end
-)
-vim.keymap.set(
-    { "n", "i", "v", "t" },
-    "<C-k>",
-    function() vim.cmd.wincmd("k") end
-)
-vim.keymap.set(
-    { "n", "i", "v", "t" },
-    "<C-l>",
-    function() vim.cmd.wincmd("l") end
-)
+-- Navigate split windows (CTRL+<hjkl>)
+local win_nav_dirs = { h = "left", j = "down", k = "up", l = "right" }
+for dir, name in pairs(win_nav_dirs) do
+    local key = "<C-" .. dir .. ">"
+    vim.keymap.set({ "n", "i", "v", "t" }, key, function()
+        if vim.api.nvim_win_get_config(0).relative ~= "" then
+            vim.api.nvim_feedkeys(vim.keycode(key), "t", false)
+            return
+        end
+        vim.cmd.wincmd(dir)
+    end, { desc = "Window " .. name })
+end
 
 -- Move window positions in split layout
 vim.keymap.set(
