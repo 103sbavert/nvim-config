@@ -23,8 +23,7 @@ do
     -- plugins when no stdin is present)
     -- See `:help 'shellcmdflag'`
     -- See `:!man zsh`
-    vim.o.shell = vim.fs.joinpath(vim.fn.stdpath("config"), "shell.zsh")
-    vim.o.shellcmdflag = "--non-interactive"
+    vim.o.shellcmdflag = vim.fs.joinpath(vim.env.ZDOTDIR, "cmdline.zsh")
 
     -- Set <space> as the leader key
     --
