@@ -71,13 +71,13 @@ vim.keymap.set(
 -- Key binds to navigate between tabs (ALT+<h,l>)
 vim.keymap.set(
     { "n", "i", "v", "t" },
-    "<A-h>",
+    "<A-q>",
     vim.cmd.tabprevious,
     { silent = true, desc = "Previous tab" }
 )
 vim.keymap.set(
     { "n", "i", "v", "t" },
-    "<A-l>",
+    "<A-e>",
     vim.cmd.tabnext,
     { silent = true, desc = "Next tab" }
 )
@@ -90,77 +90,86 @@ vim.keymap.set(
     { silent = true, desc = "Move window to new tab" }
 )
 
+-- Move current buffer/window to a new tab
+vim.keymap.set(
+    { "n", "i", "v", "t" },
+    "<A-w>",
+    vim.cmd.tabclose,
+    { silent = true, desc = "Move window to new tab" }
+)
+
 -- Navigate split windows (CTRL+<hjkl>)
-local win_nav_dirs = { h = "left", j = "down", k = "up", l = "right" }
-for dir, name in pairs(win_nav_dirs) do
-    local key = "<C-" .. dir .. ">"
-    vim.keymap.set({ "n", "i", "v", "t" }, key, function()
-        if vim.api.nvim_win_get_config(0).relative ~= "" then
-            vim.api.nvim_feedkeys(vim.keycode(key), "t", false)
-            return
-        end
-        vim.cmd.wincmd(dir)
-    end, { desc = "Window " .. name })
-end
+-- local win_nav_dirs = { h = "left", j = "down", k = "up", l = "right" }
+-- for dir, name in pairs(win_nav_dirs) do
+--     local key = "<C-" .. dir .. ">"
+--     vim.keymap.set({ "n", "i", "v", "t" }, key, function()
+--         if vim.api.nvim_win_get_config(0).relative ~= "" then
+--             vim.api.nvim_feedkeys(vim.keycode(key), "t", false)
+--             return
+--         end
+--         vim.cmd.wincmd(dir)
+--     end, { desc = "Window " .. name })
+-- end
 
 -- Move window positions in split layout
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wH",
-    "<C-w>H",
-    { desc = "Move window left" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wL",
-    "<C-w>L",
-    { desc = "Move window right" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wJ",
-    "<C-w>J",
-    { desc = "Move window down" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wK",
-    "<C-w>K",
-    { desc = "Move window up" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>w=",
-    "<C-w>=",
-    { desc = "Equalize all splits" }
-)
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wH",
+--     "<C-w>H",
+--     { desc = "Move window left" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wL",
+--     "<C-w>L",
+--     { desc = "Move window right" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wJ",
+--     "<C-w>J",
+--     { desc = "Move window down" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wK",
+--     "<C-w>K",
+--     { desc = "Move window up" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>w=",
+--     "<C-w>=",
+--     { desc = "Equalize all splits" }
+-- )
 
 -- Resize windows
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wh",
-    "<cmd>vertical resize -3<cr>",
-    { desc = "Decrease width" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wj",
-    "<cmd>resize -3<cr>",
-    { desc = "Decrease height" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wk",
-    "<cmd>resize +3<cr>",
-    { desc = "Increase height" }
-)
-vim.keymap.set(
-    { "n", "v" },
-    "<leader>wl",
-    "<cmd>vertical resize +3<cr>",
-    { desc = "Increase width" }
-)
-vim.keymap.set({ "n", "v" }, "<leader>wq", "<cmd>q<cr>", { desc = "Close" })
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wh",
+--     "<cmd>vertical resize -3<cr>",
+--     { desc = "Decrease width" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wj",
+--     "<cmd>resize -3<cr>",
+--     { desc = "Decrease height" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wk",
+--     "<cmd>resize +3<cr>",
+--     { desc = "Increase height" }
+-- )
+-- vim.keymap.set(
+--     { "n", "v" },
+--     "<leader>wl",
+--     "<cmd>vertical resize +3<cr>",
+--     { desc = "Increase width" }
+-- )
+
+-- vim.keymap.set({ "n", "v" }, "<leader>wq", "<cmd>q<cr>", { desc = "Close" })
 
 -- [[ Merged LazyVim Enhancements ]]
 
