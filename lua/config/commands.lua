@@ -1,3 +1,14 @@
+local copy_args = {
+    ["bufpath"] = function()
+        return vim.fs.normalize(vim.api.nvim_buf_get_name(0))
+    end,
+    ["buftext"] = function()
+        return table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+    end,
+    ["tabcd"] = function() return vim.fn.getcwd(-1, 0) end,
+    ["wincd"] = function() return vim.fn.getcwd(0, 0) end,
+}
+
 -- [[ User commands ]]
 -- Custom commands that do not utilize any external libraries or plugins
 
@@ -5,19 +16,48 @@
 -- configured clipboard provider.
 --
 -- See `:help provider`
-vim.api.nvim_create_user_command("Copyfile", function()
-    local name = vim.api.nvim_buf_get_name(0)
-    if name == "" then
-        vim.notify("Copyfile: buffer has no file name", vim.log.levels.WARN)
+vim.api.nvim_create_user_command("Copy", function(args)
+    local target = args.fargs[1]
+    local get_text = copy_args[target]
+
+    assert(
+        get_text ~= nil and type(get_text) == "function",
+        string.format("Copy: Invalid argument type %s", target)
+    )
+
+    local res = get_text()
+    if res == "" then
+        local err = string.format("Copy: %s is empty or not present", target)
+        vim.notify(err, vim.log.levels.WARN)
         return
     end
 
-    local path = vim.fs.normalize(name)
+    assert(vim.fn.setreg("+", res) == 0, "Copy: Unable to copy to register '+'")
 
-    vim.fn.setreg("+", path)
-
-    vim.notify("Copied: " .. path, vim.log.levels.INFO)
-end, { desc = "Copy current buffer path" })
+    local lines = select(2, res:gsub("\n", "")) + 1
+    local msg
+    if lines == 1 then
+        local char_count = vim.fn.strchars(res)
+        msg = string.format(
+            "Copied: %s",
+            char_count < 30 and res or tostring(char_count) .. " chars"
+        )
+    else
+        msg = string.format("Copied: %d lines", lines)
+    end
+    vim.notify(msg, vim.log.levels.INFO)
+end, {
+    nargs = 1,
+    desc = "Copy buffer content, path or cwd",
+    complete = function(arglead)
+        local keys = vim.tbl_keys(copy_args)
+        table.sort(keys)
+        return vim.tbl_filter(
+            function(key) return vim.startswith(key, arglead) end,
+            keys
+        )
+    end,
+})
 
 local SGR_RESET = "\27[0m"
 local SGR_RED = "\27[31m"
