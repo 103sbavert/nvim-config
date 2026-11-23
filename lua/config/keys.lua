@@ -100,6 +100,20 @@ map(
     { silent = true, desc = "Move window to new tab" }
 )
 
+map(
+    { "n", "v" },
+    "<leader>_",
+    vim.cmd.split,
+    { silent = true, desc = "split horizontally" }
+)
+
+map(
+    { "n", "v" },
+    "<leader>|",
+    vim.cmd.vsplit,
+    { silent = true, desc = "split horizontally" }
+)
+
 -- Navigate split windows (CTRL+<hjkl>)
 -- local win_nav_dirs = { h = "left", j = "down", k = "up", l = "right" }
 -- for dir, name in pairs(win_nav_dirs) do
