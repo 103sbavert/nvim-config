@@ -1,11 +1,13 @@
 -- [[ Basic Keymaps ]]
 -- Basic keymaps (built in vim actions, without any plugin dependency)
 
+local map = function(mode, lhs, rhs, opts) vim.keymap.set(mode, lhs, rhs, opts) end
+
 -- Clear highlights on search when pressing <Esc> in normal mode
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+map("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Toggle wrap
-vim.keymap.set(
+map(
     "n",
     "<leader>tw",
     function() vim.wo[0].wrap = not vim.wo[0].wrap end,
@@ -13,7 +15,7 @@ vim.keymap.set(
 )
 
 -- Toggle-open the terminal
-vim.keymap.set(
+map(
     { "n", "o", "t", "v" },
     "<C-/>",
     require("config.utils").toggle_term,
@@ -22,14 +24,14 @@ vim.keymap.set(
 
 -- Sane gg and G behavior
 -- Move to the last character of the last line
-vim.keymap.set({ "n", "o", "v" }, "G", function()
+map({ "n", "o", "v" }, "G", function()
     local last_line = vim.api.nvim_buf_line_count(0)
     local last_col = #vim.api.nvim_buf_get_lines(0, -2, -1, false)[1] - 1
     vim.api.nvim_win_set_cursor(0, { last_line, math.max(0, last_col) })
 end, { noremap = true })
 
 -- Move to the first character of the first line
-vim.keymap.set(
+map(
     { "n", "o", "v" },
     "gg",
     function() vim.api.nvim_win_set_cursor(0, { 1, 0 }) end,
@@ -37,15 +39,15 @@ vim.keymap.set(
 )
 
 -- Custom character and line motion remaps
-vim.keymap.set({ "n", "o", "v" }, "0", "0", { desc = "First character" })
-vim.keymap.set({ "n", "o", "v" }, "=", "g_", { desc = "Last non-ws character" })
-vim.keymap.set({ "n", "o", "v" }, "-", "_", { desc = "First non-ws character" })
-vim.keymap.set({ "n", "o", "v" }, "$", "=", { desc = "Indent (op)" })
-vim.keymap.set({ "n", "o", "v" }, "_", "-", { desc = "Start of previous line" })
-vim.keymap.set({ "n", "o", "v" }, "g_", "$", { desc = "Last character" })
+map({ "n", "o", "v" }, "0", "0", { desc = "First character" })
+map({ "n", "o", "v" }, "=", "g_", { desc = "Last non-ws character" })
+map({ "n", "o", "v" }, "-", "_", { desc = "First non-ws character" })
+map({ "n", "o", "v" }, "$", "=", { desc = "Indent (op)" })
+map({ "n", "o", "v" }, "_", "-", { desc = "Start of previous line" })
+map({ "n", "o", "v" }, "g_", "$", { desc = "Last character" })
 
 -- Terminal kitty-keyboard-protocol fix (<C-@> -> <C-Space>)
-vim.keymap.set(
+map(
     { "n", "i", "v", "o", "c", "t", "l" },
     "<C-@>",
     "<C-Space>",
@@ -61,7 +63,7 @@ vim.filetype.add({
 })
 
 -- Exit to Normal mode
-vim.keymap.set(
+map(
     { "i", "c", "v", "o", "t", "l" },
     "<C-n>",
     "<C-\\><C-n>",
@@ -69,13 +71,13 @@ vim.keymap.set(
 )
 
 -- Key binds to navigate between tabs (ALT+<h,l>)
-vim.keymap.set(
+map(
     { "n", "i", "v", "t" },
     "<A-q>",
     vim.cmd.tabprevious,
     { silent = true, desc = "Previous tab" }
 )
-vim.keymap.set(
+map(
     { "n", "i", "v", "t" },
     "<A-e>",
     vim.cmd.tabnext,
@@ -83,7 +85,7 @@ vim.keymap.set(
 )
 
 -- Move current buffer/window to a new tab
-vim.keymap.set(
+map(
     { "n", "i", "v", "t" },
     "<A-t>",
     function() vim.cmd.wincmd("T") end,
@@ -91,7 +93,7 @@ vim.keymap.set(
 )
 
 -- Move current buffer/window to a new tab
-vim.keymap.set(
+map(
     { "n", "i", "v", "t" },
     "<A-w>",
     vim.cmd.tabclose,
@@ -102,7 +104,7 @@ vim.keymap.set(
 -- local win_nav_dirs = { h = "left", j = "down", k = "up", l = "right" }
 -- for dir, name in pairs(win_nav_dirs) do
 --     local key = "<C-" .. dir .. ">"
---     vim.keymap.set({ "n", "i", "v", "t" }, key, function()
+--     map({ "n", "i", "v", "t" }, key, function()
 --         if vim.api.nvim_win_get_config(0).relative ~= "" then
 --             vim.api.nvim_feedkeys(vim.keycode(key), "t", false)
 --             return
@@ -112,31 +114,31 @@ vim.keymap.set(
 -- end
 
 -- Move window positions in split layout
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wH",
 --     "<C-w>H",
 --     { desc = "Move window left" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wL",
 --     "<C-w>L",
 --     { desc = "Move window right" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wJ",
 --     "<C-w>J",
 --     { desc = "Move window down" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wK",
 --     "<C-w>K",
 --     { desc = "Move window up" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>w=",
 --     "<C-w>=",
@@ -144,71 +146,61 @@ vim.keymap.set(
 -- )
 
 -- Resize windows
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wh",
 --     "<cmd>vertical resize -3<cr>",
 --     { desc = "Decrease width" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wj",
 --     "<cmd>resize -3<cr>",
 --     { desc = "Decrease height" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wk",
 --     "<cmd>resize +3<cr>",
 --     { desc = "Increase height" }
 -- )
--- vim.keymap.set(
+-- map(
 --     { "n", "v" },
 --     "<leader>wl",
 --     "<cmd>vertical resize +3<cr>",
 --     { desc = "Increase width" }
 -- )
 
--- vim.keymap.set({ "n", "v" }, "<leader>wq", "<cmd>q<cr>", { desc = "Close" })
+-- map({ "n", "v" }, "<leader>wq", "<cmd>q<cr>", { desc = "Close" })
 
 -- [[ Merged LazyVim Enhancements ]]
 
 -- Better indenting (preserves visual selection)
-vim.keymap.set("v", "<", "<gv", { desc = "Outdent selection" })
-vim.keymap.set("v", ">", ">gv", { desc = "Indent selection" })
+map("v", "<", "<gv", { desc = "Outdent selection" })
+map("v", ">", ">gv", { desc = "Indent selection" })
 
 -- Move Lines
-vim.keymap.set(
+map(
     "n",
     "<A-j>",
     "<cmd>execute 'move .+' . v:count1<cr>==",
     { desc = "Move line down" }
 )
-vim.keymap.set(
+map(
     "n",
     "<A-k>",
     "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==",
     { desc = "Move line up" }
 )
-vim.keymap.set(
-    "i",
-    "<A-j>",
-    "<esc><cmd>m .+1<cr>==gi",
-    { desc = "Move line down" }
-)
-vim.keymap.set(
-    "i",
-    "<A-k>",
-    "<esc><cmd>m .-2<cr>==gi",
-    { desc = "Move line up" }
-)
-vim.keymap.set(
+map("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move line down" })
+map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move line up" })
+map(
     "v",
     "<A-j>",
     ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv",
     { desc = "Move selection down" }
 )
-vim.keymap.set(
+map(
     "v",
     "<A-k>",
     ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv",
@@ -216,25 +208,25 @@ vim.keymap.set(
 )
 
 -- Saner search direction (n always goes forward, N always goes backward)
-vim.keymap.set(
+map(
     "n",
     "n",
     "'Nn'[v:searchforward].'zv'",
     { expr = true, desc = "Next Match" }
 )
-vim.keymap.set(
+map(
     { "v", "o" },
     "n",
     "'Nn'[v:searchforward]",
     { expr = true, desc = "Next Match" }
 )
-vim.keymap.set(
+map(
     "n",
     "N",
     "'nN'[v:searchforward].'zv'",
     { expr = true, desc = "Prev Match" }
 )
-vim.keymap.set(
+map(
     { "v", "o" },
     "N",
     "'nN'[v:searchforward]",
@@ -242,25 +234,25 @@ vim.keymap.set(
 )
 
 -- Smart wrapped line movement (moves visual lines on wrap, logical lines on count)
-vim.keymap.set(
+map(
     { "n", "v" },
     "j",
     "v:count == 0 ? 'gj' : 'j'",
     { expr = true, silent = true, desc = "Down" }
 )
-vim.keymap.set(
+map(
     { "n", "v" },
     "<Down>",
     "v:count == 0 ? 'gj' : 'j'",
     { expr = true, silent = true, desc = "Down" }
 )
-vim.keymap.set(
+map(
     { "n", "v" },
     "k",
     "v:count == 0 ? 'gk' : 'k'",
     { expr = true, silent = true, desc = "Up" }
 )
-vim.keymap.set(
+map(
     { "n", "v" },
     "<Up>",
     "v:count == 0 ? 'gk' : 'k'",
@@ -268,6 +260,6 @@ vim.keymap.set(
 )
 
 -- Add undo break-points
-vim.keymap.set("i", ",", ",<c-g>u")
-vim.keymap.set("i", ".", ".<c-g>u")
-vim.keymap.set("i", ";", ";<c-g>u")
+map("i", ",", ",<c-g>u")
+map("i", ".", ".<c-g>u")
+map("i", ";", ";<c-g>u")
