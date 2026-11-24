@@ -56,7 +56,7 @@ local copy_args = {
 -- configured clipboard provider.
 --
 -- See `:help provider`
-vim.api.nvim_create_user_command("Copy", function(args)
+vim.api.nvim_create_user_command("Bcp", function(args)
     local target = args.fargs[1]
     local get_text = copy_args[target]
 
