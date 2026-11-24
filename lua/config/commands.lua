@@ -10,11 +10,10 @@ local function to_location_ref(line1, line2)
 end
 
 --- @param ref string location of the codeblock in `filepath:line_start-line_end` or `filepath:lineno` format
---- @param buftype string file type of the buffer
 --- @param text string codeblock to wrap in backticks
-local function to_codeblock(ref, buftype, text)
+local function to_codeblock(ref, text)
     local trim_text = vim.trim(text)
-    local block_start = "```" .. buftype
+    local block_start = "```" .. vim.bo.filetype
     local block_end = "```"
     return table.concat({ ref, block_start, trim_text, block_end }, "\n")
 end
@@ -39,14 +38,12 @@ local copy_args = {
         )
         return to_codeblock(
             to_location_ref(args.line1, args.line2),
-            vim.bo.filetype,
             table.concat(lines, "\n")
         )
     end,
     ["line"] = function(args)
         return to_codeblock(
             to_location_ref(args.line1, args.line1),
-            vim.bo.filetype,
             vim.api.nvim_get_current_line()
         )
     end,
