@@ -79,8 +79,7 @@ local function on_init(client)
     local base_ls_opts = client.config.settings.Lua
 
     --- @cast base_ls_opts table
-    client.config.settings.Lua =
-        get_nvim_lua_opts(base_ls_opts)
+    client.config.settings.Lua = get_nvim_lua_opts(base_ls_opts)
 end
 
 --- @type vim.lsp.Config
