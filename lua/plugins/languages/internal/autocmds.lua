@@ -181,8 +181,14 @@ vim.lsp.handlers["client/registerCapability"] = (function(overridden)
             return result
         end
 
-        if vim.api.nvim_buf_is_valid(ctx.bufnr) then
-            on_client_attach(client, ctx.bufnr)
+        if ctx.bufnr then
+            if vim.api.nvim_buf_is_valid(ctx.bufnr) then
+                on_client_attach(client, ctx.bufnr)
+            end
+        else
+            for bufnr in pairs(client.attached_buffers) do
+                on_client_attach(client, bufnr)
+            end
         end
 
         return result
@@ -199,8 +205,14 @@ vim.lsp.handlers["client/unregisterCapability"] = (function(overridden)
             return result
         end
 
-        if vim.api.nvim_buf_is_valid(ctx.bufnr) then
-            lsp_actions.sync_keymaps(ctx.bufnr)
+        if ctx.bufnr then
+            if vim.api.nvim_buf_is_valid(ctx.bufnr) then
+                lsp_actions.sync_keymaps(ctx.bufnr)
+            end
+        else
+            for bufnr in pairs(client.attached_buffers) do
+                lsp_actions.sync_keymaps(bufnr)
+            end
         end
 
         return result
