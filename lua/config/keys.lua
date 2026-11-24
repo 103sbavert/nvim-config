@@ -112,6 +112,11 @@ map(
     "<leader>|",
     vim.cmd.vsplit,
     { silent = true, desc = "split horizontally" }
+map(
+    { "n", "v" },
+    "<leader>=",
+    "<C-w>=",
+    { silent = true, desc = "Equalize all splits" }
 )
 
 -- Navigate split windows (CTRL+<hjkl>)
@@ -151,12 +156,6 @@ map(
 --     "<leader>wK",
 --     "<C-w>K",
 --     { desc = "Move window up" }
--- )
--- map(
---     { "n", "v" },
---     "<leader>w=",
---     "<C-w>=",
---     { desc = "Equalize all splits" }
 -- )
 
 -- Resize windows
