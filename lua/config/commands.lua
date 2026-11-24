@@ -23,11 +23,14 @@ local copy_modes = { selection = "visual", line = "normal" }
 
 local copy_args = {
     ["path"] = get_buf_path,
-    ["text"] = function()
-        return table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
-    end,
     ["tabcd"] = function() return vim.fn.getcwd(-1, 0) end,
     ["wincd"] = function() return vim.fn.getcwd(0, 0) end,
+    ["text"] = function()
+        return to_codeblock(
+            get_buf_path(),
+            table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+        )
+    end,
     ["selection"] = function(args)
         local lines = vim.fn.getregion(
             vim.fn.getpos("'<"),
