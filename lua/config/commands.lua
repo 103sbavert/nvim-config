@@ -57,16 +57,10 @@ local copy_args = {
 --
 -- See `:help provider`
 vim.api.nvim_create_user_command("Bcp", function(args)
-    local target = args.fargs[1]
-    local get_text = copy_args[target]
-
-    assert(
-        get_text ~= nil and type(get_text) == "function",
-        string.format("Copy: Invalid argument type %s", target)
-    )
-
-    local mode = copy_modes[target]
     local in_visual = args.range > 0
+    local target = args.fargs[1] or in_visual and "selection" or "path"
+    local mode = copy_modes[target]
+
     if
         (mode == "visual" and not in_visual) or (mode == "normal" and in_visual)
     then
@@ -76,6 +70,12 @@ vim.api.nvim_create_user_command("Bcp", function(args)
         )
         return
     end
+
+    local get_text = copy_args[target]
+    assert(
+        get_text ~= nil and type(get_text) == "function",
+        string.format("Copy: Invalid argument type %s", target)
+    )
 
     local res = get_text(args)
     if res == "" then
@@ -99,7 +99,7 @@ vim.api.nvim_create_user_command("Bcp", function(args)
     end
     vim.notify(msg, vim.log.levels.INFO)
 end, {
-    nargs = 1,
+    nargs = "?",
     range = true,
     desc = "Copy buffer content, path, cwd, line or visual selection",
     complete = function(arglead)
