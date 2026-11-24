@@ -104,14 +104,16 @@ map(
     { "n", "v" },
     "<leader>_",
     vim.cmd.split,
-    { silent = true, desc = "split horizontally" }
+    { silent = true, desc = "Split horizontally" }
 )
 
 map(
     { "n", "v" },
     "<leader>|",
     vim.cmd.vsplit,
-    { silent = true, desc = "split horizontally" }
+    { silent = true, desc = "Split horizontally" }
+)
+
 map(
     { "n", "v" },
     "<leader>=",
