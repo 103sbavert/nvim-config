@@ -1,12 +1,52 @@
+local function get_buf_path()
+    return vim.fs.normalize(vim.api.nvim_buf_get_name(0))
+end
+
+local function to_location_ref(line1, line2)
+    if line1 == line2 then
+        return string.format("%s:%d", get_buf_path(), line1)
+    end
+    return string.format("%s:%d-%d", get_buf_path(), line1, line2)
+end
+
+--- @param ref string location of the codeblock in `filepath:line_start-line_end` or `filepath:lineno` format
+--- @param buftype string file type of the buffer
+--- @param text string codeblock to wrap in backticks
+local function to_codeblock(ref, buftype, text)
+    local trim_text = vim.trim(text)
+    local block_start = "```" .. buftype
+    local block_end = "```"
+    return table.concat({ ref, block_start, trim_text, block_end }, "\n")
+end
+
+local copy_modes = { selection = "visual", line = "normal" }
+
 local copy_args = {
-    ["bufpath"] = function()
-        return vim.fs.normalize(vim.api.nvim_buf_get_name(0))
-    end,
-    ["buftext"] = function()
+    ["path"] = get_buf_path,
+    ["text"] = function()
         return table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
     end,
     ["tabcd"] = function() return vim.fn.getcwd(-1, 0) end,
     ["wincd"] = function() return vim.fn.getcwd(0, 0) end,
+    ["selection"] = function(args)
+        local lines = vim.fn.getregion(
+            vim.fn.getpos("'<"),
+            vim.fn.getpos("'>"),
+            { type = vim.fn.visualmode() }
+        )
+        return to_codeblock(
+            to_location_ref(args.line1, args.line2),
+            vim.bo.filetype,
+            table.concat(lines, "\n")
+        )
+    end,
+    ["line"] = function(args)
+        return to_codeblock(
+            to_location_ref(args.line1, args.line1),
+            vim.bo.filetype,
+            vim.api.nvim_get_current_line()
+        )
+    end,
 }
 
 -- [[ User commands ]]
@@ -25,7 +65,19 @@ vim.api.nvim_create_user_command("Copy", function(args)
         string.format("Copy: Invalid argument type %s", target)
     )
 
-    local res = get_text()
+    local mode = copy_modes[target]
+    local in_visual = args.range > 0
+    if
+        (mode == "visual" and not in_visual) or (mode == "normal" and in_visual)
+    then
+        vim.notify(
+            string.format("Copy: %s requires %s mode", target, mode),
+            vim.log.levels.WARN
+        )
+        return
+    end
+
+    local res = get_text(args)
     if res == "" then
         local err = string.format("Copy: %s is empty or not present", target)
         vim.notify(err, vim.log.levels.WARN)
@@ -48,7 +100,8 @@ vim.api.nvim_create_user_command("Copy", function(args)
     vim.notify(msg, vim.log.levels.INFO)
 end, {
     nargs = 1,
-    desc = "Copy buffer content, path or cwd",
+    range = true,
+    desc = "Copy buffer content, path, cwd, line or visual selection",
     complete = function(arglead)
         local keys = vim.tbl_keys(copy_args)
         table.sort(keys)
