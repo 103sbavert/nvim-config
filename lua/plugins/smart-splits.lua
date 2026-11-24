@@ -1,3 +1,4 @@
+--- @type LazySpec
 return {
     "smart-splits-nvim/smart-splits.nvim",
     lazy = false,
