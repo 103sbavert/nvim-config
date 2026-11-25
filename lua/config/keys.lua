@@ -97,7 +97,7 @@ map(
     { "n", "i", "v", "t" },
     "<A-w>",
     vim.cmd.tabclose,
-    { silent = true, desc = "Move window to new tab" }
+    { silent = true, desc = "Close current tab" }
 )
 
 map(
