@@ -70,7 +70,7 @@ map(
     { desc = "Exit to Normal mode" }
 )
 
--- Key binds to navigate between tabs (ALT+<h,l>)
+-- Key binds to navigate between tabs
 map(
     { "n", "i", "v", "t" },
     "<A-q>",
@@ -92,7 +92,7 @@ map(
     { silent = true, desc = "Move window to new tab" }
 )
 
--- Move current buffer/window to a new tab
+-- Close current tab
 map(
     { "n", "i", "v", "t" },
     "<A-w>",
