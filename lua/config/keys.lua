@@ -70,6 +70,8 @@ map(
     { desc = "Exit to Normal mode" }
 )
 
+map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit term mode" })
+
 -- Key binds to navigate between tabs
 map(
     { "n", "i", "v", "t" },
