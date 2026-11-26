@@ -124,22 +124,16 @@ function M.setup()
                 end
 
                 if path then
-                    vim.uv.fs_unlink(path, function(unlink_err)
-                        if unlink_err then
-                            vim.schedule(
-                                function()
-                                    vim.notify(
-                                        "Failed to remove temp file "
-                                            .. path
-                                            .. ": "
-                                            .. unlink_err,
-                                        vim.log.levels.WARN,
-                                        { title = "Sudo" }
-                                    )
-                                end
-                            )
-                        end
-                    end)
+                    local ok, unlink_err = vim.uv.fs_unlink(path)
+                    vim.b[buf].su_temp_path = nil
+
+                    if not ok then
+                        vim.notify(
+                            "Failed to remove temp file " .. path .. ": " .. unlink_err,
+                            vim.log.levels.WARN,
+                            { title = "Sudo" }
+                        )
+                    end
                 end
             end,
         })
