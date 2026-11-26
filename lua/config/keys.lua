@@ -39,7 +39,7 @@ map(
 )
 
 -- Custom character and line motion remaps
-map({ "n", "o", "v" }, "0", "0", { desc = "First character" })
+-- map({ "n", "o", "v" }, "0", "0", { desc = "First character" }) -- Added in @which-key.lua since this is only a desc assignment
 map({ "n", "o", "v" }, "=", "g_", { desc = "Last non-ws character" })
 map({ "n", "o", "v" }, "-", "_", { desc = "First non-ws character" })
 map({ "n", "o", "v" }, "$", "=", { desc = "Indent (op)" })

@@ -35,6 +35,7 @@ return {
         spec = {
             -- `g` prefix groups
             -- { "gc", desc = "Comment", mode = "n" },
+            { "0", desc = "Format (smart)", mode = { "n", "o", "v" } },
             { "gq", desc = "Format (smart)", mode = { "v", "n" } },
             { "gw", desc = "Format (dumb)", mode = { "v", "n" } },
             { "gx", desc = "Open URI/path under cusor", mode = { "v", "n" } },
