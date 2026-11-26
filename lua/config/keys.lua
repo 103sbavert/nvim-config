@@ -97,7 +97,7 @@ map(
 -- Close current tab
 map(
     { "n", "i", "v", "t" },
-    "<A-w>",
+    "<A-c>",
     vim.cmd.tabclose,
     { silent = true, desc = "Close current tab" }
 )
